@@ -6,7 +6,7 @@ plugins {
 allprojects {
     apply plugin: "java"
 
-    version = "2.2.1-dev2"
+    version = "0.1.0"
 
     sourceCompatibility = 8
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -40,7 +40,7 @@ project(":common") {
 }
 
 project(":client") {
-    archivesBaseName = "minicraft-plus"
+    archivesBaseName = "terramodulus"
 
     repositories {
         maven { url "https://plugins.gradle.org/m2/" }
@@ -65,7 +65,7 @@ project(":client") {
 
 project(":server") {
 
-    archivesBaseName = "minicraft-plus-server"
+    archivesBaseName = "terramodulus-server"
 
     dependencies {
         implementation project(":common")
@@ -98,18 +98,18 @@ jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-publishing {
-	repositories {
-		maven {
-			name = "GitHubPackages"
-			url = "https://maven.pkg.github.com/MinicraftPlus/minicraft-plus-revived"
-			credentials {
-				username = System.getenv("GITHUB_ACTOR")
-				password = System.getenv("GITHUB_TOKEN")
-			}
-		}
-	}
-}
+//publishing {
+//	repositories {
+//		maven {
+//			name = "GitHubPackages"
+//			url = "https://maven.pkg.github.com/MinicraftPlus/minicraft-plus-revived"
+//			credentials {
+//				username = System.getenv("GITHUB_ACTOR")
+//				password = System.getenv("GITHUB_TOKEN")
+//			}
+//		}
+//	}
+//}
 
 // Don't override if we're building a tar package.
 tasks.withType(Tar) {
