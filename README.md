@@ -8,7 +8,7 @@ but eventually will be detached from the original codebase.
 ## Status
 
 Migration is still in progress:
-- including all issues, labels;
+- including all issues, labels, pull requests;
 - project management; and,
 - development roadmap
 
@@ -45,7 +45,7 @@ a new project for further development because of the incompatibilities of philos
 
 ## Development Progress
 
-Main development would only be conducted by me in these stages.
+Main development would only be conducted by me in these stages. All main changes will be made into pull requests for tracking.
 
 Contributing guidelines will be drafted and made in the future for open contributions later.
 
