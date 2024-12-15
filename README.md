@@ -1,78 +1,69 @@
-[![Nightly build](https://github.com/MinicraftPlus/minicraft-plus-revived/actions/workflows/autobuild.yml/badge.svg?branch=main)](https://github.com/MinicraftPlus/minicraft-plus-revived/actions/workflows/autobuild.yml)
-[![CodeQL](https://github.com/MinicraftPlus/minicraft-plus-revived/actions/workflows/codeql-analysis.yml/badge.svg?branch=main)](https://github.com/MinicraftPlus/minicraft-plus-revived/actions/workflows/codeql-analysis.yml)
 
-# Minicraft+
+# TerraModulus
 
-![Minicraft+](https://user-images.githubusercontent.com/37084190/138313821-75ac3112-7044-45c1-bdbb-d89f2333c2c0.png)
+TerraModulus is a now fork of [Minicraft+](https://github.com/MinicraftPlus/minicraft-plus-revived)
+(at [`58460dd`](https://github.com/MinicraftPlus/minicraft-plus-revived/commit/58460ddf4860423a915289d96152150cc09238f6)),
+but eventually will be detached from the original codebase.
 
-Minicraft+ is an overhaul mod of Minicraft, a game made by Markus "Notch" Persson in the Ludum Dare 22 contest. To learn
-more about Minicraft take a look at [playminicraft.com](https://www.playminicraft.com), talk to the community at
-our [Discord](https://discord.me/minicraft), or check out
-our [wiki.gg Wiki](https://minicraft.wiki.gg/wiki/).
+## Status
 
-Check the [releases](https://github.com/minicraftplus/minicraft-plus-revived/releases) page to download the latest
-version, or older versions.
+Migration is still in progress:
+- including all issues, labels, pull requests;
+- project management; and,
+- development roadmap
 
-## Major features
+Currently, in *Early Stage* and *Engine Rewrite Stage*, yet no outside/open contributions (pull requests) would be accepted,
+but anyone is still welcome for opinions, suggestions and discussions. Also, before the completion of the stages,
+no other feature requests and bug reports would be accepted, unless there is any extra feature suggestion accepted.
 
-* Four new gamemodes
-    * Creative
-    * Hardcore
-    * Score
-    * Survival
-* Saving and loading
-* Multiplayer mode and an account system (Now supported
-  by [El-Virus](https://www.github.com/ElVir-Software/minicraft-plus-online))
-* More mobs
-* Personal crafting menu
-* Beds
-* Mob spawners with loot
-* Ruined structures with loot
-* An expanded storyline
-* Key binding customization
-* Tutorials
-* Achievements
-* Resource packs
-* Better rendering
-* Skins
-* Quests
-* Support for several languages
-* and many, many more!
+Most plans at the moment are still not publicly visible, but would be revealed upon the progress; most issues migrated
+are related to the mentioned 2 stages.
 
-## System Prerequisites
+Yet, no plan to release snapshots during development in the 2 stages.
 
-Our game only supports Windows, MacOS and Linux. Furthermore, newer platform versions are required for controllers.
+## Project Direction
 
-For Java, you may check out [system requirements for Java](https://www.java.com/en/download/help/sysreq.html).
+This project aims to be a enhanced version over the original Minicraft, built with much more flexible and customizable features,
+along with some more functionalities. Although this started based on Minicraft+ Revived, but will be moved away from it, so
+some content added by Minicraft+ would be removed and the entire project will be reworked and rewritten thoroughly.
 
-## Current goals and ideas
+This will support a lot of flexible APIs, plugins/modding utilities, built-in mod loader, advanced resource packs/data packs,
+more than Minicraft+. So, this may be said to be *the successor of MiniMods*. In addition, all the resources would be overhauled,
+so to build up modernization and move away from copyright concerns.
 
-Take a look at the [ideas](ideas/) folder or
-the [issues](https://github.com/minicraftplus/minicraft-plus-revived/issues) page.
+Eventually, this project will become a sole project besides Minicraft+, but might be still related to the Minicraft community.
 
-## Getting the game and run the game
+## History
 
-Head over [releases](https://github.com/minicraftplus/minicraft-plus-revived/releases) and find the latest version of
-Minicraft+.
-There, you can find an file called `minicraft_plus.jar`. Click the file, and after you have downloaded the file, you
-must double-click the file in downloads folder to open it.
-You must first confirm that you have [Java](https://www.java.com/en/download/) (at least version 8) installed on your
-computer.
+Originally, I have been participating the development in the Minicraft+ Revived project for more than 2 years. Along the time,
+I have made a significant amount of changes and code contributions to the project. Afterwards, the amount of contributions seemed to
+have taken the place of maintainer's responsibilities, and thus some discussions and arguments occurred in the time being.
 
-## Localization
+At the end of 2024, due to my personal updates to the project management made when the inactivity of the maintainer(s), a conflict appeared
+(said to be "*dictating the project*"). By the conflicts, I finally decided to split and migrate my (then and future) works from them to
+a new project for further development because of the incompatibilities of philosophies, this project has then been created.
 
-This project is running with an external localization platform called Lokalise. You can now [head over Lokalise to contribute localization](https://app.lokalise.com/public/42925017655336d50b3007.03067253/)!
+## Development Progress
 
-## How to build/run in development
+Main development would only be conducted by me in these stages. All main changes will be made into pull requests for tracking.
 
-Because this project uses a build tool called gradle it is very easy to build or run the project from the source code.
+Contributing guidelines will be drafted and made in the future for open contributions later.
 
-1. Download the source code by clicking the green code button, and download it as a ZIP.
-2. Extract the contents of the folder.
-3. Open command prompt and enter `cd <folder_location>`, this will open the folder in the command prompt.
-4. Type `gradlew run` or `gradlew build` to run or build the program. This might take some time. If on unix, add "./" to
-   the front. If on Windows using an IDE or Windows Powershell, add ".\" to the front.
-    1. If you built the project, the jar file is found in `build/libs`
-    2. If you get an error screaming that you're missing java. You need
-       to [set up](https://confluence.atlassian.com/doc/setting-the-java_home-variable-in-windows-8895.html) your
-       JAVA_HOME environment variable, or download a JDK if you haven't already.
+### Early Stage
+
+Save directory will be kept under `/playminicraft/mods`, but named as `TerraModulus` instead of `Minicraft_Plus`.
+Mainly it is the migration of my pull requests from Minicraft+ to here.
+Version will be locked at `0.1.0` and no public release would be done.
+
+### Engine Rewrite Stage
+
+## License
+
+This repository is licensed under both GPLv3 and LGPLv3. All our content is licensed under LGPLv3, but all the works originated
+from the Minicraft+ project are still licensed as is as GPLv3. All the modifications made by us are still licensed under LGPL, but
+the combined works in individual files are licensed under GPLv3 according to the terms of GPLv3. However, if any parts have been
+overwritten, such parts will be re-licensed under LGPL. The media (including music tracks and graphics) originated in this project
+would be decided later about licensing. Although I could ask for granting permissions from them, I still mixed the licenses for them.
+
+Complementary license in [`LICENSE`](/LICENSE), a copy of LGPL in [`LICENSE-LGPL`](/LICENSE-LGPL) and a copy of GPL in
+[`LICENSE-GPL`](/LICENSE-GPL).

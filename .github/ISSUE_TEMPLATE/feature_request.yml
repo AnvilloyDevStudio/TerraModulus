@@ -1,0 +1,40 @@
+name: Feature Request
+description: Submit a feature request.
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please submit a request of a certain functionality or feature.
+  - type: textarea
+    id: background
+    attributes:
+      label: Background
+      description: Introduction or background information to certain feature
+      placeholder: Background
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Describe your feature request
+      placeholder: Details
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: Describe your additional suggestions to the feature
+      placeholder: Suggestions
+    validations:
+      required: false
+#  - type: checkboxes
+#    id: terms
+#    attributes:
+#      label: Code of Conduct
+#      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+#      options:
+#        - label: I agree to follow this project's Code of Conduct
+#          required: true
