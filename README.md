@@ -55,6 +55,8 @@ Save directory will be kept under `/playminicraft/mods`, but named as `TerraModu
 Mainly it is the migration of my pull requests from Minicraft+ to here.
 Version will be locked at `0.1.0` and no public release would be done.
 
+Therefore, if you would like to access the builds, you have to build them yourself.
+
 ### Engine Rewrite Stage
 
 ## License
