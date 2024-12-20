@@ -59,6 +59,34 @@ Therefore, if you would like to access the builds, you have to build them yourse
 
 ### Engine Rewrite Stage
 
+Features to be removed at first:
+- Flowers: to be reimplemented as distinct tiles
+- Dungeon level: no longer as a part of TerraModulus
+
+Features temporarily disabled at first:
+- Saves
+
+Tasks:
+- Crash report system
+  - Part 1: Basic system
+  - Part 2: Usages and Applications (part of class reorganizing)
+- Basic Codebase Optimization and Review
+  - Part 1: Methods, Fields and Validation
+  - Part 2: Registry and Settings
+  - Part 3: Class categorizing and JSON
+  - Part 4: Logging and Crash report system Part 2
+  - Part 5: Performance optimizations and Display capacity
+- Rework resource pack system
+	- Music customization support
+	- Categorizing tile types, item types and entity types
+- Rewrite save system
+	- Rewrite armor system + clothing system (also #507; #382 + #295)
+	- Rewrite sleeping mechanism
+	- Rewrite world generation
+	- Rewrite light system
+- Rewrite rendering system with LWJGL
+- *More to be added*
+
 ## License
 
 This repository is licensed under both GPLv3 and LGPLv3. All our content is licensed under LGPLv3, but all the works originated
