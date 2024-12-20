@@ -62,6 +62,7 @@ Therefore, if you would like to access the builds, you have to build them yourse
 Features to be removed at first:
 - Flowers: to be reimplemented as distinct tiles
 - Dungeon level: no longer as a part of TerraModulus
+- Tree: to be reimplemented as distinct tiles
 
 Features temporarily disabled at first:
 - Saves
