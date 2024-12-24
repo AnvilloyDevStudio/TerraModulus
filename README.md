@@ -67,6 +67,8 @@ Features to be removed at first:
 Features temporarily disabled at first:
 - Saves
 - Achievements
+- Quest System
+- Tutorials
 
 Tasks:
 - Crash report system
