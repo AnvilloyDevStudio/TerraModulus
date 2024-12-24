@@ -63,6 +63,7 @@ Features to be removed at first:
 - Flowers: to be reimplemented as distinct tiles
 - Dungeon level: no longer as a part of TerraModulus
 - Tree: to be reimplemented as distinct tiles
+- Score Mode and Scores
 
 Features temporarily disabled at first:
 - Saves
