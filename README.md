@@ -70,6 +70,7 @@ Features temporarily disabled at first:
 - Achievements
 - Quest System
 - Tutorials
+- Furniture Picking Up
 
 Tasks:
 - Crash report system
