@@ -64,6 +64,7 @@ Features to be removed at first:
 - Dungeon level: no longer as a part of TerraModulus
 - Tree: to be reimplemented as distinct tiles
 - Score Mode and Scores
+- Sign: to be reimplemented
 
 Features temporarily disabled at first:
 - Saves
