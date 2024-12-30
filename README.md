@@ -60,21 +60,8 @@ Therefore, if you would like to access the builds, you have to build them yourse
 
 ### Engine Rewrite Stage
 
-Features to be removed at first:
-- Flowers: to be reimplemented as distinct tiles
-- Dungeon level: no longer as a part of TerraModulus
-- Tree: to be reimplemented as distinct tiles
-- Score Mode and Scores
-- Sign: to be reimplemented
-
-Features temporarily disabled at first:
-- Saves
-- Achievements
-- Quest System
-- Tutorials
-- Furniture Picking Up
-
 Tasks:
+- [Feature Removals and Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
 - Crash report system
   - Part 1: Basic system
   - Part 2: Usages and Applications (part of class reorganizing)
