@@ -1,4 +1,4 @@
-[![](https://dcbadge.limes.pink/api/server/https://discord.com/invite/87DF72RqHu)](https://discord.com/invite/87DF72RqHu)
+[![](https://dcbadge.limes.pink/api/server/https://discord.com/invite/87DF72RqHu?style=flat)](https://discord.com/invite/87DF72RqHu)
 
 # TerraModulus
 
