@@ -61,8 +61,8 @@ Therefore, if you would like to access the builds, you have to build them yourse
 ### Engine Rewrite Stage
 
 Tasks:
-- [Feature Removals and Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
-- Crash report system
+- [Feature Removals & Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
+- [Crash Report System](https://github.com/AnvilloyDevStudio/TerraModulus/issues/33)
   - Part 1: Basic system
   - Part 2: Usages and Applications (part of class reorganizing)
 - Basic Codebase Optimization and Review
