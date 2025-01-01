@@ -50,7 +50,7 @@ project(":client") {
     dependencies {
         implementation project(":common")
 
-        implementation 'org.json:json:20220320'
+        implementation 'org.json:json:20240303'
         implementation 'com.konghq:unirest-java:3.13.10'
         implementation 'com.badlogicgames.gdx:gdx:1.11.0'
         implementation 'com.badlogicgames.gdx:gdx-box2d:1.11.0'
