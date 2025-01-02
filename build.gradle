@@ -52,10 +52,10 @@ project(":client") {
 
         implementation 'org.json:json:20240303'
         implementation 'com.konghq:unirest-java:3.14.5'
-        implementation 'com.badlogicgames.gdx:gdx:1.11.0'
-        implementation 'com.badlogicgames.gdx:gdx-box2d:1.11.0'
+        implementation 'com.badlogicgames.gdx:gdx:1.13.0'
+        implementation 'com.badlogicgames.gdx:gdx-box2d:1.13.0'
         implementation 'com.badlogicgames.gdx:gdx-controllers:1.9.13'
-        implementation 'com.badlogicgames.jamepad:jamepad:2.0.20.0'
+        implementation 'com.badlogicgames.jamepad:jamepad:2.30.0.0'
     }
 
     application {
