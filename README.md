@@ -13,7 +13,7 @@ Migration is still in progress:
 - project management; and,
 - development roadmap
 
-Currently, in *Early Stage* and *Engine Rewrite Stage*, yet no outside/open contributions (pull requests) would be accepted,
+Currently, it is in the *[Early Stage](#early-stage)* and the next one the *[Engine Rewrite Stage](#engine-rewrite-stage)*, yet no outside/open contributions (pull requests) would be accepted,
 but anyone is still welcome for opinions, suggestions and discussions. Also, before the completion of the stages,
 no other feature requests and bug reports would be accepted, unless there is any extra feature suggestion accepted.
 
