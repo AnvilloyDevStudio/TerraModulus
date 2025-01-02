@@ -8,5 +8,13 @@ updates:
   - package-ecosystem: "gradle" # See documentation for possible values
     directory: "/" # Location of package manifests
     labels: ["type: Dependency Bump"]
+    open-pull-requests-limit: 8
     schedule:
       interval: "daily"
+    groups:
+      tinylog:
+        patterns:
+          - "org.tinylog*"
+      badlogicgames:
+        patterns:
+          - "com.badlogicgames*"
