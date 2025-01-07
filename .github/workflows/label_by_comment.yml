@@ -13,8 +13,8 @@ jobs:
 
       - name: Add label # Credit: Copilot
         run: |
-          AUTHOR=${{ github.event.comment.user.login }}
-          COMMENT_BODY=${{ github.event.comment.body }}
+          AUTHOR="${{ github.event.comment.user.login }}"
+          COMMENT_BODY="${{ github.event.comment.body }}"
           if [[ "${COMMENT_BODY,,}" =~ ^superseded\ by.* ]] && [[ "$AUTHOR" == "dependabot" || "$(gh api user/$AUTHOR | jq -r '.site_admin')" == "true" ]]; then
             gh auth login --with-token $GITHUB_TOKEN
             gh issue edit ${{ github.event.issue.id }} --add-label "status: Superseded"
