@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class Localization {
 
@@ -20,6 +21,7 @@ public class Localization {
 	public static boolean isDebugLocaleEnabled = false;
 	public static boolean unlocalizedStringTracing = false;
 
+	private static final Pattern NUMBER_REGEX = Pattern.compile("^[+-]?((\\d+(\\.\\d*)?)|(\\.\\d+))$");
 	private static final HashMap<Locale, HashSet<String>> knownUnlocalizedStrings = new HashMap<>();
 	private static final HashMap<String, String> localization = new HashMap<>();
 
@@ -112,10 +114,8 @@ public class Localization {
 		if (key.matches("^ *$")) return key; // Blank, or just whitespace
 		if (selectedLocale == DEBUG_LOCALE) return key;
 
-		try {
-			Double.parseDouble(key);
+		if (NUMBER_REGEX.matcher(key).matches()) {
 			return key; // This is a number; don't try to localize it
-		} catch (NumberFormatException ignored) {
 		}
 
 		String localString = localization.get(key);

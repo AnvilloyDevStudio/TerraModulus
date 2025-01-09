@@ -39,7 +39,7 @@ public class FileHandler extends Game {
 
 	static {
 		OS = System.getProperty("os.name").toLowerCase();
-		String local = "playminicraft/mods/Minicraft_Plus";
+		String local = "playminicraft/mods/TerraModulus";
 
 		if (OS.contains("windows")) // windows
 			systemGameDir = System.getenv("APPDATA");

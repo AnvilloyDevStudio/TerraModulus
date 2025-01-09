@@ -327,18 +327,17 @@ public class Level {
 			while (!addedchest) { // Keep running until we successfully add a DungeonChest
 
 				// Pick a random tile:
-				int x2 = random.nextInt(16 * w) / 16;
-				int y2 = random.nextInt(16 * h) / 16;
+				int x2 = random.nextInt(w);
+				int y2 = random.nextInt(h);
 				if (getTile(x2, y2) == Tiles.get("Grass")) {
-					boolean xaxis = random.nextBoolean();
-					if (xaxis) {
+					if (random.nextBoolean()) { // x-axis
 						for (int s = x2; s < w - s; s++) {
 							if (getTile(s, y2) == Tiles.get("Obsidian Wall") || getTile(s, y2) == Tiles.get("Ornate Obsidian")) {
 								d.x = s * 20 - 16;
 								d.y = y2 * 24 - 14;
 							}
 						}
-					} else { // y axis
+					} else { // y-axis
 						for (int s = y2; s < h - s; s++) {
 							if (getTile(x2, s) == Tiles.get("Obsidian Wall") || getTile(x2, s) == Tiles.get("Ornate Obsidian")) {
 								d.x = x2 * 23 - 14;
@@ -350,6 +349,12 @@ public class Level {
 						d.x = (x2 << 4) - 8;
 						d.y = (y2 << 4) - 8;
 					}
+
+					// Target place may not exist a dungeon chest
+					if (!getEntitiesInTiles(d.x >> 4, d.y >> 4, 0, true, DungeonChest.class).isEmpty()) continue;
+					// If target place is blocking wall, remove it
+					if (getTile(d.x >> 4, d.y >> 4) == Tiles.get("Obsidian Wall"))
+						setTile(d.x >> 4, d.y >> 4, Tiles.get("Raw Obsidian"));
 
 					add(d);
 					chestCount++;
@@ -1024,19 +1029,19 @@ public class Level {
 						setTile(sp.x >> 4, sp.y >> 4, Tiles.get("dirt"));
 					}
 
-					Structure.mobDungeonCenter.draw(this, sp.x >> 4, sp.y >> 4);
+					Structure.mobDungeonCenter.draw(this, sp.x >> 4, sp.y >> 4, random.nextInt(3) * 5 + 90, random);
 
 					if (getTile(sp.x >> 4, (sp.y >> 4) - 4) == Tiles.get("dirt")) {
-						Structure.mobDungeonNorth.draw(this, sp.x >> 4, (sp.y >> 4) - 5);
+						Structure.mobDungeonNorth.draw(this, sp.x >> 4, (sp.y >> 4) - 5, random.nextInt(3) * 5 + 90, random);
 					}
 					if (getTile(sp.x >> 4, (sp.y >> 4) + 4) == Tiles.get("dirt")) {
-						Structure.mobDungeonSouth.draw(this, sp.x >> 4, (sp.y >> 4) + 5);
+						Structure.mobDungeonSouth.draw(this, sp.x >> 4, (sp.y >> 4) + 5, random.nextInt(3) * 5 + 90, random);
 					}
 					if (getTile((sp.x >> 4) + 4, sp.y >> 4) == Tiles.get("dirt")) {
-						Structure.mobDungeonEast.draw(this, (sp.x >> 4) + 5, sp.y >> 4);
+						Structure.mobDungeonEast.draw(this, (sp.x >> 4) + 5, sp.y >> 4, random.nextInt(3) * 5 + 90, random);
 					}
 					if (getTile((sp.x >> 4) - 4, sp.y >> 4) == Tiles.get("dirt")) {
-						Structure.mobDungeonWest.draw(this, (sp.x >> 4) - 5, sp.y >> 4);
+						Structure.mobDungeonWest.draw(this, (sp.x >> 4) - 5, sp.y >> 4, random.nextInt(3) * 5 + 90, random);
 					}
 
 					add(sp);
@@ -1111,9 +1116,7 @@ public class Level {
 	}
 
 	private void generateVillages() {
-		int lastVillageX = 0;
-		int lastVillageY = 0;
-
+		HashSet<Point> villages = new HashSet<>();
 		for (int i = 0; i < w / 128 * 2; i++) {
 			// Makes 2-8 villages based on world size
 
@@ -1124,9 +1127,8 @@ public class Level {
 				int y = random.nextInt(h);
 
 				// Makes sure the village isn't to close to the previous village
-				if (getTile(x, y) == Tiles.get("grass") && (Math.abs(x - lastVillageX) > 16 && Math.abs(y - lastVillageY) > 16)) {
-					lastVillageX = x;
-					lastVillageY = y;
+				if (getTile(x, y) == Tiles.get("grass") && villages.stream().allMatch(pt -> Math.abs(x - pt.x) > 16 && Math.abs(y - pt.y) > 16)) {
+					villages.add(new Point(x, y));
 
 					// A number between 2 and 4
 					int numHouses = random.nextInt(3) + 2;
@@ -1145,9 +1147,9 @@ public class Level {
 						yo += random.nextInt(5) - 2;
 
 						if (twoDoors) {
-							Structure.villageHouseTwoDoor.draw(this, x + xo, y + yo);
+							Structure.villageHouseTwoDoor.draw(this, x + xo, y + yo, random.nextInt(7) * 5 + 60, random);
 						} else {
-							Structure.villageHouseNormal.draw(this, x + xo, y + yo);
+							Structure.villageHouseNormal.draw(this, x + xo, y + yo, random.nextInt(7) * 5 + 60, random);
 						}
 
 						// Make the village look ruined
@@ -1157,7 +1159,7 @@ public class Level {
 							Structure.villageRuinedOverlay2.draw(this, x + xo, y + yo);
 						}
 
-						// Add a chest to some of the houses
+						// Add a chest to some houses
 						if (hasChest) {
 							Chest c = new Chest();
 							c.populateInvRandom(random, "villagehouse", 1);
@@ -1176,16 +1178,14 @@ public class Level {
 			int x = random.nextInt(w - 2) + 1;
 			int y = random.nextInt(h - 2) + 1;
 
-			if (x > 8 && y > 8) {
-				if (x < w - 8 && y < w - 8) {
-					if (random.nextInt(2) == 1) {
-						Structure.dungeonGarden.draw(this, x, y);
-					} else {
-						Structure.dungeonChest.draw(this, x, y, furniture -> {
+			if (x > 8 && y > 8 && x < w - 8 && y < w - 8) {
+				if (random.nextBoolean()) {
+					Structure.dungeonGarden.draw(this, x, y);
+				} else {
+					Structure.dungeonChest.draw(this, x, y, furniture -> {
 							if (furniture instanceof DungeonChest)
 								((DungeonChest) furniture).populateInv(random);
 						});
-					}
 				}
 			}
 		}
