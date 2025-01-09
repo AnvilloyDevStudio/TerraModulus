@@ -87,6 +87,13 @@ public class Rectangle {
 		return getLeft() <= x && x <= getRight() && getTop() <= y && y <= getBottom();
 	}
 
+	public boolean isWithin(Rectangle other) {
+		return getTop() >= other.getTop() // Top is below the other top
+			&& getBottom() <= other.getBottom() // Bottom is above the other bottom
+			&& getLeft() >= other.getLeft() // Left is on the right of the other left
+			&& getRight() <= other.getRight(); // Right is on the left of the other right
+	}
+
 	public void setPosition(Point p, RelPos relPos) { setPosition(p.x, p.y, relPos); }
 	public void setPosition(int x, int y, RelPos relPos) {
 		this.x = x - relPos.xIndex * w / 2;
