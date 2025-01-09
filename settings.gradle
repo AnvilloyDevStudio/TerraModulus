@@ -1,4 +1,4 @@
-rootProject.name = "minicraft-plus"
+rootProject.name = "TerraModulus"
 
 include "common"
 include "client"
