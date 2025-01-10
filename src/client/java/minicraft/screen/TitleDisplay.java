@@ -38,8 +38,7 @@ public class TitleDisplay extends Display {
 	public TitleDisplay() {
 		super(true, false, new Menu.Builder(false, 2, RelPos.CENTER,
 				new SelectEntry(Localization.getStaticDisplay("minicraft.displays.title.play"),
-					() -> Game.setDisplay(
-						WorldSelectDisplay.anyWorld() ? new WorldSelectDisplay() : new WorldCreateDisplay())),
+					() -> Game.setDisplay(new WorldSelectDisplay())),
 			new SelectEntry(Localization.getStaticDisplay("minicraft.display.options_display"),
 				() -> Game.setDisplay(new OptionsMainMenuDisplay())),
             new SelectEntry(Localization.getStaticDisplay("minicraft.displays.skin"),

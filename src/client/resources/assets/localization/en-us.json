@@ -486,6 +486,7 @@
   "minicraft.displays.world_create.options.terrain_type.irregular": "Irregular",
   "minicraft.displays.world_create.options.tutorials": "Tutorials",
   "minicraft.displays.world_create.options.quests": "Quests",
+  "minicraft.displays.world_create.options.quests_panel": "Quests Panel",
   "minicraft.displays.world_select.action.copy": "Copy (%s)",
   "minicraft.displays.world_select.action.delete": "Delete (%s)",
   "minicraft.displays.world_select.action.new": "New (%s)",

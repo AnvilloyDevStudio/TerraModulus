@@ -32,22 +32,22 @@ public class Localization {
 	private static final HashSet<HookedLocalizedBufArgString> hookedLocalizedStrings = new HashSet<>();
 
 	public static DisplayString getStaticDisplay(@NotNull String key) {
-		return new DisplayString.StaticString(getLocalized(key));
+		return new DisplayString.StaticString(getLocalized0(key));
 	}
 
 	public static DisplayString getStaticDisplay(@NotNull String key, Object @NotNull ...args) {
-		return DisplayString.staticArgString(key, args);
+		return DisplayString.staticArgString(getLocalized0(key), args);
 	}
 
 	public static class LocalizedBufArgFixedString extends DisplayString.BufArgFixedString {
 		public LocalizedBufArgFixedString(@NotNull String key, Object @NotNull ...args) {
-			super(getLocalized(key), args);
+			super(getLocalized0(key), args);
 		}
 	}
 
 	public static class LocalizedDynArgFixedString extends DisplayString.DynArgFixedString {
 		public LocalizedDynArgFixedString(@NotNull String key, Object @NotNull ...args) {
-			super(getLocalized(key), args);
+			super(getLocalized0(key), args);
 		}
 	}
 
@@ -88,13 +88,13 @@ public class Localization {
 		}
 
 		private void refreshParamStrBuf() {
-			bufParamStr = getLocalized(key);
+			bufParamStr = getLocalized0(key);
 			refreshBuf();
 		}
 
 		@Override
 		protected @NotNull String getParameterizedString() {
-			return bufParamStr == null ? bufParamStr = getLocalized(key) : bufParamStr;
+			return bufParamStr == null ? bufParamStr = getLocalized0(key) : bufParamStr;
 		}
 
 		@Override
@@ -118,6 +118,16 @@ public class Localization {
 			return key; // This is a number; don't try to localize it
 		}
 
+		String localString = getLocalized0(key);
+
+		if (localString != null) {
+			localString = String.format(getSelectedLocale(), localString, arguments);
+		}
+
+		return (localString == null ? key : localString);
+	}
+
+	private static String getLocalized0(String key) {
 		String localString = localization.get(key);
 
 		if (localString == null) {
@@ -127,10 +137,6 @@ public class Localization {
 				Logger.tag("LOC").trace(unlocalizedStringTracing ? new Throwable("Tracing") : null, "{}: '{}' is unlocalized.", selectedLocale.toLanguageTag(), key);
 				knownUnlocalizedStrings.get(selectedLocale).add(key);
 			}
-		}
-
-		if (localString != null) {
-			localString = String.format(getSelectedLocale(), localString, arguments);
 		}
 
 		return (localString == null ? key : localString);
