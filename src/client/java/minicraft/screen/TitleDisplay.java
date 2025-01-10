@@ -157,7 +157,7 @@ public class TitleDisplay extends Display {
 
 		Font.drawCentered(splashes[rand], screen, (Screen.h / 2) - 44, splashColor);
 
-		Font.draw(Localization.getLocalized("minicraft.displays.title.display.version", Game.VERSION), screen, 1, 1, Color.get(1, 51));
+		Font.draw(Localization.getLocalized("minicraft.displays.title.display.version", "0.1.0"), screen, 1, 1, Color.get(1, 51));
 
 		Font.drawCentered(Localization.getLocalized("minicraft.displays.title.display.help"), screen, Screen.h - 20, Color.DARK_GRAY);
 
