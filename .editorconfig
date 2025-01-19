@@ -1,0 +1,24 @@
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+[**.kt]
+indent_style = tab
+indent_size = tab
+ij_smart_tabs = true
+tab_width = 4
+ij_kotlin_imports_layout = *, |, java.**, |, javax.**, |, kotlin.**, |, $*
+ij_kotlin_packages_to_use_import_on_demand = unset
+ij_kotlin_name_count_to_use_star_import = unset
+ij_kotlin_name_count_to_use_star_import_for_members = unset
+ij_kotlin_block_comment_add_space = true
+ij_kotlin_line_comment_add_space = true
+ij_kotlin_method_annotation_wrap = on_every_item
+ij_kotlin_field_annotation_wrap = on_every_item
+
+[**.json]
+indent_style = space
+indent_size = 2
