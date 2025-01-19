@@ -6,5 +6,5 @@
 package terramodulus.client
 
 class Main {
-    
+
 }
