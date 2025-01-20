@@ -364,7 +364,7 @@ public class DebugPanelDisplay extends Display {
 				int count = 0;
 				if (itemSelEntry.getUserInput().isEmpty()) {
 					Inventory inventory = Game.player.getInventory();
-					count = inventory.getItems().stream().reduce(0, (a, b) -> a + Items.getCount(b), Integer::sum);
+					count = inventory.getItemsView().stream().reduce(0, (a, b) -> a + Items.getCount(b), Integer::sum);
 					inventory.clearInv();
 				} else if (!itemSelEntry.isValid()) {
 					Logging.WORLDNAMED.error("Item specified is invalid: {}.", itemSelEntry.getUserInput());

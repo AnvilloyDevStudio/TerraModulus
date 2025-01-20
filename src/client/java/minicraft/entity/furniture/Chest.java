@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Chest extends Furniture implements ItemHolder {
-	protected static final LinkedSprite defaultSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "chest").createSpriteLink();
+	protected static final SpriteLink defaultSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "chest").createSpriteLink();
 	protected final Inventory inventory; // Inventory of the chest
 
 	public Chest() {
@@ -39,7 +39,7 @@ public class Chest extends Furniture implements ItemHolder {
 		this(new FixedInventory(), name, itemSprite); // Default with bounded inventory
 	}
 
-	protected Chest(Inventory inventory, String name, LinkedSprite itemSprite) {
+	protected Chest(Inventory inventory, String name, SpriteLink itemSprite) {
 		super(name, new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "chest").createSpriteLink(), itemSprite, 3, 3); // Name of the chest
 		this.inventory = inventory; // Initialize the inventory.
 	}
