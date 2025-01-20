@@ -40,23 +40,23 @@ public abstract class Toast {
 				for (int j = 0; j < h; ++j) {
 					Sprite.Px[][] pxs = sprite.spritePixels;
 					if (i == 0 && j == 0)
-						screen.render(x, y, pxs[0][0]);
+						screen.render(null, x, y, pxs[0][0]);
 					else if (i == 0 && j == h - 1)
-						screen.render(x, y + j * 8, pxs[2][0]);
+						screen.render(null, x, y + j * 8, pxs[2][0]);
 					else if (i == w - 1 && j == 0)
-						screen.render(x + i * 8, y, pxs[0][2]);
+						screen.render(null, x + i * 8, y, pxs[0][2]);
 					else if (i == w - 1 && j == h - 1)
-						screen.render(x + i * 8, y + j * 8, pxs[2][2]);
+						screen.render(null, x + i * 8, y + j * 8, pxs[2][2]);
 					else if (i == 0)
-						screen.render(x, y + j * 8, pxs[1][0]);
+						screen.render(null, x, y + j * 8, pxs[1][0]);
 					else if (j == 0)
-						screen.render(x + i * 8, y, pxs[0][1]);
+						screen.render(null, x + i * 8, y, pxs[0][1]);
 					else if (i == w - 1)
-						screen.render(x + i * 8, y + j * 8, pxs[1][2]);
+						screen.render(null, x + i * 8, y + j * 8, pxs[1][2]);
 					else if (j == h - 1)
-						screen.render(x + i * 8, y + j * 8, pxs[2][1]);
+						screen.render(null, x + i * 8, y + j * 8, pxs[2][1]);
 					else
-						screen.render(x + i * 8, y + j * 8, pxs[1][1]);
+						screen.render(null, x + i * 8, y + j * 8, pxs[1][1]);
 				}
 			}
 		}

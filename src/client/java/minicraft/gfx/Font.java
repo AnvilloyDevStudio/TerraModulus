@@ -2,7 +2,6 @@ package minicraft.gfx;
 
 import minicraft.core.Action;
 import minicraft.core.Renderer;
-import minicraft.gfx.SpriteLinker.SpriteType;
 import minicraft.screen.entry.ListEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +42,7 @@ public class Font {
 			int ix = chars.indexOf(msg.charAt(i)); // The current letter in the message loop
 			if (ix >= 0) {
 				// If that character's position is larger than or equal to 0, then render the character on the screen.
-				screen.render(bounds, x + i * textWidth(msg.substring(i, i + 1)), y, ix % 32, ix / 32, 0, Renderer.spriteManager.getSheet(SpriteType.Gui, "font"), whiteTint);
+				screen.render(bounds, x + i * textWidth(msg.substring(i, i + 1)), y, ix % 32, ix / 32, 0, Renderer.spriteManager.getSheet(SpriteManager.SpriteType.Gui, "font"), whiteTint);
 			}
 		}
 	}
@@ -116,7 +115,7 @@ public class Font {
 	public static void drawBackground(String msg, Screen screen, int x, int y, int whiteTint) { drawBackground(null, msg, screen, x, y, whiteTint); }
 	public static void drawBackground(@Nullable Screen.RenderingLimitingModel bounds, String msg, Screen screen, int x, int y, int whiteTint) {
 		for (int i = 0; i < msg.length(); i++) { // Renders the black boxes under the text
-			screen.render(null, x + i * textWidth(msg.substring(i, i + 1)), y, 5, 2, 0, Renderer.spriteManager.getSheet(SpriteType.Gui, "hud"));
+			screen.render(null, x + i * textWidth(msg.substring(i, i + 1)), y, 5, 2, 0, Renderer.spriteManager.getSheet(SpriteManager.SpriteType.Gui, "hud"));
 		}
 
 		// Renders the text

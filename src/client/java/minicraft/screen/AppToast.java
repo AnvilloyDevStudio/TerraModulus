@@ -7,7 +7,7 @@ import minicraft.gfx.FontStyle;
 import minicraft.gfx.Insets;
 import minicraft.gfx.Screen;
 import minicraft.gfx.Sprite;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,9 +41,9 @@ public class AppToast extends Toast {
 		public static final AppToastFrame FRAME_WINDOW = new WindowAppToastFrame();
 		public static final AppToastFrame FRAME_BRICK = new BrickAppToastFrame();
 
-		protected final @Nullable SpriteLinker.LinkedSprite sprite;
+		protected final @Nullable SpriteManager.SpriteLink sprite;
 
-		protected AppToastFrame(@Nullable SpriteLinker.LinkedSprite sprite, Insets paddings) {
+		protected AppToastFrame(@Nullable SpriteManager.SpriteLink sprite, Insets paddings) {
 			super(paddings);
 			this.sprite = sprite;
 		}
@@ -56,29 +56,33 @@ public class AppToast extends Toast {
 
 		private static class GeneralAppToastFrame extends AppToastFrame {
 			private GeneralAppToastFrame() {
-				super(new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Gui, "toasts")
-					.setSpriteDim(0, 0, 3, 3), new Insets(4));
+				super(new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Gui, "toasts")
+					.setSpriteDim(0, 0, 3, 3)
+					.createSpriteLink(), new Insets(4));
 			}
 		}
 
 		private static class UrgentAppToastFrame extends AppToastFrame {
 			private UrgentAppToastFrame() {
-				super(new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Gui, "toasts")
-					.setSpriteDim(3, 0, 3, 3), new Insets(4));
+				super(new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Gui, "toasts")
+					.setSpriteDim(3, 0, 3, 3)
+					.createSpriteLink(), new Insets(4));
 			}
 		}
 
 		private static class WindowAppToastFrame extends AppToastFrame {
 			private WindowAppToastFrame() {
-				super(new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Gui, "toasts")
-					.setSpriteDim(0, 3, 3, 3), new Insets(6, 4, 2, 8));
+				super(new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Gui, "toasts")
+					.setSpriteDim(0, 3, 3, 3)
+					.createSpriteLink(), new Insets(6, 4, 2, 8));
 			}
 		}
 
 		private static class BrickAppToastFrame extends AppToastFrame {
 			private BrickAppToastFrame() {
-				super(new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Gui, "toasts")
-					.setSpriteDim(3, 3, 3, 3), new Insets(6, 6, 2, 6));
+				super(new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Gui, "toasts")
+					.setSpriteDim(3, 3, 3, 3)
+					.createSpriteLink(), new Insets(6, 6, 2, 6));
 			}
 		}
 	}

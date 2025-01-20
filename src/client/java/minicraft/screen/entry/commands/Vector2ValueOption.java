@@ -62,10 +62,10 @@ public class Vector2ValueOption extends ListEntry implements UserMutable {
 	}
 
 	@Override
-	public void render(Screen screen, int x, int y, boolean isSelected) {
+	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected) {
 		if (isVisible()) {
 			for (int i = 0; i < INPUT_ENTRY_COUNT; i++) {
-				inputs.get(i).render(screen, x, y, isSelected && i == selection);
+				inputs.get(i).render(screen, bounds, x, y, isSelected && i == selection);
 				x += Font.textWidth(inputs.get(i).toString()) + Font.textWidth("; ");
 			}
 		}

@@ -3,6 +3,7 @@ package minicraft.screen.entry.commands;
 import minicraft.core.io.InputHandler;
 import minicraft.gfx.Screen;
 import minicraft.screen.entry.ListEntry;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,13 +40,13 @@ public class UnionEntry<T extends ListEntry> extends ListEntry {
 	}
 
 	@Override
-	public void render(Screen screen, int x, int y, boolean isSelected, String contain, int containColor) {
-		entries.get(selection).render(screen, x, y, isSelected, contain, containColor);
+	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected, String contain, int containColor) {
+		entries.get(selection).render(screen, bounds, x, y, isSelected, contain, containColor);
 	}
 
 	@Override
-	public void render(Screen screen, int x, int y, boolean isSelected) {
-		entries.get(selection).render(screen, x, y, isSelected);
+	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected) {
+		entries.get(selection).render(screen, bounds, x, y, isSelected);
 	}
 
 	@Override

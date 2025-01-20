@@ -7,7 +7,7 @@ import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.item.FishingRodItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
@@ -358,7 +358,7 @@ public class RepairBenchDisplay extends Display {
 				}
 
 				@Override
-				public @Nullable SpriteLinker.LinkedSprite getSprite() {
+				public @Nullable SpriteManager.SpriteLink getSprite() {
 					return repairInfo == null ? null : repairInfo.material.sprite;
 				}
 			}, RepairBenchDisplay.this::onSlotTransfer);

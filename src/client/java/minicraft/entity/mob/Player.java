@@ -547,6 +547,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 					LoadingDisplay.setPercentage(0);
 					new Save(WorldSelectDisplay.getWorldName());
 				}
+			}
 
 			if (attackTime > 0) {
 				attackTime--;

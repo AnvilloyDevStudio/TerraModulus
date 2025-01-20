@@ -11,7 +11,7 @@ import minicraft.gfx.Insets;
 import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.saveload.Save;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectEntry;
@@ -189,9 +189,10 @@ public class AchievementsDisplay extends Display {
 		private static final AchievementUnlockToastFrame FRAME = new AchievementUnlockToastFrame();
 
 		private static class AchievementUnlockToastFrame extends ToastFrame {
-			private static final SpriteLinker.LinkedSprite sprite =
-				new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Gui, "toasts")
-					.setSpriteDim(0, 6, 3, 3);
+			private static final SpriteManager.SpriteLink sprite =
+				new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Gui, "toasts")
+					.setSpriteDim(0, 6, 3, 3)
+					.createSpriteLink();
 
 			protected AchievementUnlockToastFrame() {
 				super(new Insets(3));
@@ -223,9 +224,9 @@ public class AchievementsDisplay extends Display {
 			int x = -size.width * (ANIMATION_TIME - animationTick) / ANIMATION_TIME; // Shifting with animation (sliding)
 			int y = 0;
 			FRAME.render(screen, x, y, size.width / 8, size.height / 8);
-			screen.render(x + FRAME.paddings.left + (ICON_PADDING - MinicraftImage.boxWidth) / 2,
+			screen.render(null, x + FRAME.paddings.left + (ICON_PADDING - MinicraftImage.boxWidth) / 2,
 				y + FRAME.paddings.top + MinicraftImage.boxWidth / 2,
-					Objects.requireNonNull(SpriteLinker.missingTexture(SpriteLinker.SpriteType.Item)));
+					Objects.requireNonNull(SpriteManager.missingTexture(SpriteManager.SpriteType.Item)));
 			Font.draw(title, screen, x + FRAME.paddings.left + ICON_PADDING, y + FRAME.paddings.top, Color.GOLD);
 			Font.draw(name, screen, x + FRAME.paddings.left + ICON_PADDING,
 				y + FRAME.paddings.top + SPACING + Font.textHeight(), Color.WHITE);

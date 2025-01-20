@@ -213,12 +213,12 @@ public class Renderer extends Game {
 
 		private void render() {
 			if (duration == 0) return;
-			MinicraftImage sheet = spriteLinker.getSheet(SpriteType.Gui, "app_status_bar"); // Obtains sheet.
+			MinicraftImage sheet = spriteManager.getSheet(SpriteType.Gui, "app_status_bar"); // Obtains sheet.
 
 			// Background
 			for (int x = 0; x < 12; ++x) {
 				for (int y = 0; y < 2; ++y) {
-					screen.render(Screen.w - 16 * 8 + x * 8, y * 8, x, y, 0, sheet);
+					screen.render(null, Screen.w - 16 * 8 + x * 8, y * 8, x, y, 0, sheet);
 				}
 			}
 
@@ -268,7 +268,7 @@ public class Renderer extends Game {
 				if (durationUpdated > 0) {
 					if (blinking) {
 						for (int xx = 0; xx < 2; ++xx)
-							screen.render(x + xx * 8, y, 10 + xx, 3 + size, 0, sheet);
+							screen.render(null, x + xx * 8, y, 10 + xx, 3 + size, 0, sheet);
 					}
 				}
 			}
@@ -319,10 +319,10 @@ public class Renderer extends Game {
 				super.render(x, y, sheet);
 				if (status == ACCELERATION_ON) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, xx, 4, 0, sheet);
+						screen.render(null, x + xx * 8, y, xx, 4, 0, sheet);
 				} else if (status == ACCELERATION_OFF) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 2 + xx, 4, 0, sheet);
+						screen.render(null, x + xx * 8, y, 2 + xx, 4, 0, sheet);
 				}
 			}
 
@@ -357,22 +357,22 @@ public class Renderer extends Game {
 				super.render(x, y, sheet);
 				if (status == CONTROLLER_CONNECTED) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, xx, 2, 0, sheet);
 				} else if (status == CONTROLLER_UNAVAILABLE) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 2 + xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, 2 + xx, 2, 0, sheet);
 				} else if (status == CONTROLLER_DISCONNECTED) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 4 + xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, 4 + xx, 2, 0, sheet);
 				} else if (status == CONTROLLER_PENDING) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 6 + xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, 6 + xx, 2, 0, sheet);
 				} else if (status == CONTROLLER_UNKNOWN) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 8 + xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, 8 + xx, 2, 0, sheet);
 				} else if (status == CONTROLLER_FUNCTION_UNAVAILABLE) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 10 + xx, 2, 0, sheet);
+						screen.render(null, x + xx * 8, y, 10 + xx, 2, 0, sheet);
 				}
 			}
 
@@ -418,16 +418,16 @@ public class Renderer extends Game {
 				super.render(x, y, sheet);
 				if (status == INPUT_KEYBOARD_ONLY) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, xx, 5, 0, sheet);
+						screen.render(null, x + xx * 8, y, xx, 5, 0, sheet);
 				} else if (status == INPUT_CONTROLLER_PRIOR) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 2 + xx, 5, 0, sheet);
+						screen.render(null, x + xx * 8, y, 2 + xx, 5, 0, sheet);
 				} else if (status == INPUT_KEYBOARD_PRIOR) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 4 + xx, 5, 0, sheet);
+						screen.render(null, x + xx * 8, y, 4 + xx, 5, 0, sheet);
 				} else if (status == INPUT_CONTROLLER_UNUSABLE) {
 					for (int xx = 0; xx < 2; ++xx)
-						screen.render(x + xx * 8, y, 6 + xx, 5, 0, sheet);
+						screen.render(null, x + xx * 8, y, 6 + xx, 5, 0, sheet);
 				}
 			}
 

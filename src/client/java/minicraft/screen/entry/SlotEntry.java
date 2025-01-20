@@ -5,7 +5,7 @@ import minicraft.core.io.Localization;
 import minicraft.core.io.Sound;
 import minicraft.gfx.Color;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.item.Item;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,13 +40,13 @@ public class SlotEntry extends ListEntry {
 	}
 
 	@Override
-	public void render(Screen screen, int x, int y, boolean isSelected) {
-		super.render(screen, x, y, isSelected);
+	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected) {
+		super.render(screen, bounds, x, y, isSelected);
 		if (item == null) {
-			SpriteLinker.LinkedSprite sprite = placeholder.getSprite();
-			if (sprite != null) screen.render(x, y, sprite);
+			SpriteManager.SpriteLink sprite = placeholder.getSprite();
+			if (sprite != null) screen.render(bounds, x, y, sprite);
 		} else
-			screen.render(x, y, item.sprite);
+			screen.render(bounds, x, y, item.sprite);
 	}
 
 	@Override
@@ -68,10 +68,10 @@ public class SlotEntry extends ListEntry {
 		private static final int LIGHT_GRAY = Color.tint(Color.GRAY, 1, true);
 
 		private final String text;
-		private final @Nullable SpriteLinker.LinkedSprite sprite;
+		private final @Nullable SpriteManager.SpriteLink sprite;
 
 		public SlotEntryPlaceholder(String text) { this(text, null); }
-		public SlotEntryPlaceholder(String text, @Nullable SpriteLinker.LinkedSprite sprite) {
+		public SlotEntryPlaceholder(String text, @Nullable SpriteManager.SpriteLink sprite) {
 			this.text = text;
 			this.sprite = sprite;
 		}
@@ -79,7 +79,7 @@ public class SlotEntry extends ListEntry {
 		public String getDisplayString() { return text; }
 		public int getDisplayColor(boolean isSelected) { return isSelected ? LIGHT_GRAY : Color.DARK_GRAY; }
 		/** @return must be an 8*8 (1*1 block) LinkedSprite */
-		public @Nullable SpriteLinker.LinkedSprite getSprite() { return sprite; }
+		public @Nullable SpriteManager.SpriteLink getSprite() { return sprite; }
 	}
 
 	public static abstract class SynchronizedSlotEntry extends ListEntry { // Used when the slot is protected.
@@ -132,30 +132,30 @@ public class SlotEntry extends ListEntry {
 		}
 
 		@Override
-		public void render(Screen screen, int x, int y, boolean isSelected) {
-			super.render(screen, x, y, isSelected);
+		public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected) {
+			super.render(screen, bounds, x, y, isSelected);
 			if (isEmpty()) {
-				SpriteLinker.LinkedSprite sprite = placeholder.getSprite();
-				if (sprite != null) screen.render(x, y, sprite);
+				SpriteManager.SpriteLink sprite = placeholder.getSprite();
+				if (sprite != null) screen.render(bounds, x, y, sprite);
 			} else
-				renderItemSprite(screen, x, y);
+				renderItemSprite(screen, bounds, x, y);
 		}
 
 		/**
 		 * Quick examine to the existence of the slot to not create a new clone or object.
 		 * This is associated with {@link #getColor(boolean)} and {@link #toString()} by default.
 		 * @return {@code true} if the current slot is empty
-		 * @see #renderItemSprite(Screen, int, int)
+		 * @see #renderItemSprite(Screen, Screen.RenderingLimitingModel, int, int)
 		 * @see #getItemDisplayString()
 		 */
 		public abstract boolean isEmpty();
 
 		/**
 		 * Rendering the current item sprite of the slot.
-		 * This is called by {@link #render(Screen, int, int, boolean)} only when the slot is not empty by default.
+		 * This is called by {@link #render(Screen, Screen.RenderingLimitingModel, int, int, boolean)} only when the slot is not empty by default.
 		 * @see #isEmpty()
 		 */
-		protected abstract void renderItemSprite(Screen screen, int x, int y);
+		protected abstract void renderItemSprite(Screen screen, Screen.@Nullable RenderingLimitingModel bounds, int x, int y);
 
 		@Override
 		public int getColor(boolean isSelected) {

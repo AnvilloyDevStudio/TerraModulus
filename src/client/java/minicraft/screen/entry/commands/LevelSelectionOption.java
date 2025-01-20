@@ -88,9 +88,9 @@ public class LevelSelectionOption extends TargetedInputEntry<Integer> {
 	}
 
 	@Override
-	public void render(Screen screen, int x, int y, boolean isSelected) {
+	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel bounds, int x, int y, boolean isSelected) {
 		if (!isSelected) typing = false; // TODO There should be #tick(..., isSelected) to replace this line.
-		Font.draw(isSelected && typing ? super.toString() : toString(), screen, x, y,
+		Font.draw(bounds, isSelected && typing ? super.toString() : toString(), screen, x, y,
 			isValid() ? isSelected ? Color.GREEN : COL_UNSLCT : isSelected ? Color.RED : DARK_RED);
 	}
 
