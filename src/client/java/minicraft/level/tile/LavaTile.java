@@ -3,8 +3,10 @@ package minicraft.level.tile;
 import minicraft.entity.Entity;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.item.Item;
 import minicraft.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 public class LavaTile extends Tile {
 	private static SpriteAnimation sprite = new SpriteAnimation(SpriteType.Tile, "lava")
@@ -54,4 +56,7 @@ public class LavaTile extends Tile {
 	public int getLightRadius(Level level, int x, int y) {
 		return 6;
 	}
+
+	@Override
+	protected void handleDamage(Level level, int x, int y, Entity source, @Nullable Item item, int dmg) {}
 }

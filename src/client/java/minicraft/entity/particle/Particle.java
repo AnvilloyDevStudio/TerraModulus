@@ -1,10 +1,16 @@
 package minicraft.entity.particle;
 
 import minicraft.entity.ClientTickable;
+import minicraft.entity.Direction;
 import minicraft.entity.Entity;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.item.Item;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
+import minicraft.util.DamageSource;
 import minicraft.util.Logging;
+import org.jetbrains.annotations.Nullable;
 
 import javax.security.auth.DestroyFailedException;
 
@@ -12,7 +18,7 @@ public class Particle extends Entity implements ClientTickable {
 	private int time; // lifetime elapsed.
 	private int lifetime;
 
-	protected LinkedSprite sprite;
+	protected SpriteLink sprite;
 
 	/**
 	 * Creates an particle entity at the given position. The particle has a x and y radius = 1.
@@ -22,7 +28,7 @@ public class Particle extends Entity implements ClientTickable {
 	 * @param lifetime How many game ticks the particle lives before its removed
 	 * @param sprite The particle's sprite
 	 */
-	public Particle(int x, int y, int xr, int lifetime, LinkedSprite sprite) {
+	public Particle(int x, int y, int xr, int lifetime, SpriteLink sprite) {
 		// Make a particle at the given coordinates
 		super(xr, 1);
 		this.x = x;
@@ -32,7 +38,7 @@ public class Particle extends Entity implements ClientTickable {
 		time = 0;
 	}
 
-	public Particle(int x, int y, int lifetime, LinkedSprite sprite) {
+	public Particle(int x, int y, int lifetime, SpriteLink sprite) {
 		this(x, y, 1, lifetime, sprite);
 	}
 
@@ -56,6 +62,29 @@ public class Particle extends Entity implements ClientTickable {
 
 	@Override
 	public boolean isSolid() {
+		return false;
+	}
+
+	@Override
+	public boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isUsable() {
+		return false;
+	}
+
+	@Override
+	protected void handleDamage(DamageSource source, Direction attackDir, int damage) {}
+
+	@Override
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
 		return false;
 	}
 }

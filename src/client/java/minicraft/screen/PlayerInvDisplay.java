@@ -12,7 +12,7 @@ import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
@@ -26,7 +26,7 @@ public class PlayerInvDisplay extends Display {
 
 	private final Player player;
 	private final MinicraftImage counterSheet =
-		Renderer.spriteLinker.getSheet(SpriteLinker.SpriteType.Gui, "inventory_counter");
+		Renderer.spriteManager.getSheet(SpriteManager.SpriteType.Gui, "inventory_counter");
 
 	private String itemDescription = "";
 	private Menu.Builder descriptionMenuBuilder;
@@ -87,7 +87,7 @@ public class PlayerInvDisplay extends Display {
 		if (onScreenKeyboardMenu == null || !curMenu.isSearcherBarActive() && !onScreenKeyboardMenu.isVisible()) {
 			super.tick(input);
 
-			if (input.inputPressed("menu")) {
+			if (input.inputPressed("INVENTORY")) {
 				Game.exitDisplay();
 				return;
 			}
@@ -105,7 +105,7 @@ public class PlayerInvDisplay extends Display {
 			if (!acted)
 				curMenu.tick(input);
 
-			if (input.getMappedKey("menu").isClicked()) { // Should not listen button press.
+			if (input.getMappedKey("menu").isClicked() || input.inputPressed("EXIT")) { // Should not listen button press.
 				Game.exitDisplay();
 				return;
 			}
@@ -127,7 +127,7 @@ public class PlayerInvDisplay extends Display {
 
 				Inventory from, to;
 				if (selection == 0) {
-					if (input.inputPressed("attack") && menus[0].getNumOptions() > 0) {
+					if (input.inputPressed("SELECT") && menus[0].getNumOptions() > 0) {
 						player.activeItem = player.getInventory().remove(menus[0].getSelection());
 						Game.exitDisplay();
 						return;
@@ -180,7 +180,7 @@ public class PlayerInvDisplay extends Display {
 				}
 
 			} else {
-				if (input.inputPressed("attack") && menus[0].getNumOptions() > 0) {
+				if (input.inputPressed("SELECT") && menus[0].getNumOptions() > 0) {
 					player.activeItem = player.getInventory().remove(menus[0].getSelection());
 					Game.exitDisplay();
 				}
@@ -358,9 +358,11 @@ public class PlayerInvDisplay extends Display {
 
 	private void update() {
 		menus[0] = new InventoryMenu((InventoryMenu) menus[0]);
-		menus[1] = new InventoryMenu((InventoryMenu) menus[1]);
-		menus[1].translate(menus[0].getBounds().getWidth() + padding, 0);
-		onSelectionChange(0, selection);
+		if (creativeMode) {
+			menus[1] = new InventoryMenu((InventoryMenu) menus[1]);
+			menus[1].translate(menus[0].getBounds().getWidth() + padding, 0);
+			onSelectionChange(0, selection);
+		}
 		itemDescription = getDescription();
 	}
 }

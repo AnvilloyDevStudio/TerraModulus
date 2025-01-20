@@ -3,8 +3,8 @@ package minicraft.item;
 import minicraft.core.Game;
 import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
@@ -48,8 +48,8 @@ public class FishingRodItem extends Item {
 	};
 
 	public FishingRodItem(int level) {
-		super(LEVEL_NAMES[level] + " Fishing Rod", new LinkedSprite(SpriteType.Item,
-			LEVEL_NAMES[level].toLowerCase().replace("wood", "wooden") + "_fishing_rod"));
+		super(LEVEL_NAMES[level] + " Fishing Rod", new SpriteLink.SpriteLinkBuilder(SpriteType.Item,
+			LEVEL_NAMES[level].toLowerCase().replace("wood", "wooden") + "_fishing_rod").createSpriteLink());
 		this.level = level;
 	}
 
@@ -58,7 +58,7 @@ public class FishingRodItem extends Item {
 	}
 
 	@Override
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		if (tile == Tiles.get("water") && !player.isSwimming()) { // Make sure not to use it if swimming
 			uses++;
 			player.isFishing = true;
@@ -66,11 +66,6 @@ public class FishingRodItem extends Item {
 			return true;
 		}
 
-		return false;
-	}
-
-	@Override
-	public boolean canAttack() {
 		return false;
 	}
 
