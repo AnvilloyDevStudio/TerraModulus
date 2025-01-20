@@ -12,7 +12,7 @@ import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.ToolItem;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SandTile extends Tile {
 	private static SpriteAnimation sprite = new SpriteAnimation(SpriteType.Tile, "sand")
-		.setConnectionChecker((level, x, y, tile, side) -> !side || tile.connectsToSand(level, x, y))
+		.setConnectionChecker((level, x, y, tile, side) -> tile.connectsToSand(level, x, y))
 		.setSingletonWithConnective(true);
 
 	protected SandTile(String name) {

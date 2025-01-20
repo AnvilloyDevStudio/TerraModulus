@@ -7,7 +7,7 @@ import minicraft.entity.furniture.Furniture;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.level.Level;
 import org.jetbrains.annotations.Nullable;

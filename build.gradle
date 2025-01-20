@@ -6,7 +6,7 @@ plugins {
 allprojects {
     apply plugin: "java"
 
-    version = "2.2.1-dev2"
+    version = "0.1.0"
 
     sourceCompatibility = 8
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -27,7 +27,7 @@ subprojects {
     }
 
     dependencies {
-        implementation 'org.jetbrains:annotations:23.0.0'
+        implementation 'org.jetbrains:annotations:26.0.1'
         implementation 'org.tinylog:tinylog-api:2.4.1'
         implementation 'org.tinylog:tinylog-impl:2.4.1'
     }
@@ -40,7 +40,7 @@ project(":common") {
 }
 
 project(":client") {
-    archivesBaseName = "minicraft-plus"
+    archivesBaseName = "terramodulus"
 
     repositories {
         maven { url "https://plugins.gradle.org/m2/" }
@@ -50,12 +50,12 @@ project(":client") {
     dependencies {
         implementation project(":common")
 
-        implementation 'org.json:json:20220320'
-        implementation 'com.konghq:unirest-java:3.13.10'
-        implementation 'com.badlogicgames.gdx:gdx:1.11.0'
-        implementation 'com.badlogicgames.gdx:gdx-box2d:1.11.0'
+        implementation 'org.json:json:20241224'
+        implementation 'com.konghq:unirest-java:3.14.5'
+        implementation 'com.badlogicgames.gdx:gdx:1.13.0'
+        implementation 'com.badlogicgames.gdx:gdx-box2d:1.13.0'
         implementation 'com.badlogicgames.gdx:gdx-controllers:1.9.13'
-        implementation 'com.badlogicgames.jamepad:jamepad:2.0.20.0'
+        implementation 'com.badlogicgames.jamepad:jamepad:2.30.0.0'
     }
 
     application {
@@ -65,7 +65,7 @@ project(":client") {
 
 project(":server") {
 
-    archivesBaseName = "minicraft-plus-server"
+    archivesBaseName = "terramodulus-server"
 
     dependencies {
         implementation project(":common")
@@ -98,18 +98,18 @@ jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-publishing {
-	repositories {
-		maven {
-			name = "GitHubPackages"
-			url = "https://maven.pkg.github.com/MinicraftPlus/minicraft-plus-revived"
-			credentials {
-				username = System.getenv("GITHUB_ACTOR")
-				password = System.getenv("GITHUB_TOKEN")
-			}
-		}
-	}
-}
+//publishing {
+//	repositories {
+//		maven {
+//			name = "GitHubPackages"
+//			url = "https://maven.pkg.github.com/MinicraftPlus/minicraft-plus-revived"
+//			credentials {
+//				username = System.getenv("GITHUB_ACTOR")
+//				password = System.getenv("GITHUB_TOKEN")
+//			}
+//		}
+//	}
+//}
 
 // Don't override if we're building a tar package.
 tasks.withType(Tar) {

@@ -1,11 +1,16 @@
 package minicraft.gfx;
 
+import minicraft.core.Action;
 import minicraft.core.Renderer;
 import minicraft.gfx.SpriteLinker.SpriteType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Font {
 	// These are all the characters that will be translated to the screen. (The spaces are important)
@@ -34,37 +39,66 @@ public class Font {
 			int ix = chars.indexOf(msg.charAt(i)); // The current letter in the message loop
 			if (ix >= 0) {
 				// If that character's position is larger than or equal to 0, then render the character on the screen.
-				screen.render(x + i * textWidth(msg.substring(i, i + 1)), y, ix % 32, ix / 32, 0, Renderer.spriteLinker.getSheet(SpriteType.Gui, "font"), whiteTint);
+				screen.render(x + i * textWidth(msg.substring(i, i + 1)), y, ix % 32, ix / 32, 0, Renderer.spriteManager.getSheet(SpriteType.Gui, "font"), whiteTint);
 			}
 		}
 	}
 
-	public static void drawColor(String message, Screen screen, int x, int y) {
-		// Set default color message if it doesn't have initially
-		if (message.charAt(0) != Color.COLOR_CHAR) {
-			message = Color.WHITE_CODE + message;
+	public static void drawColor(String message, Screen screen, int x, int y) { drawColor(message, screen, x, y, -1); }
+	public static void drawColor(String message, Screen screen, int x, int y, int whiteTint) {
+		AtomicInteger leading = new AtomicInteger();
+		AtomicReference<StringBuilder> toRender = new AtomicReference<>(new StringBuilder());
+		SizedStack<Integer> colors = new SizedStack<>(2);
+		Action textRenderer = () -> {
+			if (toRender.get().length() > 0) {
+				String text = toRender.toString();
+				Font.draw(text, screen, x + leading.get(), y, colors.isEmpty() ? whiteTint : colors.peek());
+				leading.addAndGet(Font.textWidth(text));
+				toRender.set(new StringBuilder()); // Clears the appended text.
+			}
+		};
+		for (int i = 0; i < message.length(); i++) {
+			char c = message.charAt(i);
+			if (c == Color.COLOR_CHAR) {
+				if (message.length() - 1 - i >= 4) { // There should be 4 chars for color values.
+					textRenderer.act(); // Renders with the last color instantly.
+					String colorCode = message.substring(i, i + 5); // Gets the 5 characters including color char.
+					if (colorCode.equals(Color.RESET_CODE)) {
+						colors.clear();
+					} else if (colorCode.equals(Color.REDO_CODE)) {
+						if (colors.size() > 0) colors.pop();
+					} else {
+						colors.add(Color.get(colorCode));
+					}
+
+					i += 4; // Shifts for 4 characters (color values).
+					continue;
+				}
+			}
+
+			toRender.get().append(c);
+			if (i == message.length() - 1) { // If this is the last character
+				textRenderer.act(); // Renders the text remaining.
+			}
+		}
+	}
+
+	// Reference: https://stackoverflow.com/a/16206356
+	private static class SizedStack<T> extends Stack<T> {
+		private final int maxSize;
+
+		public SizedStack(int size) {
+			super();
+			this.maxSize = size;
 		}
 
-		int leading = 0;
-		for (String data : message.split(String.valueOf(Color.COLOR_CHAR))) {
-			if (data.isEmpty()) {
-				continue;
+		@Override
+		public T push(T object) {
+			//If the stack is too big, remove elements until it's the right size.
+			while (this.size() >= maxSize) {
+				this.remove(0);
 			}
-
-			String text;
-			String color;
-
-			try {
-				text = data.substring(4);
-				color = data.substring(0, 4); // ARGB value
-			} catch (IndexOutOfBoundsException ignored) {
-				// Bad formatted colored string
-				text = data;
-				color = Color.WHITE_CODE;
-			}
-
-			Font.draw(text, screen, x + leading, y, Color.get(color));
-			leading += Font.textWidth(text);
+			return super.push(object);
 		}
 	}
 
@@ -74,7 +108,7 @@ public class Font {
 
 	public static void drawBackground(String msg, Screen screen, int x, int y, int whiteTint) {
 		for (int i = 0; i < msg.length(); i++) { // Renders the black boxes under the text
-			screen.render(x + i * textWidth(msg.substring(i, i + 1)), y, 5, 2, 0, Renderer.spriteLinker.getSheet(SpriteType.Gui, "hud"));
+			screen.render(x + i * textWidth(msg.substring(i, i + 1)), y, 5, 2, 0, Renderer.spriteManager.getSheet(SpriteType.Gui, "hud"));
 		}
 
 		// Renders the text
@@ -82,7 +116,22 @@ public class Font {
 	}
 
 	public static int textWidth(String text) { // Filtering out coloring codes.
-		return (int) (Math.max(text.length() - text.chars().filter(ch -> ch == Color.COLOR_CHAR).count() * 5, 0) * 8);
+		return Math.max(text.length() - countMatches(text, Color.COLOR_CHAR) * 5, 0) * 8;
+	}
+
+	// Source: Apache commons-lang lang3 StringUtils
+	private static int countMatches(@NotNull final CharSequence str, final char ch) {
+		if (str.length() == 0) {
+			return 0;
+		}
+		int count = 0;
+		// We could also call str.toCharArray() for faster lookups but that would generate more garbage.
+		for (int i = 0; i < str.length(); i++) {
+			if (ch == str.charAt(i)) {
+				count++;
+			}
+		}
+		return count;
 	}
 
 	public static int textWidth(String[] para) {

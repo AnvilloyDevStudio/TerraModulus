@@ -11,7 +11,7 @@ import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.ToolItem;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class FenceTile extends Tile {
 
-	private static final SpriteAnimation wood = new SpriteAnimation(SpriteType.Tile, "wood_fence");
-	private static final SpriteAnimation stone = new SpriteAnimation(SpriteType.Tile, "stone_fence");
-	private static final SpriteAnimation obsidian = new SpriteAnimation(SpriteType.Tile, "obsidian_fence");
+	private static final SpriteAnimation wood = new SpriteAnimation(SpriteManager.SpriteType.Tile, "wood_fence");
+	private static final SpriteAnimation stone = new SpriteAnimation(SpriteManager.SpriteType.Tile, "stone_fence");
+	private static final SpriteAnimation obsidian = new SpriteAnimation(SpriteManager.SpriteType.Tile, "obsidian_fence");
 
 	protected final Material type;
 
@@ -47,10 +47,10 @@ public class FenceTile extends Tile {
 				sprite = obsidian;
 				break;
 		}
-		top = new SpriteAnimation(SpriteType.Tile, type.toString().toLowerCase() + "_fence_top");
-		bottom = new SpriteAnimation(SpriteType.Tile, type.toString().toLowerCase() + "_fence_bottom");
-		left = new SpriteAnimation(SpriteType.Tile, type.toString().toLowerCase() + "_fence_left");
-		right = new SpriteAnimation(SpriteType.Tile, type.toString().toLowerCase() + "_fence_right");
+		top = new SpriteAnimation(SpriteManager.SpriteType.Tile, type.toString().toLowerCase() + "_fence_top");
+		bottom = new SpriteAnimation(SpriteManager.SpriteType.Tile, type.toString().toLowerCase() + "_fence_bottom");
+		left = new SpriteAnimation(SpriteManager.SpriteType.Tile, type.toString().toLowerCase() + "_fence_left");
+		right = new SpriteAnimation(SpriteManager.SpriteType.Tile, type.toString().toLowerCase() + "_fence_right");
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.ToolItem;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GrassTile extends Tile {
 	private static final SpriteAnimation sprite = new SpriteAnimation(SpriteType.Tile, "grass")
-		.setConnectionChecker((level, x, y, tile, side) -> !side || tile.connectsToGrass(level, x, y))
+		.setConnectionChecker((level, x, y, tile, side) -> tile.connectsToGrass(level, x, y))
 		.setSingletonWithConnective(true);
 
 	protected GrassTile(String name) {
