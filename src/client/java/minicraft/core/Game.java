@@ -25,7 +25,7 @@ public class Game {
 
 	public static final String NAME = "TerraModulus"; // This is the name on the application window.
 
-	public static final Version VERSION = new Version("0.1.0");
+	public static final Version VERSION = new Version("2.3.0");
 
 	public static InputHandler input; // Input used in Game, Player, and just about all the *Menu classes.
 	public static Player player;
@@ -33,6 +33,7 @@ public class Game {
 	public static List<String> notifications = new ArrayList<>();
 
 	public static int MAX_FPS;
+	public static boolean debug = false;
 
 	// DISPLAY
 	static Display currentDisplay = null;

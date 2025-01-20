@@ -1,22 +1,26 @@
 package minicraft.entity.mob;
 
-import minicraft.core.Game;
 import minicraft.core.Renderer;
+import minicraft.core.io.Sound;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Tnt;
 import minicraft.entity.particle.BurnParticle;
 import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.item.Item;
 import minicraft.item.PotionType;
+import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
+import minicraft.util.DamageSource;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Mob extends Entity {
 
-	protected LinkedSprite[][] sprites; // This contains all the mob's sprites, sorted first by direction (index corresponding to the dir variable), and then by walk animation state.
+	protected SpriteLink[][] sprites; // This contains all the mob's sprites, sorted first by direction (index corresponding to the dir variable), and then by walk animation state.
 	public int walkDist = 0; // How far we've walked currently, incremented after each movement. This is used to change the sprite; "(walkDist >> 3) & 1" switches between a value of 0 and 1 every 8 increments of walkDist.
 
 	public Direction dir = Direction.DOWN; // The direction the mob is facing, used in attacking and rendering. 0 is down, 1 is up, 2 is left, 3 is right
@@ -35,7 +39,7 @@ public abstract class Mob extends Entity {
 	 * @param sprites All of this mob's sprites.
 	 * @param health The mob's max health.
 	 */
-	public Mob(LinkedSprite[][] sprites, int health) {
+	public Mob(SpriteLink[][] sprites, int health) {
 		super(4, 3);
 		this.sprites = sprites;
 		this.health = this.maxHealth = health;
@@ -54,7 +58,8 @@ public abstract class Mob extends Entity {
 		noActionTime++;
 
 		if (level != null && level.getTile(x >> 4, y >> 4) == Tiles.get("lava")) // If we are trying to swim in lava
-			hurt(Tiles.get("lava"), x, y, 4); // Inflict 4 damage to ourselves, sourced from the lava Tile, with the direction as the opposite of ours.
+			// Inflict 4 damage to ourselves, sourced from the lava Tile, with the direction as the opposite of ours.
+			hurt(new DamageSource(DamageSource.DamageType.LAVA, level, x, y, Tiles.get("lava")), Direction.NONE, 4);
 
 		if (canBurn()) {
 			if (this.burningDuration > 0) {
@@ -62,13 +67,9 @@ public abstract class Mob extends Entity {
 				if (this.burningDuration % 10 == 0)
 					level.add(new BurnParticle(x - 8 + (random.nextInt(8) - 4), y - 8 + (random.nextInt(8) - 4)));
 				this.burningDuration--;
-				if (this instanceof Player) {
-					if (this.burningDuration % 70 == 0 && !Renderer.player.potioneffects.containsKey(PotionType.Lava))
-						hurt(this, 1, Direction.NONE); //burning damage
-				} else {
-					if (this.burningDuration % 70 == 0)
-						hurt(this, 2, Direction.NONE); //burning damage
-				}
+				// TODO different damage?
+				hurt(new DamageSource(DamageSource.DamageType.ON_FIRE, level, x, y, null), // TODO last attacker
+					Direction.NONE, this instanceof Player ? 1 : 2); //burning damage
 			}
 		}
 
@@ -79,11 +80,11 @@ public abstract class Mob extends Entity {
 		/// The code below checks the direction of the knockback, moves the Mob accordingly, and brings the knockback closer to 0.
 		int xd = 0, yd = 0;
 		if (xKnockback != 0) {
-			xd = (int) Math.ceil(xKnockback / 2);
+			xd = (int) Math.ceil(xKnockback / 2F);
 			xKnockback -= xKnockback / Math.abs(xKnockback);
 		}
 		if (yKnockback != 0) {
-			yd = (int) Math.ceil(yKnockback / 2);
+			yd = (int) Math.ceil(yKnockback / 2F);
 			yKnockback -= yKnockback / Math.abs(yKnockback);
 		}
 
@@ -154,25 +155,25 @@ public abstract class Mob extends Entity {
 	/**
 	 * This is an easy way to make a list of sprites that are all part of the same "Sprite", so they have similar parameters, but they're just at different locations on the spreadsheet.
 	 */
-	public static LinkedSprite[] compileSpriteList(int sheetX, int sheetY, int width, int height, int mirror, int number, String key) {
-		LinkedSprite[] sprites = new LinkedSprite[number];
+	public static SpriteLink[] compileSpriteList(int sheetX, int sheetY, int width, int height, int mirror, int number, String key) {
+		SpriteLink[] sprites = new SpriteLink[number];
 		for (int i = 0; i < sprites.length; i++)
-			sprites[i] = new LinkedSprite(SpriteType.Entity, key).setSpriteDim(sheetX + width * i, sheetY, width, height)
-				.setMirror(mirror).setFlip(mirror);
+			sprites[i] = new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, key).setSpriteDim(sheetX + width * i, sheetY, width, height)
+				.setMirror(mirror).setFlip(mirror).createSpriteLink();
 
 		return sprites;
 	}
 
-	public static LinkedSprite[][] compileMobSpriteAnimations(int sheetX, int sheetY, String key) {
-		LinkedSprite[][] sprites = new LinkedSprite[4][2];
+	public static SpriteLink[][] compileMobSpriteAnimations(int sheetX, int sheetY, String key) {
+		SpriteLink[][] sprites = new SpriteLink[4][2];
 		// dir numbers: 0=down, 1=up, 2=left, 3=right.
 		/// On the spritesheet, most mobs have 4 sprites there, first facing down, then up, then right 1, then right 2. The first two get flipped to animate them, but the last two get flipped to change direction.
 
 		// Contents: down 1, up 1, right 1, right 2
-		LinkedSprite[] set1 = compileSpriteList(sheetX, sheetY, 2, 2, 0, 4, key);
+		SpriteLink[] set1 = compileSpriteList(sheetX, sheetY, 2, 2, 0, 4, key);
 
 		// Contents: down 2, up 2, left 1, left 2
-		LinkedSprite[] set2 = compileSpriteList(sheetX, sheetY, 2, 2, 1, 4, key);
+		SpriteLink[] set2 = compileSpriteList(sheetX, sheetY, 2, 2, 1, 4, key);
 
 		// Down
 		sprites[0][0] = set1[0];
@@ -219,37 +220,12 @@ public abstract class Mob extends Entity {
 	}
 
 	/**
-	 * Do damage to the mob this method is called on.
-	 * @param tile The tile that hurt the player
-	 * @param x The x position of the mob
-	 * @param y The x position of the mob
-	 * @param damage The amount of damage to hurt the mob with
+	 * Attacks an entity
+	 * @param entity The entity to attack
+	 * @return If the interaction was successful
 	 */
-	public void hurt(Tile tile, int x, int y, int damage) { // Hurt the mob, when the source of damage is a tile
-		Direction attackDir = Direction.getDirection(dir.getDir() ^ 1); // Set attackDir to our own direction, inverted. XORing it with 1 flips the rightmost bit in the variable, this effectively adds one when even, and subtracts one when odd.
-		if (!(tile == Tiles.get("lava") && this instanceof Player && ((Player) this).potioneffects.containsKey(PotionType.Lava)))
-			doHurt(damage, tile.mayPass(level, x, y, this) ? Direction.NONE : attackDir); // Call the method that actually performs damage, and set it to no particular direction
-	}
-
-	/**
-	 * Do damage to the mob this method is called on.
-	 * @param mob The mob that hurt this mob
-	 * @param damage The amount of damage to hurt the mob with
-	 */
-	public void hurt(Mob mob, int damage) {
-		hurt(mob, damage, getAttackDir(mob, this));
-	}
-
-	/**
-	 * Do damage to the mob this method is called on.
-	 * @param mob The mob that hurt this mob
-	 * @param damage The amount of damage to hurt the mob with
-	 * @param attackDir The direction this mob was attacked from
-	 */
-	public void hurt(Mob mob, int damage, Direction attackDir) { // Hurt the mob, when the source is another mob
-		if (mob instanceof Player && Game.isMode("minicraft.settings.mode.creative") && mob != this)
-			doHurt(health, attackDir); // Kill the mob instantly
-		else doHurt(damage, attackDir); // Call the method that actually performs damage, and use our provided attackDir
+	public boolean attack(Entity entity) {
+		return false;
 	}
 
 	/**
@@ -265,18 +241,32 @@ public abstract class Mob extends Entity {
 	 * @param dmg The amount of damage the explosion does.
 	 */
 	public void onExploded(Tnt tnt, int dmg) {
-		doHurt(dmg, getAttackDir(tnt, this));
+		hurt(new DamageSource(DamageSource.DamageType.EXPLOSION, tnt, null),
+			getInteractionDir(tnt, this), dmg);
 	}
 
-	/**
-	 * Hurt the mob, based on only damage and a direction
-	 * This is overridden in Player.java
-	 * @param damage The amount of damage to hurt the mob with
-	 * @param attackDir The direction this mob was attacked from
-	 */
-	protected void doHurt(int damage, Direction attackDir) {
+	@Override
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
+		handleDamage(source, attackDir, damage);
+		return true;
+	}
+
+	@Override
+	protected void handleDamage(DamageSource source, Direction attackDir, int damage) {
 		if (isRemoved() || hurtTime > 0)
 			return; // If the mob has been hurt recently and hasn't cooled down, don't continue
+
+		Player player = getClosestPlayer();
+		if (player != null) { // If there is a player in the level
+
+			/// Play the hurt sound only if the player is less than 80 entity coordinates away; or 5 tiles away.
+			int xd = player.x - x;
+			int yd = player.y - y;
+			if (xd * xd + yd * yd < 80 * 80) {
+				Sound.play("monsterhurt");
+			}
+		}
+		level.add(new TextParticle("" + damage, x, y, Color.RED)); // Make a text particle at this position in this level, bright red and displaying the damage inflicted
 
 		health -= damage; // Actually change the health
 
@@ -297,18 +287,5 @@ public abstract class Mob extends Entity {
 		health += heal; // Actually add the amount to heal to our current health
 		if (health > (Player.baseHealth + Player.extraHealth))
 			health = (Player.baseHealth + Player.extraHealth); // If our health has exceeded our maximum, lower it back down to said maximum
-	}
-
-	protected static Direction getAttackDir(Entity attacker, Entity hurt) {
-		return Direction.getDirection(hurt.x - attacker.x, hurt.y - attacker.y);
-	}
-
-	/**
-	 * This checks how the {@code attacker} can damage this mob.
-	 * @param attacker The attacker entity.
-	 * @return The calculated damage.
-	 */
-	public int calculateEntityDamage(Entity attacker, int damage) {
-		return damage;
 	}
 }

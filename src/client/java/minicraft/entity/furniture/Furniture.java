@@ -5,10 +5,12 @@ import minicraft.entity.Direction;
 import minicraft.entity.Entity;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
+import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.item.FurnitureItem;
 import minicraft.item.Item;
-import minicraft.item.PowerGloveItem;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
+import minicraft.util.DamageSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +22,8 @@ public class Furniture extends Entity {
 
 	protected int pushTime = 0, multiPushTime = 0; // Time for each push; multi is for multiplayer, to make it so not so many updates are sent.
 	private Direction pushDir = Direction.NONE; // The direction to push the furniture
-	public LinkedSprite sprite;
-	public LinkedSprite itemSprite;
+	public SpriteLink sprite;
+	public SpriteLink itemSprite;
 	public String name;
 
 	/**
@@ -30,7 +32,7 @@ public class Furniture extends Entity {
 	 * @param name Name of the furniture.
 	 * @param sprite Furniture sprite.
 	 */
-	public Furniture(String name, LinkedSprite sprite, LinkedSprite itemSprite) {
+	public Furniture(String name, SpriteLink sprite, SpriteLink itemSprite) {
 		this(name, sprite, itemSprite, 3, 3);
 	}
 
@@ -42,7 +44,7 @@ public class Furniture extends Entity {
 	 * @param xr Horizontal radius.
 	 * @param yr Vertical radius.
 	 */
-	public Furniture(String name, LinkedSprite sprite, LinkedSprite itemSprite, int xr, int yr) {
+	public Furniture(String name, SpriteLink sprite, SpriteLink itemSprite, int xr, int yr) {
 		// All of these are 2x2 on the spritesheet; radius is for collisions only.
 		super(xr, yr);
 		this.name = name;
@@ -76,13 +78,6 @@ public class Furniture extends Entity {
 		screen.render(null, x - 8, y - 8, sprite);
 	}
 
-	/**
-	 * Called when the player presses the MENU key in front of this.
-	 */
-	public boolean use(Player player) {
-		return false;
-	}
-
 	@Override
 	public boolean blocks(Entity e) {
 		return true; // Furniture blocks all entities, even non-solid ones like arrows.
@@ -94,21 +89,38 @@ public class Furniture extends Entity {
 			tryPush((Player) entity);
 	}
 
+	@Override
+	public boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir) {
+		return true;
+	}
+
+	@Override
+	public boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir) {
+		return true;
+	}
+
+	@Override
+	public boolean isUsable() {
+		return true;
+	}
+
+	@Override
+	protected void handleDamage(DamageSource source, Direction attackDir, int damage) {}
+
+	@Override
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
+		return false;
+	}
+
 	/**
-	 * Used in PowerGloveItem.java to let the user pick up furniture.
+	 * Lets the user pick up furniture.
 	 * @param player The player picking up the furniture.
 	 */
 	@Override
-	public boolean interact(Player player, @Nullable Item item, Direction attackDir) {
-		if (item instanceof PowerGloveItem) {
-			Sound.play("monsterhurt");
-			remove();
-			if (player.activeItem != null && !(player.activeItem instanceof PowerGloveItem))
-				player.getLevel().dropItem(player.x, player.y, player.activeItem); // Put whatever item the player is holding into their inventory
-			player.activeItem = new FurnitureItem(this); // Make this the player's current item.
-			return true;
-		}
-		return false;
+	public @Nullable Item take(Player player) {
+		Sound.play("monsterhurt");
+		remove();
+		return new FurnitureItem(this);
 	}
 
 	/**

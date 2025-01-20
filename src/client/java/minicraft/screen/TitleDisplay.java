@@ -11,7 +11,7 @@ import minicraft.gfx.Font;
 import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.network.Network;
 import minicraft.screen.entry.BlankEntry;
@@ -104,7 +104,7 @@ public class TitleDisplay extends Display {
 
 	@Override
 	public void tick(InputHandler input) {
-		if (input.getMappedKey("F3-r").isClicked()) rand = random.nextInt(splashes.length - 3) + 3;
+		if (input.getMappedKey("F3-r").isClicked() && Game.debug) rand = random.nextInt(splashes.length - 3) + 3;
 
 		super.tick(input);
 	}
@@ -113,7 +113,7 @@ public class TitleDisplay extends Display {
 	public void render(Screen screen) {
 		super.render(screen);
 
-		MinicraftImage sheet = Renderer.spriteLinker.getSheet(SpriteType.Gui, "title");
+		MinicraftImage sheet = Renderer.spriteManager.getSheet(SpriteType.Gui, "title");
 		int h = sheet.height / 8; // Height of squares (on the spritesheet)
 		int w = sheet.width / 8; // Width of squares (on the spritesheet)
 		int xo = (Screen.w - sheet.width) / 2; // X location of the title
@@ -143,7 +143,7 @@ public class TitleDisplay extends Display {
 
 		Font.drawCentered(splashes[rand], screen, (Screen.h / 2) - 44, splashColor);
 
-		Font.draw(Localization.getLocalized("minicraft.displays.title.display.version", Game.VERSION), screen, 1, 1, Color.get(1, 51));
+		Font.draw(Localization.getLocalized("minicraft.displays.title.display.version", "0.1.0"), screen, 1, 1, Color.get(1, 51));
 
 
 		String upString = Localization.getLocalized("minicraft.displays.title.display.help.0", Game.input.getMapping("cursor-up"), Game.input.getMapping("cursor-down"));
