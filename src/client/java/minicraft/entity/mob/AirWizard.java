@@ -3,6 +3,7 @@ package minicraft.entity.mob;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Localization;
+import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
@@ -10,13 +11,16 @@ import minicraft.entity.Spark;
 import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.network.Analytics;
 import minicraft.screen.AchievementsDisplay;
+import minicraft.util.DamageSource;
+import org.jetbrains.annotations.Nullable;
 
 public class AirWizard extends EnemyMob {
-	private static final LinkedSprite[][][] sprites = new LinkedSprite[][][] {
+	private static final SpriteLink[][][] sprites = new SpriteLink[][][] {
 		Mob.compileMobSpriteAnimations(0, 0, "air_wizard"),
 		Mob.compileMobSpriteAnimations(0, 2, "air_wizard")
 	};
@@ -117,11 +121,11 @@ public class AirWizard extends EnemyMob {
 	}
 
 	@Override
-	public void doHurt(int damage, Direction attackDir) {
-		super.doHurt(damage, attackDir);
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
 		if (attackDelay == 0 && attackTime == 0) {
 			attackDelay = 60 * 2;
 		}
+		return super.hurt(source, attackDir, damage);
 	}
 
 	@Override
@@ -151,7 +155,7 @@ public class AirWizard extends EnemyMob {
 	protected void touchedBy(Entity entity) {
 		if (entity instanceof Player) {
 			// If the entity is the Player, then deal them 1 damage points.
-			((Player) entity).hurt(this, 1);
+			attack(entity);
 		}
 	}
 

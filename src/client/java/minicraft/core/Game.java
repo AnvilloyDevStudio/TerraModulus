@@ -25,9 +25,9 @@ public class Game {
 	protected Game() {
 	} // Can't instantiate the Game class.
 
-	public static final String NAME = "Minicraft Plus"; // This is the name on the application window.
+	public static final String NAME = "TerraModulus"; // This is the name on the application window.
 
-	public static final Version VERSION = new Version("2.2.1-dev1");
+	public static final Version VERSION = new Version("2.3.0");
 
 	public static InputHandler input; // Input used in Game, Player, and just about all the *Menu classes.
 	public static Player player;
@@ -37,6 +37,7 @@ public class Game {
 	public static ArrayDeque<Toast> inGameToasts = new ArrayDeque<>(); // Canvas size is limited, so handled one by one
 
 	public static int MAX_FPS;
+	public static boolean debug = false;
 
 	// DISPLAY
 	static Display currentDisplay = null;

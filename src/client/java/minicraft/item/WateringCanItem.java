@@ -5,9 +5,10 @@ import minicraft.entity.mob.Player;
 import minicraft.entity.particle.Particle;
 import minicraft.entity.particle.WaterParticle;
 import minicraft.gfx.Point;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.level.Level;
 import minicraft.level.tile.DirtTile;
+import minicraft.level.tile.FlowerTile;
 import minicraft.level.tile.GrassTile;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
@@ -25,15 +26,18 @@ public class WateringCanItem extends Item {
 		return items;
 	}
 
-	private static final SpriteLinker.LinkedSprite sprite = new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Item, "watering_can");
-	private static final SpriteLinker.LinkedSprite spriteFilled = new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Item, "watering_can_filled");
-	private static final SpriteLinker.LinkedSprite particleSprite = new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "glint");
+	private static final SpriteManager.SpriteLink sprite = new SpriteManager.SpriteLink.SpriteLinkBuilder(
+		SpriteManager.SpriteType.Item, "watering_can").createSpriteLink();
+	private static final SpriteManager.SpriteLink spriteFilled = new SpriteManager.SpriteLink.SpriteLinkBuilder(
+		SpriteManager.SpriteType.Item, "watering_can_filled").createSpriteLink();
+	private static final SpriteManager.SpriteLink particleSprite = new SpriteManager.SpriteLink.SpriteLinkBuilder(
+		SpriteManager.SpriteType.Entity, "glint").createSpriteLink();
 
-	private static final SpriteLinker.LinkedSprite[] spriteSplash = new SpriteLinker.LinkedSprite[] {
-		new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "splash_0"),
-		new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "splash_1"),
-		new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "splash_2"),
-		new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "splash_3")
+	private static final SpriteManager.SpriteLink[] spriteSplash = new SpriteManager.SpriteLink[] {
+		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "splash_0").createSpriteLink(),
+		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "splash_1").createSpriteLink(),
+		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "splash_2").createSpriteLink(),
+		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "splash_3").createSpriteLink()
 	};
 
 	public final int CAPACITY = 1800;
@@ -45,7 +49,7 @@ public class WateringCanItem extends Item {
 	}
 
 	@Override
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		if (tile instanceof WaterTile) {
 			content = CAPACITY;
 			updateSprite();
@@ -57,7 +61,7 @@ public class WateringCanItem extends Item {
 			Random random = new Random();
 			if (renderingTick >= 8) {
 				for (int i = 0; i < 4; i++) {
-					SpriteLinker.LinkedSprite splash = spriteSplash[random.nextInt(spriteSplash.length)];
+					SpriteManager.SpriteLink splash = spriteSplash[random.nextInt(spriteSplash.length)];
 					// 2-pixel deviation for centering particle sprites.
 					int destX = player.x - 2 + 12 * attackDir.getX() + random.nextInt(9) - 4;
 					int destY = player.y - 2 + 12 * attackDir.getY() + random.nextInt(9) - 4;
@@ -85,7 +89,8 @@ public class WateringCanItem extends Item {
 						level.add(new Particle((int) x, (int) y, 120 + random.nextInt(21) - 40, particleSprite));
 					}
 					if (random.nextInt(60) == 0) { // Small chance for growing flowers
-						level.setTile(xt, yt, Tiles.get((short) 2), random.nextInt(2));
+						level.setTile(xt, yt, Tiles.get((short) 2),
+							random.nextInt(FlowerTile.FlowerVariant.values().length));
 					}
 				}
 

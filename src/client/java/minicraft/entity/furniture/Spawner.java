@@ -4,6 +4,7 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Sound;
 import minicraft.entity.Direction;
+import minicraft.entity.Entity;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
@@ -20,15 +21,17 @@ import minicraft.entity.particle.FireParticle;
 import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
 import minicraft.gfx.Point;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.FurnitureItem;
 import minicraft.item.Item;
 import minicraft.item.PotionType;
 import minicraft.item.PowerGloveItem;
 import minicraft.item.ToolItem;
 import minicraft.item.ToolType;
+import minicraft.util.DamageSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.util.ArrayList;
@@ -72,16 +75,17 @@ public class Spawner extends Furniture {
 	 * @param m Mob which will be spawned.
 	 */
 	public Spawner(MobAi m) {
-		super(getClassName(m.getClass()) + " Spawner", new LinkedSprite(SpriteType.Entity, "spawner"), m instanceof Cow ? new LinkedSprite(SpriteType.Item, "cow_spawner") :
-			m instanceof Pig ? new LinkedSprite(SpriteType.Item, "pig_spawner") :
-				m instanceof Sheep ? new LinkedSprite(SpriteType.Item, "sheep_spawner") :
-					m instanceof Slime ? new LinkedSprite(SpriteType.Item, "slime_spawner") :
-						m instanceof Zombie ? new LinkedSprite(SpriteType.Item, "zombie_spawner") :
-							m instanceof Creeper ? new LinkedSprite(SpriteType.Item, "creeper_spawner") :
-								m instanceof Skeleton ? new LinkedSprite(SpriteType.Item, "skeleton_spawner") :
-									m instanceof Snake ? new LinkedSprite(SpriteType.Item, "snake_spawner") :
-										m instanceof Knight ? new LinkedSprite(SpriteType.Item, "knight_spawner") :
-											new LinkedSprite(SpriteType.Item, "air_wizard_spawner"), 7, 2);
+		super(getClassName(m.getClass()) + " Spawner", new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "spawner").createSpriteLink(),
+			m instanceof Cow ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "cow_spawner") .createSpriteLink():
+			m instanceof Pig ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "pig_spawner") .createSpriteLink():
+				m instanceof Sheep ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "sheep_spawner") .createSpriteLink():
+					m instanceof Slime ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "slime_spawner") .createSpriteLink():
+						m instanceof Zombie ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "zombie_spawner") .createSpriteLink():
+							m instanceof Creeper ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "creeper_spawner") .createSpriteLink():
+								m instanceof Skeleton ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "skeleton_spawner") .createSpriteLink():
+									m instanceof Snake ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "snake_spawner") .createSpriteLink():
+										m instanceof Knight ? new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "knight_spawner") .createSpriteLink():
+											new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "air_wizard_spawner").createSpriteLink(), 7, 2);
 		health = 100;
 		initMob(m);
 		resetSpawnInterval();
@@ -173,51 +177,40 @@ public class Spawner extends Furniture {
 	}
 
 	@Override
-	public boolean interact(Player player, Item item, Direction attackDir) {
-		if (item instanceof ToolItem) {
-			ToolItem tool = (ToolItem) item;
-
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
+		if (source.getCausingEntity() instanceof Player) {
+			Item item = source.getItem();
 			Sound.play("monsterhurt");
-
-			int dmg;
+			int dmg = item instanceof ToolItem ? ((ToolItem) item).getAttackDamageBonus(this) : 1;
 			if (Game.isMode("minicraft.settings.mode.creative"))
 				dmg = health;
-			else {
-				dmg = tool.level + random.nextInt(2);
-
-				if (tool.type == ToolType.Pickaxe)
-					dmg += random.nextInt(5) + 2;
-
-				if (player.potioneffects.containsKey(PotionType.Haste))
-					dmg *= 2;
-			}
 
 			health -= dmg;
 			level.add(new TextParticle("" + dmg, x, y, Color.get(-1, 200, 300, 400)));
 			if (health <= 0) {
 				level.remove(this);
 				Sound.play("death");
-				player.addScore(500);
+				((Player) source.getCausingEntity()).addScore(500);
 			}
 
 			return true;
 		}
 
-		if (item instanceof PowerGloveItem && Game.isMode("minicraft.settings.mode.creative")) {
-			level.remove(this);
-			if (!(player.activeItem instanceof PowerGloveItem))
-				player.getLevel().dropItem(player.x, player.y, player.activeItem);
-			player.activeItem = new FurnitureItem(this);
-			return true;
-		}
-
-		if (item == null) return use(player);
-
 		return false;
 	}
 
 	@Override
-	public boolean use(Player player) {
+	public @Nullable Item take(Player player) {
+		if (Game.isMode("minicraft.settings.mode.creative")) {
+			level.remove(this);
+			return new FurnitureItem(this);
+		}
+
+		return null;
+	}
+
+	@Override
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		if (Game.isMode("minicraft.settings.mode.creative") && mob instanceof EnemyMob) {
 			lvl++;
 			if (lvl > maxMobLevel) lvl = 1;

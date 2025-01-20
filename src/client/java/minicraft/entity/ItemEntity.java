@@ -4,6 +4,10 @@ import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Screen;
 import minicraft.item.Item;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
+import minicraft.util.DamageSource;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -128,8 +132,8 @@ public class ItemEntity extends Entity implements ClientTickable {
 			if (time / 6 % 2 == 0) return;
 		}
 
-		screen.render(x - 4, y - 4, item.sprite.getSprite(), 0, false, Color.get(0, 31)); // Item shadow
-		screen.render(x - 4, y - 4 - (int) zz, item.sprite); // Item
+		screen.render(null, x - 4, y - 4, item.sprite.getSprite(), 0, false, Color.get(0, 31)); // Item shadow
+		screen.render(null, x - 4, y - 4 - (int) zz, item.sprite); // Item
 	}
 
 	@Override
@@ -143,6 +147,29 @@ public class ItemEntity extends Entity implements ClientTickable {
 				pickedUp = isRemoved();
 			}
 		}
+	}
+
+	@Override
+	public boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isUsable() {
+		return false;
+	}
+
+	@Override
+	protected void handleDamage(DamageSource source, Direction attackDir, int damage) {}
+
+	@Override
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
+		return false;
 	}
 
 	@Override
