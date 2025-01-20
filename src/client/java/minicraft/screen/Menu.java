@@ -1,5 +1,6 @@
 package minicraft.screen;
 
+import minicraft.core.Renderer;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
 import minicraft.core.io.Sound;
@@ -11,8 +12,7 @@ import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.screen.entry.BlankEntry;
 import minicraft.screen.entry.ItemEntry;
 import minicraft.screen.entry.ListEntry;
@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 public class Menu {
 
@@ -74,7 +75,7 @@ public class Menu {
 	 */
 	private String typingSearcher;
 
-	private LinkedSprite hudSheet = new LinkedSprite(SpriteType.Gui, "hud");
+	private final Supplier<MinicraftImage> hudSheet = () -> Renderer.spriteManager.getSheet(SpriteType.Gui, "hud");
 
 	private Menu() {
 	}
@@ -138,7 +139,7 @@ public class Menu {
 		doScroll();
 	}
 
-	void setSelection(int idx) {
+	public void setSelection(int idx) {
 		if (idx >= entries.size())
 			idx = entries.size() - 1;
 
@@ -149,8 +150,7 @@ public class Menu {
 		doScroll();
 	}
 
-	int getSelection() {
-		return selection;
+	public int getSelection() { return selection;
 	}
 
 	int getDispSelection() {
@@ -171,13 +171,8 @@ public class Menu {
 		entries.forEach(entry -> this.entries.add(new MenuListEntry(entry, entryPos)));
 	}
 
-	@Nullable ListEntry getCurEntry() {
-		return entries.size() == 0 ? null : entries.get(selection).delegate;
-	}
-
-	int getNumOptions() {
-		return entries.size();
-	}
+	public @Nullable ListEntry getCurEntry() { return entries.size() == 0 ? null : entries.get(selection).delegate; }
+	int getNumOptions() { return entries.size(); }
 
 	Rectangle getBounds() {
 		return new Rectangle(bounds);
@@ -360,13 +355,13 @@ public class Menu {
 			if (drawVertically) {
 				for (int i = 0; i < title.length(); i++) {
 					if (hasFrame)
-						screen.render(null, titleLoc.x, titleLoc.y + i * Font.textHeight(), spriteX, 6, 0, hudSheet.getSheet());
+						screen.render(null, titleLoc.x, titleLoc.y + i * Font.textHeight(), spriteX, 6, 0, hudSheet.get());
 					Font.draw(title.substring(i, i + 1), screen, titleLoc.x, titleLoc.y + i * Font.textHeight(), titleColor);
 				}
 			} else {
 				for (int i = 0; i < title.length(); i++) {
 					if (hasFrame)
-						screen.render(null, titleLoc.x + i * 8, titleLoc.y, spriteX, 6, 0, hudSheet.getSheet());
+						screen.render(null, titleLoc.x + i * 8, titleLoc.y, spriteX, 6, 0, hudSheet.get());
 					Font.draw(title.substring(i, i + 1), screen, titleLoc.x + i * 8, titleLoc.y, titleColor);
 				}
 			}
@@ -386,7 +381,7 @@ public class Menu {
 
 			for (int i = 0; i < typingSearcher.length() + 4; i++) {
 				if (hasFrame) {
-					screen.render(null, xSearcherBar + spaceWidth * i - leading, titleLoc.y - 8, 3, 6, 0, hudSheet.getSheet());
+					screen.render(null, xSearcherBar + spaceWidth * i - leading, titleLoc.y - 8, 3, 6, 0, hudSheet.get());
 				}
 
 				Font.draw(String.format("> %s <", typingSearcher), screen, xSearcherBar - leading, titleLoc.y - 8, typingSearcher.length() < Menu.LIMIT_TYPING_SEARCHER ? Color.YELLOW : Color.RED);
@@ -457,7 +452,7 @@ public class Menu {
 				int spriteoffset = (xend && yend ? 0 : (yend ? 1 : (xend ? 2 : 3))) + xOffset; // determines which sprite to use
 				int mirrors = (x == right ? 1 : 0) + (y == bottom ? 2 : 0); // gets mirroring
 
-				screen.render(null, x, y, spriteoffset, 6, mirrors, hudSheet.getSheet());
+				screen.render(null, x, y, spriteoffset, 6, mirrors, hudSheet.get());
 
 				if (x < right && x + MinicraftImage.boxWidth > right)
 					x = right - MinicraftImage.boxWidth;
@@ -814,8 +809,6 @@ public class Menu {
 				int width = titleDim.width;
 				for (MenuListEntry entry : menu.entries) {
 					int entryWidth = entry.delegate.getWidth();
-					if (menu.isSelectable() && !entry.delegate.isSelectable())
-						entryWidth = Math.max(0, entryWidth - MinicraftImage.boxWidth * 4);
 					width = Math.max(width, entryWidth);
 				}
 

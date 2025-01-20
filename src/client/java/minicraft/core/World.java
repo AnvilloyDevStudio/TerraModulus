@@ -81,7 +81,7 @@ public class World extends Game {
 		playerDeadTime = 0;
 		currentLevel = 3;
 		Updater.asTick = 0;
-		Updater.notifications.clear();
+		Updater.inGameNotifications.clear();
 
 		// Adds a new player
 		if (keepPlayer) {
@@ -115,6 +115,7 @@ public class World extends Game {
 		Bed.removePlayers();
 		Updater.gameTime = 0;
 		Updater.gamespeed = 1;
+		Updater.timeFlow = true;
 		lastWorldEnterTime = System.currentTimeMillis();
 
 		Updater.changeTimeOfDay(Updater.Time.Morning); // Resets tickCount; game starts in the day, so that it's nice and bright.

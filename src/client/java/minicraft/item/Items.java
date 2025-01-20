@@ -5,6 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class Items {
 
@@ -136,13 +140,15 @@ public class Items {
 		return new CreativeModeInventory();
 	}
 
-	public static class CreativeModeInventory extends Inventory {
+	public static class CreativeModeInventory extends UnlimitedInventory {
 		CreativeModeInventory() {
-			unlimited = true;
-			items.forEach(i -> {
+			Items.items.forEach(i -> {
 				if (!(i instanceof PowerGloveItem)) add(i.copy());
 			});
 		}
 	}
-}
 
+	public static Set<String> getRegisteredItemKeys() {
+		return items.stream().map(Item::getName).collect(Collectors.toCollection(TreeSet::new));
+	}
+}

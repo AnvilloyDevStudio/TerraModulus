@@ -32,7 +32,7 @@ class InventoryMenu extends ItemListMenu {
 	InventoryMenu(Entity holder, Inventory inv, DisplayString title,
 	              @MagicConstant(intValues = { ItemListMenu.POS_LEFT, ItemListMenu.POS_RIGHT }) int slot,
 	              boolean creativeInv, @Nullable Action onStackUpdateListener) {
-		super(ItemListMenu.getBuilder(slot), ItemEntry.useItems(inv.getItems()), title);
+		super(ItemListMenu.getBuilder(slot), ItemEntry.useItems(inv.getItemsView()), title);
 		this.inv = inv;
 		this.holder = holder;
 		this.creativeInv = creativeInv;

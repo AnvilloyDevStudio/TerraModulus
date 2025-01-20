@@ -39,7 +39,7 @@ public final class Settings {
 
 		options.put("updatecheck", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.settings.update_check"), "minicraft.settings.update_check.all", "minicraft.settings.update_check.full_only", "minicraft.settings.update_check.disabled"));
 
-		options.get("mode").setChangeAction(value ->
+		options.get("mode").setChangeListener(value ->
 			options.get("scoretime").setVisible("minicraft.displays.world_create.options.game_mode.score".equals(value))
 		);
 	}

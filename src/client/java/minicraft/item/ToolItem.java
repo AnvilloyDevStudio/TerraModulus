@@ -2,10 +2,17 @@ package minicraft.item;
 
 import minicraft.core.Game;
 import minicraft.core.io.Localization;
+import minicraft.entity.Arrow;
+import minicraft.entity.Direction;
 import minicraft.entity.Entity;
+import minicraft.entity.furniture.Spawner;
 import minicraft.entity.mob.Mob;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.entity.mob.Player;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
+import minicraft.screen.AchievementsDisplay;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -31,6 +38,7 @@ public class ToolItem extends Item {
 	private Random random = new Random();
 
 	public static final String[] LEVEL_NAMES = { "Wood", "Rock", "Iron", "Gold", "Gem" }; // The names of the different levels. A later level means a stronger tool.
+	public final int MAX_DUR;
 
 	public ToolType type; // Type of tool (Sword, hoe, axe, pickaxe, shovel)
 	public int level; // Level of said tool
@@ -46,20 +54,21 @@ public class ToolItem extends Item {
 	 * Tool Item, requires a tool type (ToolType.Sword, ToolType.Axe, ToolType.Hoe, etc) and a level (0 = wood, 2 = iron, 4 = gem, etc)
 	 */
 	public ToolItem(ToolType type, int level) {
-		super(String.format("%s %s", LEVEL_NAMES[level], type.name()), new LinkedSprite(SpriteType.Item, getSpriteName(type.toString(), LEVEL_NAMES[level] + "_")));
+		super(String.format("%s %s", LEVEL_NAMES[level], type.name()),
+			new SpriteLink.SpriteLinkBuilder(SpriteType.Item, getSpriteName(type.toString(), LEVEL_NAMES[level] + "_")).createSpriteLink());
 
 		this.type = type;
 		this.level = level;
 		this.damage = level * 5 + 10;
 
-		dur = type.durability * (level + 1); // Initial durability fetched from the ToolType
+		dur = MAX_DUR = type.durability * (level + 1); // Initial durability fetched from the ToolType
 	}
 
 	public ToolItem(ToolType type) {
-		super(type.name(), new LinkedSprite(SpriteType.Item, getSpriteName(type.toString(), "")));
+		super(type.name(), new SpriteLink.SpriteLinkBuilder(SpriteType.Item, getSpriteName(type.toString(), "")).createSpriteLink());
 
 		this.type = type;
-		dur = type.durability;
+		dur = MAX_DUR = type.durability;
 	}
 
 	/**
@@ -77,11 +86,19 @@ public class ToolItem extends Item {
 		return dur <= 0 && type.durability > 0;
 	}
 
-	/**
-	 * You can attack mobs with tools.
-	 */
-	public boolean canAttack() {
-		return type != ToolType.Shears;
+	@Override
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+		Inventory inventory = player.getInventory();
+		// Fire a bow if the player has the stamina and an arrow.
+		if (type == ToolType.Bow && player.payStamina(1) && inventory.count(Items.arrowItem) > 0) {
+			inventory.removeItem(Items.arrowItem);
+			level.add(new Arrow(player, attackDir, this.level));
+			if (!Game.isMode("minicraft.settings.mode.creative")) dur--;
+			AchievementsDisplay.setAchievement("minicraft.achievement.bow",true);
+			return true;
+		}
+
+		return super.useOn(tile, level, xt, yt, player, attackDir);
 	}
 
 	public boolean payDurability() {
@@ -111,6 +128,11 @@ public class ToolItem extends Item {
 			} else if (type == ToolType.Pickaxe)
 				return (level + 1) + random.nextInt(2); // Wood: 3-6 damage; gem: 15-66 damage.
 			return 1;
+		} else if (e instanceof Spawner) {
+			if (type == ToolType.Pickaxe) {
+				return 3 + level + random.nextInt(7);
+			} else
+				return 1 + level + random.nextInt(2);
 		}
 
 		return 0;

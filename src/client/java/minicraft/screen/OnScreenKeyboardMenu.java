@@ -11,12 +11,11 @@ import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Label;
 import java.awt.event.KeyEvent;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -40,7 +39,7 @@ public class OnScreenKeyboardMenu extends Menu {
 	 */
 	@Nullable
 	public static OnScreenKeyboardMenu checkAndCreateMenu() {
-		if (Game.input.anyControllerConnected()) {
+		if (Game.input.isControllerInUse()) {
 			return new OnScreenKeyboardMenu();
 		}
 
@@ -189,6 +188,9 @@ public class OnScreenKeyboardMenu extends Menu {
 	@Override
 	public void tick(InputHandler input) throws OnScreenKeyboardMenuTickActionCompleted, OnScreenKeyboardMenuBackspaceButtonActed {
 		if (keyPressed > 0) keyPressed--; // Resetting rendered pressing status.
+		if (!input.isControllerInUse()) {
+			setVisible(false);
+		}
 
 		// This is only controllable by controller.
 		if (visible) {
@@ -273,7 +275,7 @@ public class OnScreenKeyboardMenu extends Menu {
 		final int keyHeight = 14;
 		final int keyWidth = 16;
 		VirtualKey[][] keys = shiftPressed ? keysB : keysF;
-		MinicraftImage sheet = Renderer.spriteLinker.getSheet(SpriteLinker.SpriteType.Gui, "osk");
+		MinicraftImage sheet = Renderer.spriteManager.getSheet(SpriteManager.SpriteType.Gui, "osk");
 		for (int r = 0; r < keys.length; r++) {
 			int totalLength = (keys[r].length * keyWidth);
 			totalLength += keyWidth * 2 * (int) Stream.of(keys[r]).filter(k -> k == spaceBar).count();

@@ -11,10 +11,19 @@ import minicraft.screen.RelPos;
 import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.intellij.lang.annotations.RegExp;
 
 import java.util.function.Consumer;
 
-public class InputEntry extends ListEntry {
+public class InputEntry extends ListEntry implements UserMutable {
+	@RegExp
+	public static final String regexNumber = "[0-9]+";
+	@RegExp
+	public static final String regexNegNumber = "[0-9-]+";
+	@RegExp
+	public static final String regexNegNumberOpt = "[0-9-]*";
+
+	protected static final int DARK_RED = Color.tint(Color.RED, -1, true);
 
 	private final @Nullable DisplayString prompt;
 	private final String regex;
@@ -23,7 +32,7 @@ public class InputEntry extends ListEntry {
 
 	private String userInput;
 
-	private ChangeListener listener;
+	protected ChangeListener listener;
 
 	private final ClipboardHandler clipboardHandler = new ClipboardHandler();
 
@@ -82,19 +91,26 @@ public class InputEntry extends ListEntry {
 		return userInput;
 	}
 
+	public void setUserInput(String text) {
+		userInput = text;
+		listener.onChange(text);
+	}
+
 	public String toString() {
 		return prompt == null ? userInput : Localization.getLocalized("minicraft.display.entry", prompt, userInput);
 	}
 
 	@Override
 	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel limitingModel, int x, int y, boolean isSelected) {
-		Font.draw(limitingModel, toString(), screen, x, y, isValid() ? isSelected ? Color.WHITE : COL_UNSLCT : Color.RED);
+		Font.draw(limitingModel, toString(), screen, x, y, isValid() ? isSelected ? Color.WHITE : COL_UNSLCT : isSelected ? Color.RED : DARK_RED);
 	}
 
+	// TODO Review this, if userInput contains any unmatched char, it is either regex or InputHanlder#getKeyTyped is corrupted.
 	public boolean isValid() {
-		return userInput.matches(regex);
+		return regex == null || userInput.matches(regex);
 	}
 
+	@Override
 	public void setChangeListener(ChangeListener l) {
 		listener = l;
 	}

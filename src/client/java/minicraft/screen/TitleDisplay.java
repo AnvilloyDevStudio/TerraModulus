@@ -12,7 +12,7 @@ import minicraft.gfx.Font;
 import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.network.Network;
 import minicraft.screen.entry.BlankEntry;
@@ -98,7 +98,7 @@ public class TitleDisplay extends Display {
 
 	@Override
 	public void tick(InputHandler input) {
-		if (input.getMappedKey("F3-r").isClicked()) rand = random.nextInt(splashes.length - 3) + 3;
+		if (input.getMappedKey("F3-r").isClicked() && Game.debug) rand = random.nextInt(splashes.length - 3) + 3;
 
 		super.tick(input);
 
@@ -126,7 +126,7 @@ public class TitleDisplay extends Display {
 	public void render(Screen screen) {
 		super.render(screen);
 
-		MinicraftImage sheet = Renderer.spriteLinker.getSheet(SpriteType.Gui, "title");
+		MinicraftImage sheet = Renderer.spriteManager.getSheet(SpriteType.Gui, "title");
 		int h = sheet.height / 8; // Height of squares (on the spritesheet)
 		int w = sheet.width / 8; // Width of squares (on the spritesheet)
 		int xo = (Screen.w - sheet.width) / 2; // X location of the title

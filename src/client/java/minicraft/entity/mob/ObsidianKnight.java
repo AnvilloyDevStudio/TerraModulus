@@ -13,23 +13,22 @@ import minicraft.entity.furniture.KnightStatue;
 import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
+import minicraft.item.Item;
 import minicraft.item.Items;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
 import minicraft.screen.AchievementsDisplay;
+import minicraft.util.DamageSource;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 public class ObsidianKnight extends EnemyMob {
-	private static final SpriteLinker.LinkedSprite[][][] armored = new SpriteLinker.LinkedSprite[][][] {
-		Mob.compileMobSpriteAnimations(0, 0, "obsidian_knight_armored"),
-		Mob.compileMobSpriteAnimations(0, 2, "obsidian_knight_armored"),
-		Mob.compileMobSpriteAnimations(0, 4, "obsidian_knight_armored"),
-		Mob.compileMobSpriteAnimations(0, 6, "obsidian_knight_armored")
+	private static final SpriteManager.SpriteLink[][][] armored = new SpriteManager.SpriteLink[][][] {
+		Mob.compileMobSpriteAnimations(0, 0, "obsidian_knight_armored")
 	};
-	private static final SpriteLinker.LinkedSprite[][][] broken = new SpriteLinker.LinkedSprite[][][] {
-		Mob.compileMobSpriteAnimations(0, 0, "obsidian_knight_broken"),
-		Mob.compileMobSpriteAnimations(0, 2, "obsidian_knight_broken"),
-		Mob.compileMobSpriteAnimations(0, 4, "obsidian_knight_broken"),
-		Mob.compileMobSpriteAnimations(0, 6, "obsidian_knight_broken")
+	private static final SpriteManager.SpriteLink[][][] broken = new SpriteManager.SpriteLink[][][] {
+		Mob.compileMobSpriteAnimations(0, 0, "obsidian_knight_broken")
 	};
 	public static ObsidianKnight entity = null;
 
@@ -199,11 +198,17 @@ public class ObsidianKnight extends EnemyMob {
 	}
 
 	@Override
-	public void doHurt(int damage, Direction attackDir) {
-		super.doHurt(damage, attackDir);
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
 		if (attackDelay == 0 && attackTime == 0) {
 			attackDelay = 60 * 2;
 		}
+
+		if (source.getDirectEntity() instanceof Arrow && phase == 0) {
+			source.getDirectEntity().remove();
+			return false;
+		}
+
+		return super.hurt(source, attackDir, damage);
 	}
 
 	@Override
@@ -231,7 +236,7 @@ public class ObsidianKnight extends EnemyMob {
 	protected void touchedBy(Entity entity) {
 		if (entity instanceof Player) {
 			// If the entity is the Player, then deal them 2 damage points.
-			((Player) entity).hurt(this, 2);
+			attack(entity);
 			if (attackPhase == AttackPhase.Dashing) {
 				dashTime = Math.max(dashTime - 10, 0);
 			}
@@ -270,15 +275,5 @@ public class ObsidianKnight extends EnemyMob {
 		entity = null;
 
 		super.die(); // Calls the die() method in EnemyMob.java
-	}
-
-	@Override
-	public int calculateEntityDamage(Entity attacker, int damage) {
-		if (attacker instanceof Arrow && phase == 0) {
-			attacker.remove();
-			return 0;
-		}
-
-		return super.calculateEntityDamage(attacker, damage);
 	}
 }

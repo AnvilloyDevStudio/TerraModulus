@@ -12,6 +12,7 @@ import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
+import minicraft.entity.furniture.RewardChest;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
 import minicraft.entity.mob.AirWizard;
@@ -33,7 +34,6 @@ import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.PotionItem;
 import minicraft.item.PotionType;
-import minicraft.item.StackableItem;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.LoadingDisplay;
@@ -47,6 +47,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /// This class is simply a way to seperate all the old, compatibility complications into a seperate file.
@@ -61,12 +62,13 @@ public class LegacyLoad {
 
 	public boolean hasloadedbigworldalready;
 	@Nullable Version worldVer = null;
-	private DeathChest deathChest;
+	private final HashSet<Item> overflowingItems;
 
 	{
 		data = new ArrayList<>();
 		extradata = new ArrayList<>();
 		hasloadedbigworldalready = false;
+		overflowingItems = new HashSet<>();
 	}
 
 	public LegacyLoad(String worldname) {
@@ -87,9 +89,9 @@ public class LegacyLoad {
 
 		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.label.legacy",
 			Localization.getStaticDisplay("minicraft.displays.loading.message.type.completing")));
-		if (deathChest != null && deathChest.getInventory().invSize() > 0) {
-			Game.player.getLevel().add(deathChest, Game.player.x, Game.player.y);
-			Logging.SAVELOAD.debug("Added DeathChest which contains exceed items.");
+		if (!overflowingItems.isEmpty()) {
+			Game.player.getLevel().add(new RewardChest(overflowingItems), Game.player.x, Game.player.y);
+			Logging.SAVELOAD.debug("Added a RewardChest containing inventory-overflowing items.");
 		}
 	}
 
@@ -285,7 +287,6 @@ public class LegacyLoad {
 	public void loadInventory(String filename, Inventory inventory) {
 		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.label.legacy",
 			Localization.getStaticDisplay("minicraft.displays.loading.message.type.inventory")));
-		deathChest = new DeathChest();
 		loadFromFile(location + filename + extension);
 		inventory.clearInv();
 
@@ -320,7 +321,7 @@ public class LegacyLoad {
 
 	private void loadItem(Inventory inventory, Item item) {
 		if (inventory.add(item) != null) {
-			deathChest.getInventory().add(item.copy());
+			overflowingItems.add(item.copy());
 		}
 	}
 

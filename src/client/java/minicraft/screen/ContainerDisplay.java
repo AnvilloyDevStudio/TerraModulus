@@ -4,16 +4,15 @@ import com.studiohartman.jamepad.ControllerButton;
 import minicraft.core.Game;
 import minicraft.core.Renderer;
 import minicraft.core.io.InputHandler;
-import minicraft.core.io.Localization;
 import minicraft.entity.ItemHolder;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
-import minicraft.gfx.Font;
 import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
+import minicraft.item.BoundedInventory;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.StackableItem;
@@ -23,7 +22,7 @@ public class ContainerDisplay extends Display {
 	private static final int padding = 10;
 
 	private final MinicraftImage counterSheet =
-		Renderer.spriteLinker.getSheet(SpriteLinker.SpriteType.Gui, "inventory_counter");
+		Renderer.spriteManager.getSheet(SpriteManager.SpriteType.Gui, "inventory_counter");
 
 	private Player player;
 	private Chest chest;
@@ -89,30 +88,33 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, capLeft, Color.GRAY);
 			}
 
-			// RHS is not focused
-			Rectangle boundsRight = menus[1].getBounds();
-			int sizeRight = chest.getInventory().invSize();
-			int capRight = chest.getInventory().getMaxSlots();
-			// Minimized counter
-			if (sizeRight < 10) { // no worry yet, really
-				// Background
-				screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
-					0, 12, 4, 9, counterSheet);
-				// Skips the middle part as that is for more digits
-				screen.render(null, boundsRight.getLeft() + 8, boundsRight.getTop() - 1,
-					8, 12, 4, 9, counterSheet);
+			// Later when more configs can be made into chest inventory, this can be linked directly.
+			if (chest.getInventory() instanceof BoundedInventory) { // At the moment, simplify the situation
+				// RHS is not focused
+				Rectangle boundsRight = menus[1].getBounds();
+				int sizeRight = chest.getInventory().invSize();
+				int capRight = ((BoundedInventory) chest.getInventory()).getMaxSlots();
+				// Minimized counter
+				if (sizeRight < 10) { // no worry yet, really
+					// Background
+					screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
+						0, 12, 4, 9, counterSheet);
+					// Skips the middle part as that is for more digits
+					screen.render(null, boundsRight.getLeft() + 8, boundsRight.getTop() - 1,
+						8, 12, 4, 9, counterSheet);
 
-				// Digits
-				renderCounterNumber(screen, boundsRight.getLeft() + 4 + 2, boundsRight.getTop() + 1,
-					0, 4, 5, sizeRight, fadeColor(colorByHeaviness(calculateHeaviness(sizeRight, capRight), false)));
-			} else {
-				// Background
-				screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
-					0, 12, 12, 9, counterSheet);
+					// Digits
+					renderCounterNumber(screen, boundsRight.getLeft() + 4 + 2, boundsRight.getTop() + 1,
+						0, 4, 5, sizeRight, fadeColor(colorByHeaviness(calculateHeaviness(sizeRight, capRight), false)));
+				} else {
+					// Background
+					screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
+						0, 12, 12, 9, counterSheet);
 
-				// Digits
-				renderCounterNumber(screen, boundsRight.getLeft() + 4 + 2, boundsRight.getTop() + 1,
-					0, 4, 5, sizeRight, fadeColor(colorByHeaviness(calculateHeaviness(sizeRight, capRight), false)));
+					// Digits
+					renderCounterNumber(screen, boundsRight.getLeft() + 4 + 2, boundsRight.getTop() + 1,
+						0, 4, 5, sizeRight, fadeColor(colorByHeaviness(calculateHeaviness(sizeRight, capRight), false)));
+				}
 			}
 		} else { // assert selection == 1
 			// LHS is not focused
@@ -141,34 +143,36 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
 			}
 
-			// RHS is focused
-			Rectangle boundsRight = menus[1].getBounds();
-			int sizeRight = chest.getInventory().invSize();
-			int capRight = chest.getInventory().getMaxSlots();
-			// Expanded counter (background horizontally mirrored)
-			if (sizeRight < 10) {
-				// Background
-				screen.render(null, boundsRight.getLeft() - 2 + (20 - 5), boundsRight.getTop() - 3,
-					12, 12, 3, 13, counterSheet, 1);
-				// Skips the middle part as that is for more digits
-				screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
-					20, 12, 15, 13, counterSheet, 1);
+			if (chest.getInventory() instanceof BoundedInventory) { // At the moment, simplify the situation
+				// RHS is focused
+				Rectangle boundsRight = menus[1].getBounds();
+				int sizeRight = chest.getInventory().invSize();
+				int capRight = ((BoundedInventory) chest.getInventory()).getMaxSlots();
+				// Expanded counter (background horizontally mirrored)
+				if (sizeRight < 10) {
+					// Background
+					screen.render(null, boundsRight.getLeft() - 2 + (20 - 5), boundsRight.getTop() - 3,
+						12, 12, 3, 13, counterSheet, 1);
+					// Skips the middle part as that is for more digits
+					screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
+						20, 12, 15, 13, counterSheet, 1);
 
-				// Digits
-				renderCounterNumber(screen, boundsRight.getLeft() - 2 + 11, boundsRight.getTop() - 1,
-					5, 5, 7, sizeRight, colorByHeaviness(calculateHeaviness(sizeRight, capRight), true));
-				renderCounterNumber(screen, boundsRight.getLeft(), boundsRight.getTop() + 3,
-					0, 4, 5, capRight, Color.GRAY);
-			} else {
-				// Background
-				screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
-					12, 12, 23, 13, counterSheet, 1);
+					// Digits
+					renderCounterNumber(screen, boundsRight.getLeft() - 2 + 11, boundsRight.getTop() - 1,
+						5, 5, 7, sizeRight, colorByHeaviness(calculateHeaviness(sizeRight, capRight), true));
+					renderCounterNumber(screen, boundsRight.getLeft(), boundsRight.getTop() + 3,
+						0, 4, 5, capRight, Color.GRAY);
+				} else {
+					// Background
+					screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
+						12, 12, 23, 13, counterSheet, 1);
 
-				// Digits
-				renderCounterNumber(screen, boundsRight.getLeft() - 2 + 11, boundsRight.getTop() - 1,
-					5, 5, 7, sizeRight, colorByHeaviness(calculateHeaviness(sizeRight, capRight), true));
-				renderCounterNumber(screen, boundsRight.getLeft(), boundsRight.getTop() + 3,
-					0, 4, 5, capRight, Color.GRAY);
+					// Digits
+					renderCounterNumber(screen, boundsRight.getLeft() - 2 + 11, boundsRight.getTop() - 1,
+						5, 5, 7, sizeRight, colorByHeaviness(calculateHeaviness(sizeRight, capRight), true));
+					renderCounterNumber(screen, boundsRight.getLeft(), boundsRight.getTop() + 3,
+						0, 4, 5, capRight, Color.GRAY);
+				}
 			}
 		}
 	}
@@ -249,7 +253,7 @@ public class ContainerDisplay extends Display {
 		if (onScreenKeyboardMenu == null || !curMenu.isSearcherBarActive() && !onScreenKeyboardMenu.isVisible()) {
 			super.tick(input);
 
-			if (input.inputPressed("menu") || chest.isRemoved()) {
+			if (input.inputPressed("INVENTORY") || chest.isRemoved()) {
 				Game.setDisplay(null);
 				return;
 			}
@@ -267,7 +271,7 @@ public class ContainerDisplay extends Display {
 			if (!acted)
 				curMenu.tick(input);
 
-			if (input.getMappedKey("menu").isClicked() || chest.isRemoved()) {
+			if (input.getMappedKey("menu").isClicked() || input.inputPressed("EXIT") || chest.isRemoved()) {
 				Game.setDisplay(null);
 				return;
 			}

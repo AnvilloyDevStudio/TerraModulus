@@ -6,9 +6,9 @@ import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.screen.entry.ListEntry;
@@ -27,16 +27,16 @@ public abstract class Item {
 	/* Note: Most of the stuff in the class is expanded upon in StackableItem/PowerGloveItem/FurnitureItem/etc */
 
 	private final String name;
-	public LinkedSprite sprite;
+	public SpriteLink sprite;
 
-	public boolean used_pending = false; // This is for multiplayer, when an item has been used, and is pending server response as to the outcome, this is set to true so it cannot be used again unless the server responds that the item wasn't used. Which should basically replace the item anyway, soo... yeah. this never gets set back.
+// 	public boolean used_pending = false; // This is for multiplayer, when an item has been used, and is pending server response as to the outcome, this is set to true so it cannot be used again unless the server responds that the item wasn't used. Which should basically replace the item anyway, soo... yeah. this never gets set back.
 
 	protected Item(String name) {
-		sprite = SpriteLinker.missingTexture(SpriteType.Item);
+		sprite = SpriteManager.missingTexture(SpriteType.Item);
 		this.name = name;
 	}
 
-	protected Item(String name, LinkedSprite sprite) {
+	protected Item(String name, SpriteLink sprite) {
 		this.name = name;
 		this.sprite = sprite;
 	}
@@ -50,10 +50,13 @@ public abstract class Item {
 		Font.drawBackground(null, " " + dispName, screen, x + 8, y, fontColor);
 	}
 
-	/**
-	 * Determines what happens when the player interacts with a tile
-	 */
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	/** Determines what happens when the player attacks a tile */
+	public boolean attackOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+		return false;
+	}
+
+	/** Determines what happens when the player interacts with a tile */
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		return false;
 	}
 
@@ -61,13 +64,6 @@ public abstract class Item {
 	 * Returning true causes this item to be removed from the player's active item slot
 	 */
 	public boolean isDepleted() {
-		return false;
-	}
-
-	/**
-	 * Returns if the item can attack mobs or not
-	 */
-	public boolean canAttack() {
 		return false;
 	}
 
@@ -168,9 +164,5 @@ public abstract class Item {
 
 	public String getDisplayNameUndecorated() {
 		return Localization.getLocalized(getName());
-	}
-
-	public boolean interactsWithWorld() {
-		return true;
 	}
 }

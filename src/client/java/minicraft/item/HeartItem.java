@@ -4,7 +4,7 @@ import minicraft.core.Updater;
 import minicraft.core.io.Localization;
 import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,8 @@ public class HeartItem extends StackableItem {
 	protected static ArrayList<Item> getAllInstances() {
 		ArrayList<Item> items = new ArrayList<>();
 
-		items.add(new HeartItem("Obsidian Heart", new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Item, "obsidian_heart"), 5));
+		items.add(new HeartItem("Obsidian Heart",
+			new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Item, "obsidian_heart").createSpriteLink(), 5));
 
 		return items;
 	}
@@ -24,11 +25,11 @@ public class HeartItem extends StackableItem {
 	private int health; // The amount of health to increase by.
 	private int staminaCost; // The amount of stamina it costs to consume.
 
-	private HeartItem(String name, SpriteLinker.LinkedSprite sprite, int health) {
+	private HeartItem(String name, SpriteManager.SpriteLink sprite, int health) {
 		this(name, sprite, 1, health);
 	}
 
-	private HeartItem(String name, SpriteLinker.LinkedSprite sprite, int count, int health) {
+	private HeartItem(String name, SpriteManager.SpriteLink sprite, int count, int health) {
 		super(name, sprite, count);
 		this.health = health;
 		staminaCost = 7;
@@ -37,7 +38,7 @@ public class HeartItem extends StackableItem {
 	/**
 	 * What happens when the player uses the item on a tile
 	 */
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		boolean success = false;
 
 		if ((Player.baseHealth + Player.extraHealth) < Player.maxHealth) {
@@ -51,11 +52,6 @@ public class HeartItem extends StackableItem {
 		}
 
 		return super.interactOn(success);
-	}
-
-	@Override
-	public boolean interactsWithWorld() {
-		return false;
 	}
 
 	public @NotNull HeartItem copy() {

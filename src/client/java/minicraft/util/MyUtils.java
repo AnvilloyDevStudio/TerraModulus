@@ -1,5 +1,6 @@
 package minicraft.util;
 
+import org.jetbrains.annotations.Range;
 import org.jetbrains.annotations.NotNull;
 
 public final class MyUtils {
@@ -21,8 +22,9 @@ public final class MyUtils {
 		return (int) (Math.random() * (max - min + 1)) + min;
 	}
 
+	// num should be a natural number.
 	public static String plural(int num, String word) {
-		return String.format("%d %s%s", num, word, num == 1 ? "" : "s");
+		return String.format("%d %s%s", num, word, num <= 1 ? "" : "s");
 	}
 
 	/**

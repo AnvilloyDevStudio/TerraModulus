@@ -19,9 +19,8 @@ import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.gfx.Sprite;
-import minicraft.gfx.SpriteLinker;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.PotionType;
@@ -32,8 +31,10 @@ import minicraft.item.WateringCanItem;
 import minicraft.level.Level;
 import minicraft.screen.LoadingDisplay;
 import minicraft.screen.Menu;
+import minicraft.screen.AppToast;
 import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
+import minicraft.screen.Toast;
 import minicraft.screen.SignDisplayMenu;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.entry.ListEntry;
@@ -43,6 +44,7 @@ import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 import minicraft.util.Quest;
 import minicraft.util.Quest.QuestSeries;
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +67,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 public class Renderer extends Game {
 	private Renderer() {
@@ -75,7 +79,7 @@ public class Renderer extends Game {
 	static float SCALE = 3;
 
 	public static Screen screen; // Creates the main screen
-	public static SpriteLinker spriteLinker = new SpriteLinker(); // The sprite linker for sprites
+	public static final SpriteManager spriteManager = new SpriteManager(); // The sprite linker for sprites
 
 	static Canvas canvas = new Canvas();
 	private static BufferedImage image; // Creates an image to be displayed on the screen.
@@ -89,8 +93,6 @@ public class Renderer extends Game {
 	private static Ellipsis ellipsis = new SmoothEllipsis(new TickUpdater());
 
 	private static int potionRenderOffset = 0;
-
-	private static LinkedSprite hudSheet;
 
 	public static MinicraftImage loadDefaultSkinSheet() {
 		MinicraftImage skinsSheet;
@@ -115,9 +117,12 @@ public class Renderer extends Game {
 		screen = new Screen(image);
 		//lightScreen = new Screen();
 
-		hudSheet = new LinkedSprite(SpriteType.Gui, "hud");
-
 		canvas.createBufferStrategy(3);
+		appStatusBar.initialize();
+	}
+
+	private static MinicraftImage getHudSheet() {
+		return Renderer.spriteManager.getSheet(SpriteType.Gui, "hud");
 	}
 
 
@@ -136,6 +141,13 @@ public class Renderer extends Game {
 
 		if (currentDisplay != null) // Renders menu, if present.
 			currentDisplay.render(screen);
+
+		appStatusBar.render();
+
+		AppToast toast;
+		if ((toast = inAppToasts.peek()) != null) {
+			toast.render(screen);
+		}
 
 		if (!canvas.hasFocus())
 			renderFocusNagger(); // Calls the renderFocusNagger() method, which creates the "Click to Focus" message.
@@ -195,6 +207,259 @@ public class Renderer extends Game {
 		}
 	}
 
+	public static final AppStatusBar appStatusBar = new AppStatusBar();
+
+	public static class AppStatusBar {
+		private static final int DURATION_ON_UPDATE = 90; // 1.5s
+
+		public final AppStatusElement HARDWARE_ACCELERATION_STATUS = new HardwareAccelerationElementStatus();
+		public final AppStatusElement CONTROLLER_STATUS = new ControllerElementStatus();
+		public final AppStatusElement INPUT_METHOD_STATUS = new InputMethodElementStatus();
+
+		private AppStatusBar() {}
+
+		private int duration = 120; // Shows for 2 seconds initially.
+
+		private void render() {
+			if (duration == 0) return;
+			MinicraftImage sheet = spriteManager.getSheet(SpriteType.Gui, "app_status_bar"); // Obtains sheet.
+
+			// Background
+			for (int x = 0; x < 12; ++x) {
+				for (int y = 0; y < 2; ++y) {
+					screen.render(null, Screen.w - 16 * 8 + x * 8, y * 8, x, y, 0, sheet);
+				}
+			}
+
+			// Hardware Acceleration Status (width = 16)
+			HARDWARE_ACCELERATION_STATUS.render(Screen.w - 16 * 8 + 5, 2, sheet);
+			// Controller Status (width = 14)
+			CONTROLLER_STATUS.render(Screen.w - 16 * 8 + 21 - 1, 2, sheet);
+			// Input Method Status (width = 14)
+			INPUT_METHOD_STATUS.render(Screen.w - 16 * 8 + 35 - 1, 2, sheet);
+		}
+
+		void tick() {
+			if (duration > 0)
+				duration--;
+			HARDWARE_ACCELERATION_STATUS.tick();
+			CONTROLLER_STATUS.tick();
+			INPUT_METHOD_STATUS.tick();
+		}
+
+		void show(int duration) {
+			this.duration = Math.max(this.duration, duration);
+		}
+
+		private void onStatusUpdate() {
+			show(DURATION_ON_UPDATE);
+		}
+
+		private void initialize() {
+			HARDWARE_ACCELERATION_STATUS.initialize();
+		}
+
+		public abstract class AppStatusElement {
+			// width == 16 - size * 2
+			protected final int size; // 0: largest, 1: smaller, etc. (gradually)
+
+			private AppStatusElement(int size) {
+				this.size = size;
+			}
+
+			private static final int BLINK_PERIOD = 10; // 6 Hz
+
+			private int durationUpdated = 0;
+			private boolean blinking = false;
+			private int blinkTick = 0;
+
+			protected void render(int x, int y, MinicraftImage sheet) {
+				if (durationUpdated > 0) {
+					if (blinking) {
+						for (int xx = 0; xx < 2; ++xx)
+							screen.render(null, x + xx * 8, y, 10 + xx, 3 + size, 0, sheet);
+					}
+				}
+			}
+
+			protected void tick() {
+				if (durationUpdated > 0) {
+					durationUpdated--;
+					if (blinkTick == 0) {
+						blinkTick = BLINK_PERIOD;
+						blinking = !blinking;
+					} else blinkTick--;
+				}
+			}
+
+			protected void updateStatus() {
+				durationUpdated = DURATION_ON_UPDATE;
+				blinking = false;
+				blinkTick = 0;
+				onStatusUpdate();
+			}
+
+			public abstract void updateStatus(int status);
+
+			public void notifyStatusIf(UnaryOperator<@NotNull Integer> operator) {}
+
+			protected void initialize() {}
+		}
+
+		public class HardwareAccelerationElementStatus extends AppStatusElement {
+			public static final int ACCELERATION_ON = 0;
+			public static final int ACCELERATION_OFF = 1;
+
+			@MagicConstant(intValues = {ACCELERATION_ON, ACCELERATION_OFF})
+			private int status;
+
+			private HardwareAccelerationElementStatus() {
+				super(0);
+			}
+
+			@Override
+			protected void initialize() {
+				status = Boolean.parseBoolean(System.getProperty("sun.java2d.opengl")) ?
+					ACCELERATION_ON : ACCELERATION_OFF;
+			}
+
+			@Override
+			protected void render(int x, int y, MinicraftImage sheet) {
+				super.render(x, y, sheet);
+				if (status == ACCELERATION_ON) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, xx, 4, 0, sheet);
+				} else if (status == ACCELERATION_OFF) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 2 + xx, 4, 0, sheet);
+				}
+			}
+
+			@Override
+			public void updateStatus(int status) {
+				super.updateStatus();
+				this.status = status;
+			}
+		}
+
+		public class ControllerElementStatus extends AppStatusElement {
+			public static final int CONTROLLER_CONNECTED = 0; // Normal state, usable controller
+			public static final int CONTROLLER_UNAVAILABLE = 1; // Current controller becoming unusable
+			public static final int CONTROLLER_DISCONNECTED = 2; // System normal, no controller connected
+			public static final int CONTROLLER_PENDING = 3; // Temporary unusable or controller hanging/delaying
+			public static final int CONTROLLER_UNKNOWN = 4; // Unknown state or unknown controller (unsupported)
+			// TODO #614 tacking and referring this state
+			public static final int CONTROLLER_FUNCTION_UNAVAILABLE = 5; // System not available/malfunctioning
+//			public static final int CONTROLLER_UNDER_CONFIGURATION = 6; // Alternating 0 and 3 // Reserved
+
+			@MagicConstant(intValues = {CONTROLLER_CONNECTED, CONTROLLER_UNAVAILABLE, CONTROLLER_DISCONNECTED,
+				CONTROLLER_PENDING, CONTROLLER_UNKNOWN, CONTROLLER_FUNCTION_UNAVAILABLE})
+			private int status;
+
+			private ControllerElementStatus() {
+				super(1);
+				status = CONTROLLER_DISCONNECTED; // Default state
+			}
+
+			@Override
+			protected void render(int x, int y, MinicraftImage sheet) {
+				super.render(x, y, sheet);
+				if (status == CONTROLLER_CONNECTED) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, xx, 2, 0, sheet);
+				} else if (status == CONTROLLER_UNAVAILABLE) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 2 + xx, 2, 0, sheet);
+				} else if (status == CONTROLLER_DISCONNECTED) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 4 + xx, 2, 0, sheet);
+				} else if (status == CONTROLLER_PENDING) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 6 + xx, 2, 0, sheet);
+				} else if (status == CONTROLLER_UNKNOWN) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 8 + xx, 2, 0, sheet);
+				} else if (status == CONTROLLER_FUNCTION_UNAVAILABLE) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 10 + xx, 2, 0, sheet);
+				}
+			}
+
+			@Override
+			protected void tick() {
+				super.tick();
+				// Reserved
+			}
+
+			@Override
+			public void updateStatus(int status) {
+				super.updateStatus();
+				this.status = status;
+			}
+
+			@Override
+			public void notifyStatusIf(UnaryOperator<@NotNull Integer> operator) {
+				int status = this.status;
+				//noinspection MagicConstant
+				if ((status = operator.apply(status)) != this.status)
+					updateStatus(status);
+			}
+		}
+
+		public class InputMethodElementStatus extends AppStatusElement { // Only 2 methods: keyboard and controller
+			public static final int INPUT_KEYBOARD_ONLY = 0; // Only keyboard is accepted
+			public static final int INPUT_CONTROLLER_PRIOR = 1; // Both accepted, but controller is used priorly
+			public static final int INPUT_KEYBOARD_PRIOR = 2; // Both accepted, but keyboard is used priorly
+			// Controller is enabled, but only keyboard can be used as controller is currently unusable.
+			public static final int INPUT_CONTROLLER_UNUSABLE = 3;
+
+			@MagicConstant(intValues = {INPUT_KEYBOARD_ONLY, INPUT_CONTROLLER_PRIOR,
+				INPUT_KEYBOARD_PRIOR, INPUT_CONTROLLER_UNUSABLE})
+			private int status;
+
+			private InputMethodElementStatus() {
+				super(1);
+				status = INPUT_KEYBOARD_ONLY;
+			}
+
+			@Override
+			protected void render(int x, int y, MinicraftImage sheet) {
+				super.render(x, y, sheet);
+				if (status == INPUT_KEYBOARD_ONLY) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, xx, 5, 0, sheet);
+				} else if (status == INPUT_CONTROLLER_PRIOR) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 2 + xx, 5, 0, sheet);
+				} else if (status == INPUT_KEYBOARD_PRIOR) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 4 + xx, 5, 0, sheet);
+				} else if (status == INPUT_CONTROLLER_UNUSABLE) {
+					for (int xx = 0; xx < 2; ++xx)
+						screen.render(null, x + xx * 8, y, 6 + xx, 5, 0, sheet);
+				}
+			}
+
+			@Override
+			protected void tick() {
+				super.tick();
+				if (status == INPUT_CONTROLLER_PRIOR || status == INPUT_KEYBOARD_PRIOR) {
+					if (!input.isControllerInUse())
+						updateStatus(INPUT_CONTROLLER_UNUSABLE);
+				} else if (status == INPUT_CONTROLLER_UNUSABLE) {
+					if (input.isControllerInUse())
+						updateStatus(INPUT_CONTROLLER_PRIOR); // As controller was enabled.
+				}
+			}
+
+			@Override
+			public void updateStatus(int status) {
+				super.updateStatus();
+				this.status = status;
+			}
+		}
+	}
+
 
 	private static void renderLevel() {
 		Level level = levels[currentLevel];
@@ -209,7 +474,7 @@ public class Renderer extends Game {
 		if (xScroll > (level.w << 4) - Screen.w) xScroll = (level.w << 4) - Screen.w; // ...Right border.
 		if (yScroll > (level.h << 4) - Screen.h) yScroll = (level.h << 4) - Screen.h; // ...Bottom border.
 		if (currentLevel > 3) { // If the current level is higher than 3 (which only the sky level (and dungeon) is)
-			MinicraftImage cloud = spriteLinker.getSheet(SpriteType.Tile, "cloud_background");
+			MinicraftImage cloud = spriteManager.getSheet(SpriteType.Tile, "cloud_background");
 			for (int y = 0; y < 28; y++)
 				for (int x = 0; x < 48; x++) {
 					// Creates the background for the sky (and dungeon) level:
@@ -434,7 +699,7 @@ public class Renderer extends Game {
 					type = item.type;
 					level = item.level;
 					dur = item.dur;
-					percentage = dur * 100 / (type.durability * (level + 1));
+					percentage = dur * 100 / item.MAX_DUR;
 				}
 
 				@Override
@@ -652,6 +917,7 @@ public class Renderer extends Game {
 	 * Renders the main game GUI (hearts, Stamina bolts, name of the current item, etc.)
 	 */
 	private static void renderGui() {
+		MinicraftImage hudSheet = getHudSheet();
 		// Item held rendering frame
 		if (player.activeItem != null) {
 			for (int x = 0; x < 16; ++x)
@@ -684,18 +950,18 @@ public class Renderer extends Game {
 		// NOTIFICATIONS
 
 		Updater.updateNoteTick = false;
-		if (permStatus.size() == 0 && notifications.size() > 0) {
+		if (permStatus.size() == 0 && inGameNotifications.size() > 0) {
 			Updater.updateNoteTick = true;
-			if (notifications.size() > 3) { // Only show 3 notifs max at one time; erase old notifs.
-				notifications = notifications.subList(notifications.size() - 3, notifications.size());
+			if (inGameNotifications.size() > 3) { // Only show 3 notifs max at one time; erase old notifs.
+				inGameNotifications = inGameNotifications.subList(inGameNotifications.size() - 3, inGameNotifications.size());
 			}
 
 			if (Updater.notetick > 180) { // Display time per notification.
-				notifications.remove(0);
+				inGameNotifications.remove(0);
 				Updater.notetick = 0;
 			}
 			List<String> print = new ArrayList<>();
-			for (DisplayString n : notifications) {
+			for (DisplayString n : inGameNotifications) {
 				print.addAll(Arrays.asList(Font.getLines(n.toString(), Screen.w, Screen.h, 0)));
 			}
 
@@ -736,19 +1002,19 @@ public class Renderer extends Game {
 		}
 
 		// This renders the potions overlay
-		if (player.showpotioneffects && player.potioneffects.size() > 0) {
+		if (player.showPotionEffects && player.potioneffects.size() > 0) {
 
 			@SuppressWarnings("unchecked")
 			Map.Entry<PotionType, Integer>[] effects = player.potioneffects.entrySet().toArray(new Map.Entry[0]);
 
 			// The key is potion type, value is remaining potion duration.
-			if (!player.simpPotionEffects) {
+			if (!player.simplifyPotionEffects) {
 				for (int i = 0; i < effects.length; i++) {
 					PotionType pType = effects[i].getKey();
 					int pTime = effects[i].getValue() / Updater.normSpeed;
 					int minutes = pTime / 60;
 					int seconds = pTime % 60;
-					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("potionEffects")), screen, 180, 9);
+					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("POTION-EFFECTS")), screen, 180, 9);
 					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.potion_dur", pType, minutes, seconds), screen, 180, 17 + i * Font.textHeight() + potionRenderOffset, pType.dispColor);
 				}
 			} else {
@@ -764,16 +1030,16 @@ public class Renderer extends Game {
 			for (int i = 1; i <= 30; i++) {
 				// Renders your current red default hearts, golden hearts for 20 HP, obsidian hearts for 30 HP, or black hearts for damaged health.
 				if (i < 11) {
-					screen.render(null, (i - 1) * 8, Screen.h - 8, 0, 1, 0, hudSheet.getSheet()); // Empty Hearts
+					screen.render(null, (i - 1) * 8, Screen.h - 8, 0, 1, 0, hudSheet); // Empty Hearts
 				}
 				if (i < player.health + 1 && i < 11) {
-					screen.render(null, (i - 1) * 8, Screen.h - 8, 0, 0, 0, hudSheet.getSheet());  // Red Hearts
+					screen.render(null, (i - 1) * 8, Screen.h - 8, 0, 0, 0, hudSheet);  // Red Hearts
 				}
 				if (i < player.health + 1 && i < 21 && i >= 11) {
-					screen.render(null, (i - 11) * 8, Screen.h - 8, 0, 2, 0, hudSheet.getSheet()); // Yellow Hearts
+					screen.render(null, (i - 11) * 8, Screen.h - 8, 0, 2, 0, hudSheet); // Yellow Hearts
 				}
 				if (i < player.health + 1 && i >= 21) {
-					screen.render(null, (i - 21) * 8, Screen.h - 8, 0, 3, 0, hudSheet.getSheet()); // Obsidian Hearts
+					screen.render(null, (i - 21) * 8, Screen.h - 8, 0, 3, 0, hudSheet); // Obsidian Hearts
 				}
 			}
 			for (int i = 0; i < Player.maxStat; i++) {
@@ -787,24 +1053,24 @@ public class Renderer extends Game {
 				if (player.staminaRechargeDelay > 0) {
 					// Creates the white/gray blinking effect when you run out of stamina.
 					if (player.staminaRechargeDelay / 4 % 2 == 0) {
-						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 2, 0, hudSheet.getSheet());
+						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 2, 0, hudSheet);
 					} else {
-						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 1, 0, hudSheet.getSheet());
+						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 1, 0, hudSheet);
 					}
 				} else {
 					// Renders your current stamina, and uncharged gray stamina.
 					if (i < player.stamina) {
-						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 0, 0, hudSheet.getSheet());
+						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 0, 0, hudSheet);
 					} else {
-						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 1, 0, hudSheet.getSheet());
+						screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 8, 1, 1, 0, hudSheet);
 					}
 				}
 
 				// Renders hunger
 				if (i < player.hunger) {
-					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 0, 0, hudSheet.getSheet());
+					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 0, 0, hudSheet);
 				} else {
-					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 1, 0, hudSheet.getSheet());
+					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 1, 0, hudSheet);
 				}
 			}
 		}
@@ -826,6 +1092,11 @@ public class Renderer extends Game {
 		renderQuestsDisplay();
 		if (signDisplayMenu != null) signDisplayMenu.render(screen);
 		renderDebugInfo();
+
+		Toast toast;
+		if ((toast = inGameToasts.peek()) != null) {
+			toast.render(screen);
+		}
 	}
 
 	public static void renderBossbar(int length, String title) {
@@ -839,21 +1110,22 @@ public class Renderer extends Game {
 		int INACTIVE_BOSSBAR = 4; // sprite x position
 		int ACTIVE_BOSSBAR = 5; // sprite x position
 
+		MinicraftImage hudSheet = getHudSheet();
 
-		screen.render(null, x + (max_bar_length * 2), y, 0, INACTIVE_BOSSBAR, 1, hudSheet.getSheet()); // left corner
+		screen.render(null, x + (max_bar_length * 2), y, 0, INACTIVE_BOSSBAR, 1, hudSheet); // left corner
 
 		// The middle
 		for (int bx = 0; bx < max_bar_length; bx++) {
 			for (int by = 0; by < 1; by++) {
-				screen.render(null, x + bx * 2, y + by * 8, 3, INACTIVE_BOSSBAR, 0, hudSheet.getSheet());
+				screen.render(null, x + bx * 2, y + by * 8, 3, INACTIVE_BOSSBAR, 0, hudSheet);
 			}
 		}
 
-		screen.render(null, x - 5, y, 0, ACTIVE_BOSSBAR, 0, hudSheet.getSheet()); // right corner
+		screen.render(null, x - 5, y, 0, ACTIVE_BOSSBAR, 0, hudSheet); // right corner
 
 		for (int bx = 0; bx < bar_length; bx++) {
 			for (int by = 0; by < 1; by++) {
-				screen.render(null, x + bx * 2, y + by * 8, 3, ACTIVE_BOSSBAR, 0, hudSheet.getSheet());
+				screen.render(null, x + bx * 2, y + by * 8, 3, ACTIVE_BOSSBAR, 0, hudSheet);
 			}
 		}
 
@@ -957,26 +1229,27 @@ public class Renderer extends Game {
 		int yy = (HEIGHT - 8) / 2; // The height of the box
 		int w = msg.length(); // Length of message in characters.
 		int h = 1;
+		MinicraftImage hudSheet = getHudSheet();
 
 		// Renders the four corners of the box
-		screen.render(null, xx - 8, yy - 8, 0, 6, 0, hudSheet.getSheet());
-		screen.render(null, xx + w * 8, yy - 8, 0, 6, 1, hudSheet.getSheet());
-		screen.render(null, xx - 8, yy + 8, 0, 6, 2, hudSheet.getSheet());
-		screen.render(null, xx + w * 8, yy + 8, 0, 6, 3, hudSheet.getSheet());
+		screen.render(null, xx - 8, yy - 8, 0, 6, 0, hudSheet);
+		screen.render(null, xx + w * 8, yy - 8, 0, 6, 1, hudSheet);
+		screen.render(null, xx - 8, yy + 8, 0, 6, 2, hudSheet);
+		screen.render(null, xx + w * 8, yy + 8, 0, 6, 3, hudSheet);
 
 		// Renders each part of the box...
 		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy - 8, 1, 6, 0, hudSheet.getSheet()); // ...Top part
-			screen.render(null, xx + x * 8, yy + 8, 1, 6, 2, hudSheet.getSheet()); // ...Bottom part
+			screen.render(null, xx + x * 8, yy - 8, 1, 6, 0, hudSheet); // ...Top part
+			screen.render(null, xx + x * 8, yy + 8, 1, 6, 2, hudSheet); // ...Bottom part
 		}
 		for (int y = 0; y < h; y++) {
-			screen.render(null, xx - 8, yy + y * 8, 2, 6, 0, hudSheet.getSheet()); // ...Left part
-			screen.render(null, xx + w * 8, yy + y * 8, 2, 6, 1, hudSheet.getSheet()); // ...Right part
+			screen.render(null, xx - 8, yy + y * 8, 2, 6, 0, hudSheet); // ...Left part
+			screen.render(null, xx + w * 8, yy + y * 8, 2, 6, 1, hudSheet); // ...Right part
 		}
 
 		// The middle
 		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy, 3, 6, 0, hudSheet.getSheet());
+			screen.render(null, xx + x * 8, yy, 3, 6, 0, hudSheet);
 		}
 
 		// Renders the focus nagger text with a flash effect...

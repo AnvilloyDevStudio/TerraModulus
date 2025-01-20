@@ -8,7 +8,7 @@ import minicraft.util.DisplayString;
 
 import java.util.Arrays;
 
-public class ArrayEntry<T> extends ListEntry {
+public class ArrayEntry<T> extends ListEntry implements UserMutable {
 
 	private final DisplayString label;
 	private T[] options;
@@ -144,7 +144,8 @@ public class ArrayEntry<T> extends ListEntry {
 		return Localization.getLocalized("minicraft.display.entry", label, getLocalizedOption(options[selection]));
 	}
 
-	public void setChangeAction(ChangeListener l) {
+	@Override
+	public void setChangeListener(ChangeListener l) {
 		this.changeAction = l;
 		if (l != null)
 			l.onChange(getValue());

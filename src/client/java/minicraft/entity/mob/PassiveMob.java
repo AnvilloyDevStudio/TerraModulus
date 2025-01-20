@@ -3,11 +3,15 @@ package minicraft.entity.mob;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Settings;
+import minicraft.entity.Direction;
+import minicraft.entity.Entity;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.item.Item;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
+import org.jetbrains.annotations.Nullable;
 
 public class PassiveMob extends MobAi {
 	protected int color;
@@ -17,7 +21,7 @@ public class PassiveMob extends MobAi {
 	 * healthFactor = 3.
 	 * @param sprites The mob's sprites.
 	 */
-	public PassiveMob(LinkedSprite[][] sprites) {
+	public PassiveMob(SpriteLink[][] sprites) {
 		this(sprites, 3);
 	}
 
@@ -27,7 +31,7 @@ public class PassiveMob extends MobAi {
 	 * @param healthFactor Determines the mobs health. Will be multiplied by the difficulty
 	 * 	and then added with 5.
 	 */
-	public PassiveMob(LinkedSprite[][] sprites, int healthFactor) {
+	public PassiveMob(SpriteLink[][] sprites, int healthFactor) {
 		super(sprites, 5 + healthFactor * Settings.getIdx("diff"), 5 * 60 * Updater.normSpeed, 45, 40);
 	}
 
@@ -40,6 +44,21 @@ public class PassiveMob extends MobAi {
 	@Override
 	public void render(Screen screen) {
 		super.render(screen);
+	}
+
+	@Override
+	public boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir) {
+		return true;
+	}
+
+	@Override
+	public boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir) {
+		return true;
+	}
+
+	@Override
+	public boolean isUsable() {
+		return false;
 	}
 
 	@Override
