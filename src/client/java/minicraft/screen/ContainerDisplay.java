@@ -52,7 +52,6 @@ public class ContainerDisplay extends Display {
 
 		if (oldSel == newSel)
 			return; // this also serves as a protection against access to menus[0] when such may not exist.
-
 		int shift = 0;
 
 		if (newSel == 0) shift = padding - menus[0].getBounds().getLeft();
@@ -266,7 +265,7 @@ public class ContainerDisplay extends Display {
 		if (onScreenKeyboardMenu == null || !curMenu.isSearcherBarActive() && !onScreenKeyboardMenu.isVisible()) {
 			super.tick(input);
 
-			if (input.inputPressed("menu") || chest.isRemoved()) {
+			if (input.inputPressed("INVENTORY") || chest.isRemoved()) {
 				Game.setDisplay(null);
 				return;
 			}
@@ -284,7 +283,7 @@ public class ContainerDisplay extends Display {
 			if (!acted)
 				curMenu.tick(input);
 
-			if (input.getMappedKey("menu").isClicked() || chest.isRemoved()) {
+			if (input.getMappedKey("menu").isClicked() || input.inputPressed("EXIT") || chest.isRemoved()) {
 				Game.setDisplay(null);
 				return;
 			}
@@ -299,7 +298,7 @@ public class ContainerDisplay extends Display {
 		}
 
 		if (mainMethod || !onScreenKeyboardMenu.isVisible())
-			if (input.inputPressed("attack")) {
+			if (input.inputPressed("SELECT")) {
 				if (curMenu.getEntries().length == 0) return;
 
 				// switch inventories

@@ -7,6 +7,14 @@ import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.item.Item;
+import minicraft.level.Level;
+import minicraft.level.tile.Tile;
+import minicraft.util.DamageSource;
+import minicraft.util.Logging;
+import org.jetbrains.annotations.Nullable;
+
+import javax.security.auth.DestroyFailedException;
 
 import java.util.List;
 
@@ -82,8 +90,8 @@ public class Arrow extends Entity implements ClientTickable {
 			if (hit instanceof Mob && hit != owner) {
 				Mob mob = (Mob) hit;
 				damage += (hit instanceof Player ? 0 : 3) + (criticalHit ? 0 : 1); // Extra damage bonus.
-				damage = mob.calculateEntityDamage(this, damage);
-				mob.hurt(owner, damage, dir); //normal hurting to other mobs
+				mob.hurt(new DamageSource(DamageSource.DamageType.ARROW, owner, this, null),
+					dir, damage); // normal hurting to other mobs
 			}
 
 			if (!level.getTile(x >> 4, y >> 4).mayPass(level, x >> 4, y >> 4, this)
@@ -95,6 +103,29 @@ public class Arrow extends Entity implements ClientTickable {
 	}
 
 	public boolean isSolid() {
+		return false;
+	}
+
+	@Override
+	public boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir) {
+		return false;
+	}
+
+	@Override
+	public boolean isUsable() {
+		return false;
+	}
+
+	@Override
+	protected void handleDamage(DamageSource source, Direction attackDir, int damage) {}
+
+	@Override
+	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
 		return false;
 	}
 

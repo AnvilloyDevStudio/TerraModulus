@@ -30,8 +30,13 @@ public class CropTile extends FarmTile {
 	}
 
 	@Override
-	public boolean hurt(Level level, int x, int y, Mob source, int dmg, Direction attackDir) {
+	protected void handleDamage(Level level, int x, int y, Entity source, @Nullable Item item, int dmg) {
 		harvest(level, x, y, source);
+	}
+
+	@Override
+	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
+		handleDamage(level, x, y, source, item, damage);
 		return true;
 	}
 
@@ -103,7 +108,7 @@ public class CropTile extends FarmTile {
 		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "glint").createSpriteLink();
 
 	@Override
-	public boolean interact(Level level, int xt, int yt, Player player, Item item, Direction attackDir) {
+	public boolean use(Level level, int xt, int yt, Player player, @Nullable Item item, Direction attackDir) {
 		if (item instanceof StackableItem && item.getName().equalsIgnoreCase("Fertilizer")) {
 			((StackableItem) item).count--;
 			Random random = new Random();
@@ -128,7 +133,7 @@ public class CropTile extends FarmTile {
 			return true;
 		}
 
-		return super.interact(level, xt, yt, player, item, attackDir);
+		return false;
 	}
 
 	/**
