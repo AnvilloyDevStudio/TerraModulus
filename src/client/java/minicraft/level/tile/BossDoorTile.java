@@ -27,7 +27,7 @@ public class BossDoorTile extends DoorTile {
 				ToolItem tool = (ToolItem) item;
 				if (tool.type == type.getRequiredTool()) {
 					if (((Player) source).payStamina(1)) {
-						Game.notifications.add(Localization.getLocalized(doorMsg));
+						Game.inGameNotifications.add(Localization.getLocalized(doorMsg));
 						Sound.play("monsterhurt");
 						return true;
 					}
@@ -43,7 +43,7 @@ public class BossDoorTile extends DoorTile {
 	@Override
 	public boolean use(Level level, int xt, int yt, Player player, @Nullable Item item, Direction attackDir) {
 		if (ObsidianKnight.active && !Game.isMode("minicraft.settings.mode.creative")) {
-			Game.notifications.add(doorMsg);
+			Game.inGameNotifications.add(doorMsg);
 			return true;
 		}
 

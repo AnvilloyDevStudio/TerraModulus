@@ -77,7 +77,7 @@ public class WallTile extends Tile {
 						return true;
 					}
 				} else {
-					Game.notifications.add(obrickMsg);
+					Game.inGameNotifications.add(obrickMsg);
 				}
 			}
 		}

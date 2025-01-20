@@ -13,7 +13,9 @@ import minicraft.screen.DebugPanelDisplay;
 import minicraft.screen.Display;
 import minicraft.screen.EndGameDisplay;
 import minicraft.screen.LevelTransitionDisplay;
+import minicraft.screen.AppToast;
 import minicraft.screen.PlayerDeathDisplay;
+import minicraft.screen.Toast;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldSelectDisplay;
 import minicraft.util.AdvancementElement;
@@ -171,7 +173,20 @@ public class Updater extends Game {
 			scoreTime--;
 		}
 
+		Renderer.appStatusBar.tick();
+		if (input.getMappedKey("BACK_QUOTE").isDown())
+			Renderer.appStatusBar.show(1);
 		if (updateNoteTick) notetick++;
+		AppToast appToast;
+		if ((appToast = inAppToasts.peek()) != null) {
+			boolean refresh = true;
+			if (appToast.isExpired()) {
+				inAppToasts.pop(); // Removes
+				refresh = (appToast = inAppToasts.peek()) != null; // Tries getting new
+			}
+
+			if (refresh) appToast.tick();
+		}
 
 		Sound.tick();
 
@@ -209,6 +224,16 @@ public class Updater extends Game {
 				}
 
 				player.tick(); // Ticks the player when there's no menu.
+				Toast gameToast;
+				if ((gameToast = inGameToasts.peek()) != null) {
+					boolean refresh = true;
+					if (gameToast.isExpired()) {
+						inGameToasts.pop(); // Removes
+						refresh = (gameToast = inGameToasts.peek()) != null; // Tries getting new
+					}
+
+					if (refresh) gameToast.tick();
+				}
 
 				if (level != null) {
 					level.tick(true);
@@ -271,7 +296,7 @@ public class Updater extends Game {
 
 	public static void notifyAll(String msg, int notetick) {
 		msg = Localization.getLocalized(msg);
-		notifications.add(msg);
+		inGameNotifications.add(msg);
 		Updater.notetick = notetick;
 	}
 }
