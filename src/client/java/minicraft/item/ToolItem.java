@@ -38,6 +38,7 @@ public class ToolItem extends Item {
 	private Random random = new Random();
 
 	public static final String[] LEVEL_NAMES = { "Wood", "Rock", "Iron", "Gold", "Gem" }; // The names of the different levels. A later level means a stronger tool.
+	public final int MAX_DUR;
 
 	public ToolType type; // Type of tool (Sword, hoe, axe, pickaxe, shovel)
 	public int level; // Level of said tool
@@ -60,14 +61,14 @@ public class ToolItem extends Item {
 		this.level = level;
 		this.damage = level * 5 + 10;
 
-		dur = type.durability * (level + 1); // Initial durability fetched from the ToolType
+		dur = MAX_DUR = type.durability * (level + 1); // Initial durability fetched from the ToolType
 	}
 
 	public ToolItem(ToolType type) {
 		super(type.name(), new SpriteLink.SpriteLinkBuilder(SpriteType.Item, getSpriteName(type.toString(), "")).createSpriteLink());
 
 		this.type = type;
-		dur = type.durability;
+		dur = MAX_DUR = type.durability;
 	}
 
 	/**
