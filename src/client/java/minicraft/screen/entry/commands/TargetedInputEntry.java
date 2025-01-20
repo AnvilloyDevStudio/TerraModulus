@@ -1,6 +1,7 @@
 package minicraft.screen.entry.commands;
 
 import minicraft.screen.entry.InputEntry;
+import minicraft.util.DisplayString;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,7 +52,7 @@ public class TargetedInputEntry<T> extends InputEntry {
 	}
 
 	public TargetedInputEntry(String prompt, @RegExp String regex, @NotNull TargetedValidator<T> validator, @NotNull String initValue) {
-		super(prompt, regex, 0, initValue); // maxLen is not important
+		super(new DisplayString.StaticString(prompt), regex, 0, initValue); // maxLen is not important
 		this.validator = validator;
 	}
 

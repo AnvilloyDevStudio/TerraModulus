@@ -51,6 +51,7 @@ import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectEntry;
 import minicraft.screen.entry.StringEntry;
 import minicraft.screen.entry.UserMutable;
+import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -106,7 +107,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 	private final TargetSelectorConfigDisplay configDisplay;
 
 	public TargetSelectorEntry(Player player) {
-		super("Target", true, false, TargetScope.Player, TargetScope.Entity);
+		super(new DisplayString.StaticString("Target"), false, TargetScope.Player, TargetScope.Entity);
 		configDisplay = new TargetSelectorConfigDisplay(player);
 	}
 
@@ -204,7 +205,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 			this.defaultX = x;
 			this.defaultY = y;
 			display = new PositionArgument.PositionSelectDisplay(level);
-			entry = new SelectEntry("Position", () -> Game.setDisplay(display), false) {
+			entry = new SelectEntry(new DisplayString.StaticString("Position"), () -> Game.setDisplay(display)) {
 
 				@Override
 				public String toString() {
@@ -227,12 +228,12 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 			private final LevelCoordinatesOption positionOption; // If level is specified, the position is also used.
 
 			public PositionSelectDisplay(Level level) {
-				specifyOption = new BooleanEntry("Specify", false);
+				specifyOption = new BooleanEntry(new DisplayString.StaticString("Specify"), false);
 				levelOption = new LevelSelectionOption();
 				positionOption = new LevelCoordinatesOption(level.w, level.h, false);
 				builder = new Menu.Builder(true, 2, RelPos.CENTER, levelOption, positionOption)
 					.setPositioning(new Point(Screen.w / 2, Screen.h / 2), RelPos.CENTER)
-					.setTitle("Position");
+					.setTitle(new DisplayString.StaticString("Position"));
 				menus = new Menu[1];
 				ChangeListener l = v -> onUpdate();
 				specifyOption.setChangeListener(l);
@@ -352,7 +353,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 
 		public FilterArgument() {
 			display = new FilterArgument.FilterSettingDisplay();
-			entry = new SelectEntry("Filter", () -> Game.setDisplay(display), false) {
+			entry = new SelectEntry(new DisplayString.StaticString("Filter"), () -> Game.setDisplay(display)) {
 				@Override
 				public String toString() {
 					long v;
@@ -364,13 +365,13 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 		}
 
 		private class FilterSettingDisplay extends Display {
-			private final StringEntry placeholderEntry = new StringEntry("No Filter Selected", Color.GRAY, false);
+			private final StringEntry placeholderEntry = new StringEntry(new DisplayString.StaticString("No Filter Selected"), Color.GRAY);
 			private final SelectEntry actionEntry;
 			private final Menu.Builder builder;
 			private final HashMap<ListEntry, FilterOption> entryMap = new HashMap<>(); // A temporary list storing entry relations.
 
 			public FilterSettingDisplay() {
-				actionEntry = new SelectEntry("Add Filter",
+				actionEntry = new SelectEntry(new DisplayString.StaticString("Add Filter"),
 					() -> Game.setDisplay(new ListItemSelectDisplay<>(FilterArgument.FilterOption.values(),
 						new ListItemSelectDisplay.ListItemHandler<>(o -> o.name, o -> !argumentOptions.containsKey(o)), this::addFilter))) {
 					@Override
@@ -431,12 +432,12 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 				}
 
 				class DistanceOptionEntry extends InputEntry implements FilterArgument.FilterOption.FilterOptionEntry {
-					private final InputEntry rangedInput = new InputEntry("", regexNumber, 0);
+					private final InputEntry rangedInput = new InputEntry(new DisplayString.StaticString(""), regexNumber, 0);
 					private int selection = 0; // Maybe this should be boolean?
 					private boolean ranged = false;
 
 					public DistanceOptionEntry() {
-						super("Distance", regexNumber, 0);
+						super(new DisplayString.StaticString("Distance"), regexNumber, 0);
 					}
 
 					@Override
@@ -629,7 +630,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 
 				class RotationOptionEntry extends ArrayEntry<Direction> implements FilterArgument.FilterOption.FilterOptionEntry {
 					public RotationOptionEntry() {
-						super("Rotation", true, false,
+						super(new DisplayString.StaticString("Rotation"), false,
 							Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT);
 					}
 
@@ -657,7 +658,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 
 				class NameOptionEntry extends InputEntry implements FilterArgument.FilterOption.FilterOptionEntry {
 					public NameOptionEntry() {
-						super("Name");
+						super(new DisplayString.StaticString("Name"));
 					}
 
 					@Override
@@ -955,9 +956,9 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 		}
 
 		public CollectionArgument() {
-			limitEnabled = new BooleanEntry("Enable Limit", false);
-			sortEnabled = new BooleanEntry("Enable Sort", false);
-			limitEntry = new InputEntry("Limit", InputEntry.regexNumber, 0) {
+			limitEnabled = new BooleanEntry(new DisplayString.StaticString("Enable Limit"), false);
+			sortEnabled = new BooleanEntry(new DisplayString.StaticString("Enable Sort"), false);
+			limitEntry = new InputEntry(new DisplayString.StaticString("Limit"), InputEntry.regexNumber, 0) {
 				@Override
 				public boolean isValid() {
 					try {
@@ -967,7 +968,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 					}
 				}
 			};
-			sortEntry = new ArrayEntry<>("Sort", true, false, CollectionArgument.SortType.values());
+			sortEntry = new ArrayEntry<>(new DisplayString.StaticString("Sort"), false, CollectionArgument.SortType.values());
 			Menu.Builder builder = new Menu.Builder(true, 2, RelPos.CENTER)
 				.setPositioning(new Point(Screen.w / 2, Screen.h / 2), RelPos.CENTER);
 			display = new Display() {
@@ -993,7 +994,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 					if (listener != null) listener.onChange(null);
 				}
 			};
-			entry = new SelectEntry("Order and Bound", () -> Game.setDisplay(display), false) {
+			entry = new SelectEntry(new DisplayString.StaticString("Order and Bound"), () -> Game.setDisplay(display)) {
 				@Override
 				public String toString() {
 					return super.toString() + (isAllValid() ? "" : " (Bound " + UPV_STRING + ")");

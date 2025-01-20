@@ -552,7 +552,7 @@ public class Renderer extends Game {
 				public void renderBackground(Screen screen, int x, int y) {
 					for (int xx = 0; xx < 15; ++xx)
 						for (int yy = 0; yy < 2; ++yy)
-							screen.render(null, x + xx * 8, y + yy * 8, xx, 10 + yy, 0, hudSheet.getSheet());
+							screen.render(null, x + xx * 8, y + yy * 8, xx, 10 + yy, 0, getHudSheet());
 				}
 
 				@Override
@@ -591,9 +591,9 @@ public class Renderer extends Game {
 					Font.draw(amountStr, screen, NAME_X_CORNER, Y_CORNER);
 					if (amount > 999) { // true then length must be 3
 						screen.render(null, 120, Screen.h - 2 * 8,
-							15, 10, 0, hudSheet.getSheet());
+							15, 10, 0, getHudSheet());
 						screen.render(null, 120, Screen.h - 8,
-							15, 11, 0, hudSheet.getSheet());
+							15, 11, 0, getHudSheet());
 					}
 				}
 
@@ -603,11 +603,11 @@ public class Renderer extends Game {
 					for (int xx = 0; xx < 5; ++xx)
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, x + xx * 8, y + yy * 8,
-								xx, 10 + i * 2 + yy, 0, hudSheet.getSheet());
+								xx, 10 + i * 2 + yy, 0, getHudSheet());
 					for (int xx = 5; xx < 15; ++xx)
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, x + xx * 8, y + yy * 8,
-								xx, 10 + yy, 0, hudSheet.getSheet());
+								xx, 10 + yy, 0, getHudSheet());
 				}
 
 				@Override
@@ -669,19 +669,19 @@ public class Renderer extends Game {
 //					for (int xx = 0; xx < 6; ++xx)
 //						for (int yy = 0; yy < 2; ++yy)
 //							screen.render(null, x + xx * 8, y + yy * 8,
-//								5 + xx, 12 + yy, 0, hudSheet.getSheet());
+//								5 + xx, 12 + yy, 0, getHudSheet());
 //					for (int xx = 6; xx < 15; ++xx)
 //						for (int yy = 0; yy < 2; ++yy)
 //							screen.render(null, x + xx * 8, y + yy * 8,
-//								xx, 10 + yy, 0, hudSheet.getSheet());
+//								xx, 10 + yy, 0, getHudSheet());
 					for (int xx = 0; xx < 4; ++xx)
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, x + xx * 8, y + yy * 8,
-								5 + xx, 14 + yy, 0, hudSheet.getSheet());
+								5 + xx, 14 + yy, 0, getHudSheet());
 					for (int xx = 4; xx < 15; ++xx)
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, x + xx * 8, y + yy * 8,
-								xx, 10 + yy, 0, hudSheet.getSheet());
+								xx, 10 + yy, 0, getHudSheet());
 				}
 
 				@Override
@@ -718,19 +718,19 @@ public class Renderer extends Game {
 						for (int xx = 0; xx < 3; ++xx)
 							for (int yy = 0; yy < 2; ++yy)
 								screen.render(null, 88 + xx * 8, Screen.h - 3 * 8 + yy * 8,
-									9 + xx, 14 + yy, 0, hudSheet.getSheet());
+									9 + xx, 14 + yy, 0, getHudSheet());
 						for (int i = 0; i < s.length() - 1; ++i)
 							for (int yy = 0; yy < 2; ++yy)
 								screen.render(null, 112 + i * 8, Screen.h - 3 * 8 + yy * 8,
-									12, 14 + yy, 0, hudSheet.getSheet());
+									12, 14 + yy, 0, getHudSheet());
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, 112 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								13, 14 + yy, 0, hudSheet.getSheet());
+								13, 14 + yy, 0, getHudSheet());
 						for (int yy = 0; yy < 2; ++yy)
 							screen.render(null, 120 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								14, 14 + yy, 0, hudSheet.getSheet());
+								14, 14 + yy, 0, getHudSheet());
 						// Displays the arrow icon
-						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, hudSheet.getSheet());
+						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, getHudSheet());
 						Font.draw(s, screen, 109, Screen.h - 3 * 8 + 4);
 					}
 				}
@@ -922,12 +922,12 @@ public class Renderer extends Game {
 		if (player.activeItem != null) {
 			for (int x = 0; x < 16; ++x)
 				for (int y = 0; y < 2; ++y)
-					screen.render(null, 80 + x * 8, Screen.h - 2 * 8 + y * 8, x, 7 + y, 0, hudSheet.getSheet());
+					screen.render(null, 80 + x * 8, Screen.h - 2 * 8 + y * 8, x, 7 + y, 0, hudSheet);
 			// Shows active item sprite and name in bottom toolbar.
 			itemHotBarRenderer.render();
 		} else {
 			for (int x = 0; x < 16; ++x)
-				screen.render(null, 80 + x * 8, Screen.h - 8, x, 9, 0, hudSheet.getSheet());
+				screen.render(null, 80 + x * 8, Screen.h - 8, x, 9, 0, hudSheet);
 		}
 
 

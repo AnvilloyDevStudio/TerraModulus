@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
 
 public class OptionsWorldDisplay extends Display {
 	private final boolean prevHwaValue = (boolean) Settings.get("hwa");
-	private final BooleanEntry controllersEntry = new BooleanEntry("minicraft.display.options_display.controller",
+	private final BooleanEntry controllersEntry = new BooleanEntry(Localization.getStaticDisplay("minicraft.display.options_display.controller"),
 		Game.input.isControllerEnabled());
 
 	public OptionsWorldDisplay() {

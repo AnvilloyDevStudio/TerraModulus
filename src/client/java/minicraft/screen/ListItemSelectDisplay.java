@@ -4,6 +4,7 @@ import minicraft.core.Game;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.screen.entry.SelectEntry;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,12 +62,12 @@ public class ListItemSelectDisplay<T> extends Display {
 				.setPositioning(new Point(Screen.w / 2, Screen.h / 2), RelPos.CENTER)
 				.setEntries((itemHandler.itemFilter != null && itemHandler.removeFiltered ?
 					list.stream().filter(itemHandler.itemFilter) : list.stream()).map(e -> {
-					SelectEntry entry = new SelectEntry(itemHandler.stringifier.apply(e), () -> onSelect(e), false);
+					SelectEntry entry = new SelectEntry(new DisplayString.StaticString(itemHandler.stringifier.apply(e)), () -> onSelect(e));
 					if (itemHandler.itemFilter != null && !itemHandler.removeFiltered && !itemHandler.itemFilter.test(e))
 						entry.setSelectable(false);
 					return entry;
 				}).collect(Collectors.toList()))
-				.setTitle("Select")
+				.setTitle(new DisplayString.StaticString("Select"))
 				.setDisplayLength(Math.min(list.size(), 10))
 				.setSearcherBar(true)
 				.createMenu()

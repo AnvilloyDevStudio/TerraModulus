@@ -5,6 +5,7 @@ import minicraft.core.io.Localization;
 import minicraft.entity.furniture.RepairBench;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
+import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteManager;
@@ -18,6 +19,7 @@ import minicraft.item.ToolType;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectEntry;
 import minicraft.screen.entry.SlotEntry;
+import minicraft.util.DisplayString;
 import minicraft.util.MyUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,10 +37,12 @@ public class RepairBenchDisplay extends Display {
 	private final Menu.Builder repairBenchMenuBuilder = new Menu.Builder(true, 0, RelPos.LEFT)
 		.setPositioning(new Point(9, 9), RelPos.BOTTOM_RIGHT)
 		.setSelectable(true)
-		.setTitle("Repair Bench");
+		.setTitle(new DisplayString.StaticString("Repair Bench"))
+		.setSize(Screen.w / 2 - 10 - 10 / 2, // Occupy left half
+			(2 + 9) * MinicraftImage.boxWidth);
 
 	public RepairBenchDisplay(RepairBench repairBench, Player player) {
-		menus = new Menu[] { new InventoryMenu(player, player.getInventory(), "minicraft.display.menus.inventory", RelPos.RIGHT, this::update) };
+		menus = new Menu[] { new InventoryMenu(player, player.getInventory(), Localization.getStaticDisplay("minicraft.display.menus.inventory"), ItemListMenu.POS_RIGHT, this::update) };
 		this.repairBench = repairBench;
 		this.player = player;
 		carrier = new RepairBenchCarrier();
@@ -55,17 +59,6 @@ public class RepairBenchDisplay extends Display {
 		entries.add(carrier.productSlot);
 
 		return entries;
-	}
-
-	@Override
-	protected void onSelectionChange(int oldSel, int newSel) {
-		super.onSelectionChange(oldSel, newSel);
-		if(oldSel == newSel) return; // this also serves as a protection against access to menus[0] when such may not exist.
-		int shift = 0;
-		if(newSel == 0) shift = padding - menus[0].getBounds().getLeft();
-		if(newSel == 1) shift = (Screen.w - padding) - menus[1].getBounds().getRight();
-		for(Menu m: menus)
-			m.translate(shift, 0);
 	}
 
 	@Override
@@ -200,9 +193,7 @@ public class RepairBenchDisplay extends Display {
 			int sel = menus[0].getSelection();
 			menus[0].setSelection(sel == 0 ? menus[0].getNumOptions() : sel - 1);
 		}
-		menus[1] = new InventoryMenu((InventoryMenu) menus[1]);
-		menus[1].translate(menus[0].getBounds().getWidth() + padding, 0);
-		onSelectionChange(0, selection);
+		((InventoryMenu) menus[1]).refresh();
 	}
 
 	private class RepairBenchCarrier {
@@ -387,7 +378,7 @@ public class RepairBenchDisplay extends Display {
 					return previousRepairInfo.getDisplayColor(item, isSelected); // Should be not 0
 				}
 			};
-			actionEntry = new SelectEntry("Repair item", this::onAction) {
+			actionEntry = new SelectEntry(new DisplayString.StaticString("Repair item"), this::onAction) {
 				@Override
 				public int getColor(boolean isSelected) {
 					return isSelectable() ? super.getColor(isSelected) : Color.DARK_GRAY;

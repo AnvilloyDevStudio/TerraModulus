@@ -74,7 +74,7 @@ class InventoryMenu extends ItemListMenu {
 	}
 
 	public void refresh() {
-		setEntries(ItemEntry.useItems(inv.getItems()));
+		setEntries(ItemEntry.useItems(inv.getItemsView()));
 		setSelection(getSelection());
 	}
 

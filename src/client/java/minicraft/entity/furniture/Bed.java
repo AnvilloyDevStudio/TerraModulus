@@ -11,6 +11,7 @@ import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.DyeItem;
 import minicraft.item.Item;
 import minicraft.level.Level;
+import minicraft.util.DisplayString;
 import minicraft.util.MyUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,8 +76,8 @@ public class Bed extends Furniture {
 		if (!(Updater.tickCount >= Updater.sleepStartTime || Updater.tickCount < Updater.sleepEndTime && Updater.pastDay1)) {
 			// It is too early to sleep; display how much time is remaining.
 			int sec = (int) Math.ceil((Updater.sleepStartTime - Updater.tickCount) * 1.0 / Updater.normSpeed); // gets the seconds until sleeping is allowed. // normSpeed is in tiks/sec.
-			String note = Localization.getLocalized("minicraft.notification.cannot_sleep", sec / 60, sec % 60);
-			Game.inGameNotifications.add(note); // Add the notification displaying the time remaining in minutes and seconds.
+			// Add the notification displaying the time remaining in minutes and seconds.
+			Game.inGameNotifications.add(Localization.getStaticDisplay("minicraft.notification.cannot_sleep", sec / 60, sec % 60));
 
 			return false;
 		}

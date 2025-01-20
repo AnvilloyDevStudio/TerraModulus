@@ -4,6 +4,7 @@ import com.studiohartman.jamepad.ControllerButton;
 import minicraft.core.Game;
 import minicraft.core.Renderer;
 import minicraft.core.io.InputHandler;
+import minicraft.core.io.Localization;
 import minicraft.entity.ItemHolder;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.mob.Player;
@@ -16,6 +17,7 @@ import minicraft.item.BoundedInventory;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.StackableItem;
+import minicraft.util.DisplayString;
 
 public class ContainerDisplay extends Display {
 

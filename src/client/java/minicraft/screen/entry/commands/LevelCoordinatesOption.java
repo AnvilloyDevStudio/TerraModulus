@@ -10,6 +10,7 @@ import minicraft.screen.entry.ChangeListener;
 import minicraft.screen.entry.InputEntry;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.UserMutable;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -57,7 +58,7 @@ public class LevelCoordinatesOption extends ListEntry implements UserMutable {
 
 	private static abstract class CoordinateInputEntry extends InputEntry {
 		public CoordinateInputEntry(String prompt, String regex, String initValue) {
-			super(prompt, regex, 0, initValue);
+			super(new DisplayString.StaticString(prompt), regex, 0, initValue);
 		}
 
 		public boolean isAllValid() {
@@ -90,7 +91,7 @@ public class LevelCoordinatesOption extends ListEntry implements UserMutable {
 			super(prompt, regexNumber, initValue);
 			this.bound = bound;
 			this.specified = specified;
-			minorInput = new InputEntry("", regexNumber, 0, minorDefault) {
+			minorInput = new InputEntry(new DisplayString.StaticString(""), regexNumber, 0, minorDefault) {
 				@Override
 				public boolean isValid() {
 					try {

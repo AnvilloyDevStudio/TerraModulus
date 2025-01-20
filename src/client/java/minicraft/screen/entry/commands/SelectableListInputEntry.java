@@ -5,6 +5,7 @@ import minicraft.core.io.InputHandler;
 import minicraft.core.io.Sound;
 import minicraft.screen.ListItemSelectDisplay;
 import minicraft.screen.entry.InputEntry;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class SelectableListInputEntry extends InputEntry {
 	}
 
 	public SelectableListInputEntry(String prompt, Collection<String> list, @Nullable String placeholder) {
-		super(prompt);
+		super(new DisplayString.StaticString(prompt));
 		ArrayList<String> arrayList = list.stream().map(String::toUpperCase).sorted().collect(Collectors.toCollection(ArrayList::new));
 		this.prompt = prompt;
 		this.list = Collections.unmodifiableList(arrayList);

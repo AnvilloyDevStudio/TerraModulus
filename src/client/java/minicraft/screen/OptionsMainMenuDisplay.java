@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class OptionsMainMenuDisplay extends Display {
 	private final boolean prevHwaValue = (boolean) Settings.get("hwa");
 	private final String origUpdateCheckVal = (String) Settings.get("updatecheck");
-	private final BooleanEntry controllersEntry = new BooleanEntry("minicraft.display.options_display.controller",
+	private final BooleanEntry controllersEntry = new BooleanEntry(Localization.getStaticDisplay("minicraft.display.options_display.controller"),
 		Game.input.isControllerEnabled());
 
 	public OptionsMainMenuDisplay() {

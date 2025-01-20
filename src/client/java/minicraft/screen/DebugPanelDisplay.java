@@ -5,6 +5,7 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.InputHandler;
+import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.Entity;
@@ -43,6 +44,7 @@ import minicraft.screen.entry.commands.LevelSelectionOption;
 import minicraft.screen.entry.commands.SelectableListInputEntry;
 import minicraft.screen.entry.commands.TargetSelectorEntry;
 import minicraft.screen.entry.commands.UnionEntry;
+import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 import minicraft.util.MyUtils;
 import org.jetbrains.annotations.NotNull;
@@ -69,14 +71,14 @@ public class DebugPanelDisplay extends Display {
 			.setSelectable(true)
 			.setScrollPolicies(1, false)
 			.setSearcherBar(true)
-			.setTitle("minicraft.display.debug_panel")
+			.setTitle(Localization.getStaticDisplay("minicraft.display.debug_panel"))
 			.createMenu());
 	}
 
 	private static List<ListEntry> getEntries() {
 		ArrayList<ListEntry> entries = new ArrayList<>();
 
-		entries.add(new SelectEntry("Print all players", () -> {
+		entries.add(new SelectEntry(new DisplayString.StaticString("Print all players"), () -> {
 			// Print all players on all levels, and their coordinates.
 			Logging.WORLD.info("Printing players on all levels.");
 			for (Level value : Game.levels) {
@@ -84,8 +86,8 @@ public class DebugPanelDisplay extends Display {
 				value.printEntityLocs(Player.class);
 			}
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Teleport to...",() -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Teleport to..."),() -> {
 			Level curLevel = Game.player.getLevel();
 			LevelSelectionOption levelOption = new LevelSelectionOption(curLevel.depth);
 			LevelCoordinatesOption coordinatesOption =
@@ -123,12 +125,12 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> levelOption.isValid() && coordinatesOption.isAllInputValid(),
 				Arrays.asList(optionEntry, optionEntry1)));
-		}, false));
-		entries.add(new SelectEntry("Time set ...", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Time set ..."), () -> {
 			//noinspection Convert2Diamond Ambious type infer
-			ArrayEntry<Updater.Time> timeArrayEntry = new ArrayEntry<Updater.Time>("Time", false, false,
+			ArrayEntry<Updater.Time> timeArrayEntry = new ArrayEntry<Updater.Time>(new DisplayString.StaticString("Time"), false,
 				Updater.Time.Morning, Updater.Time.Day, Updater.Time.Evening, Updater.Time.Night);
-			InputEntry timeOption = new InputEntry("Time", InputEntry.regexNumber, 0) {
+			InputEntry timeOption = new InputEntry(new DisplayString.StaticString("Time"), InputEntry.regexNumber, 0) {
 				@Override
 				public boolean isValid() {
 					try {
@@ -140,7 +142,7 @@ public class DebugPanelDisplay extends Display {
 				}
 			};
 			UnionEntry<ListEntry> unionEntry = new UnionEntry<>(timeArrayEntry, timeOption);
-			BooleanEntry timeTypeEntry = new BooleanEntry("Specific", false);
+			BooleanEntry timeTypeEntry = new BooleanEntry(new DisplayString.StaticString("Specific"), false);
 			CommandOptionEntry optionEntry = new CommandOptionEntry(timeTypeEntry, new CommandOptionEntry(unionEntry));
 			timeTypeEntry.setChangeListener(v -> {
 				unionEntry.setSelection((boolean) v ? 1 : 0);
@@ -173,9 +175,9 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> unionEntry.getSelectedEntry() != timeOption || timeOption.isValid(),
 				Collections.singletonList(optionEntry)));
-		}, false));
-		entries.add(new SelectEntry("Gamemode ...", () -> {
-			ArrayEntry<String> modeEntry = new ArrayEntry<>("minicraft.settings.mode",
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Gamemode ..."), () -> {
+			ArrayEntry<String> modeEntry = new ArrayEntry<>(Localization.getStaticDisplay("minicraft.settings.mode"),
 				"minicraft.settings.mode.survival", "minicraft.settings.mode.creative",
 				"minicraft.settings.mode.hardcore", "minicraft.settings.mode.score");
 			modeEntry.setValue(Settings.get("mode"));
@@ -187,81 +189,81 @@ public class DebugPanelDisplay extends Display {
 				Logging.WORLDNAMED.info("Game mode changed from {} into {}.", prevMode, distMode);
 				return true;
 			}, null, Collections.singletonList(optionEntry)));
-		}, false));
-		entries.add(new SelectEntry("Reset score time as 5 seconds", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Reset score time as 5 seconds"), () -> {
 			if (Game.isMode("minicraft.settings.mode.score")) {
 				Updater.scoreTime = Updater.normSpeed * 5; // 5 seconds
 			}
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Reset tick speed (TPS)", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Reset tick speed (TPS)"), () -> {
 			float prevSpeed = Updater.gamespeed;
 			Updater.gamespeed = 1;
 			Logging.WORLDNAMED.trace("Tick speed reset from {} into 1.", prevSpeed);
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Increase tick speed (TPS)", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Increase tick speed (TPS)"), () -> {
 			float prevSpeed = Updater.gamespeed;
 			if (Updater.gamespeed < 1) Updater.gamespeed *= 2;
 			else if (Updater.normSpeed * Updater.gamespeed < 2000) Updater.gamespeed++;
 			Logging.WORLDNAMED.trace("Tick speed increased from {} into {}.", prevSpeed, Updater.gamespeed);
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Decrease tick speed (TPS)", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Decrease tick speed (TPS)"), () -> {
 			float prevSpeed = Updater.gamespeed;
 			if (Updater.gamespeed > 1) Updater.gamespeed--;
 			else if (Updater.normSpeed * Updater.gamespeed > 5) Updater.gamespeed /= 2;
 			Logging.WORLDNAMED.trace("Tick speed decreased from {} into {}.", prevSpeed, Updater.gamespeed);
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Reduce health point", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Reduce health point"), () -> {
 			Game.player.health--;
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Reduce hunger point", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Reduce hunger point"), () -> {
 			Game.player.hunger--;
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Reset moving speed", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Reset moving speed"), () -> {
 			Game.player.moveSpeed = 1;
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Increase moving speed", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Increase moving speed"), () -> {
 			Game.player.moveSpeed++;
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Decrease moving speed", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Decrease moving speed"), () -> {
 			if (Game.player.moveSpeed > 1) Game.player.moveSpeed--; // -= 0.5D;
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Set tile stairs up", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Set tile stairs up"), () -> {
 			Game.levels[Game.currentLevel].setTile(Game.player.x>>4, Game.player.y>>4, Tiles.get("Stairs Up"));
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Set tile stairs down", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Set tile stairs down"), () -> {
 			Game.levels[Game.currentLevel].setTile(Game.player.x>>4, Game.player.y>>4, Tiles.get("Stairs Down"));
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Change level down (instant)", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Change level down (instant)"), () -> {
 			Game.exitDisplay();
 			Game.setDisplay(new LevelTransitionDisplay(-1));
-		}, false));
-		entries.add(new SelectEntry("Change level up (instant)", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Change level up (instant)"), () -> {
 			Game.exitDisplay();
 			Game.setDisplay(new LevelTransitionDisplay(1));
-		}, false));
-		entries.add(new SelectEntry("Change level up", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Change level up"), () -> {
 			World.scheduleLevelChange(1);
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Change level down", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Change level down"), () -> {
 			World.scheduleLevelChange(-1);
 			Game.exitDisplay();
-		}, false));
-		entries.add(new SelectEntry("Effect ...", () -> {
-			BooleanEntry actionEntry = new BooleanEntry("Clear", false);
-			ArrayEntry<PotionType> effectEntry = new ArrayEntry<>("Effect", true, false, PotionType.values());
-			InputEntry durEntry = new InputEntry("Duration", InputEntry.regexNumber, 0) {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Effect ..."), () -> {
+			BooleanEntry actionEntry = new BooleanEntry(new DisplayString.StaticString("Clear"), false);
+			ArrayEntry<PotionType> effectEntry = new ArrayEntry<>(new DisplayString.StaticString("Effect"), false, PotionType.values());
+			InputEntry durEntry = new InputEntry(new DisplayString.StaticString("Duration"), InputEntry.regexNumber, 0) {
 				private boolean specific = false;
 
 				@Override
@@ -332,10 +334,10 @@ public class DebugPanelDisplay extends Display {
 				}
 				return true;
 			}, display -> durEntry.isValid(), Arrays.asList(optionEntry, optionEntry1, optionEntry2)));
-		}, false));
-		entries.add(new SelectEntry("Inventory Clear ...", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Inventory Clear ..."), () -> {
 			SelectableListInputEntry itemSelEntry = new SelectableListInputEntry("Item", Items.getRegisteredItemKeys(), "All");
-			InputEntry countEntry = new InputEntry("Max Count", InputEntry.regexNumber, 0) {
+			InputEntry countEntry = new InputEntry(new DisplayString.StaticString("Max Count"), InputEntry.regexNumber, 0) {
 				@Override
 				public boolean isValid() {
 					String input = getUserInput();
@@ -426,14 +428,14 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> itemSelEntry.getUserInput().isEmpty() || itemSelEntry.isValid() && countEntry.isValid(),
 				Collections.singletonList(optionEntry)));
-		}, false));
-		entries.add(new SelectEntry("Set tile ...", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Set tile ..."), () -> {
 			Level curLevel = Game.player.getLevel();
 			LevelSelectionOption levelOption = new LevelSelectionOption(curLevel.depth);
 			LevelCoordinatesOption coordinatesOption =
 				new LevelCoordinatesOption(curLevel.w, curLevel.h, Game.player.x, Game.player.y, false, true);
 			SelectableListInputEntry tileSelEntry = new SelectableListInputEntry("Tile", Tiles.getRegisteredTileKeys());
-			InputEntry dataEntry = new InputEntry("Data", InputEntry.regexNumber, 0, "0") {
+			InputEntry dataEntry = new InputEntry(new DisplayString.StaticString("Data"), InputEntry.regexNumber, 0, "0") {
 				@Override
 				public boolean isValid() {
 					try {
@@ -458,7 +460,7 @@ public class DebugPanelDisplay extends Display {
 			final String METHOD_KEEP = "KEEP";
 			final String METHOD_REPLACE = "REPLACE";
 			//noinspection Convert2Diamond Ambious type infer
-			ArrayEntry<String> methodEntry = new ArrayEntry<String>("Method", true, false, METHOD_KEEP, METHOD_REPLACE);
+			ArrayEntry<String> methodEntry = new ArrayEntry<String>(new DisplayString.StaticString("Method"), false, METHOD_KEEP, METHOD_REPLACE);
 			methodEntry.setValue(METHOD_REPLACE);
 
 			CommandOptionEntry optionEntry = new CommandOptionEntry(levelOption);
@@ -503,8 +505,8 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> levelOption.isValid() && coordinatesOption.isAllInputValid() && tileSelEntry.isValid() && dataEntry.isValid(),
 				Arrays.asList(optionEntry, optionEntry1, optionEntry2, optionEntry3, optionEntry4)));
-		}, false));
-		entries.add(new SelectEntry("Fill ...", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Fill ..."), () -> {
 			Level curLevel = Game.player.getLevel();
 			LevelSelectionOption levelOption = new LevelSelectionOption(curLevel.depth);
 			LevelCoordinatesOption fromOption =
@@ -512,7 +514,7 @@ public class DebugPanelDisplay extends Display {
 			LevelCoordinatesOption toOption =
 				new LevelCoordinatesOption("To", curLevel.w, curLevel.h, Game.player.x, Game.player.y, false, true);
 			SelectableListInputEntry tileSelEntry = new SelectableListInputEntry("Tile", Tiles.getRegisteredTileKeys());
-			InputEntry dataEntry = new InputEntry("Data", InputEntry.regexNumber, 0, "0") {
+			InputEntry dataEntry = new InputEntry(new DisplayString.StaticString("Data"), InputEntry.regexNumber, 0, "0") {
 				@Override
 				public boolean isValid() {
 					try {
@@ -539,7 +541,7 @@ public class DebugPanelDisplay extends Display {
 			final String METHOD_OUTLINE = "OUTLINE";
 			final String METHOD_REPLACE = "REPLACE";
 			//noinspection Convert2Diamond Ambious type infer
-			ArrayEntry<String> methodEntry = new ArrayEntry<String>("Method", true, false,
+			ArrayEntry<String> methodEntry = new ArrayEntry<String>(new DisplayString.StaticString("Method"), false,
 				METHOD_HOLLOW, METHOD_KEEP, METHOD_OUTLINE, METHOD_REPLACE);
 			methodEntry.setValue(METHOD_REPLACE);
 
@@ -630,8 +632,8 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> levelOption.isValid() && fromOption.isAllInputValid() && toOption.isAllInputValid() && tileSelEntry.isValid() && dataEntry.isValid(),
 				Arrays.asList(optionEntry, optionEntry1, optionEntry2, optionEntry3, optionEntry4, optionEntry5)));
-		}, false));
-		entries.add(new SelectEntry("Kill ...", () -> {
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Kill ..."), () -> {
 			TargetSelectorEntry selectorEntry = new TargetSelectorEntry(Game.player);
 			CommandOptionEntry optionEntry = new CommandOptionEntry(selectorEntry);
 			Game.setDisplay(new CommandPopupDisplay(null, () -> {
@@ -646,11 +648,11 @@ public class DebugPanelDisplay extends Display {
 				Logging.WORLDNAMED.info("Eliminated {}.", count, MyUtils.plural(count, "entity"));
 				return true;
 			}, display -> selectorEntry.isValid(), Collections.singletonList(optionEntry)));
-		}, false));
+		}));
 		// Item attributes cannot be modified or customized because of the design and nature (static and non-dynamic) of the game.
-		entries.add(new SelectEntry("Give ...", () -> {
+		entries.add(new SelectEntry(new DisplayString.StaticString("Give ..."), () -> {
 			SelectableListInputEntry itemSelEntry = new SelectableListInputEntry("Item", Items.getRegisteredItemKeys());
-			InputEntry countEntry = new InputEntry("Count", InputEntry.regexNumber, 0) {
+			InputEntry countEntry = new InputEntry(new DisplayString.StaticString("Count"), InputEntry.regexNumber, 0) {
 				@Override
 				public boolean isValid() {
 					String input = getUserInput();
@@ -711,15 +713,15 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> itemSelEntry.isValid() && countEntry.isValid(),
 				Arrays.asList(optionEntry, optionEntry1)));
-		}, false));
-		entries.add(new SelectEntry("Daytime Lock ...", () -> {
-			BooleanEntry booleanEntry = new BooleanEntry("Do Daylight Cycle", Updater.timeFlow);
+		}));
+		entries.add(new SelectEntry(new DisplayString.StaticString("Daytime Lock ..."), () -> {
+			BooleanEntry booleanEntry = new BooleanEntry(new DisplayString.StaticString("Do Daylight Cycle"), Updater.timeFlow);
 			CommandOptionEntry optionEntry = new CommandOptionEntry(booleanEntry);
 			Game.setDisplay(new CommandPopupDisplay(null, () -> {
 				Logging.WORLDNAMED.info("Daytime flow is now {}.", Updater.timeFlow = booleanEntry.getValue());
 				return true;
 			}, null, Collections.singletonList(optionEntry)));
-		}, false));
+		}));
 		// Because of the hit box, summoning with a number is not implemented.
 		// If entity attributes are going to be implemented, this would be massive and unideal
 		// due to the nature (static and non-dynamic) of the system.
@@ -737,7 +739,7 @@ public class DebugPanelDisplay extends Display {
 		entitySelectionList.put("SLIME", Slime::new);
 		entitySelectionList.put("SNAKE", Snake::new);
 		entitySelectionList.put("ZOMBIE", Zombie::new);
-		entries.add(new SelectEntry("Summon ...", () -> {
+		entries.add(new SelectEntry(new DisplayString.StaticString("Summon ..."), () -> {
 			SelectableListInputEntry entitySelEntry = new SelectableListInputEntry("Entity", entitySelectionList.keySet());
 			Level curLevel = Game.player.getLevel();
 			LevelSelectionOption levelOption = new LevelSelectionOption(curLevel.depth);
@@ -771,7 +773,7 @@ public class DebugPanelDisplay extends Display {
 				return true;
 			}, display -> entitySelEntry.isValid() && levelOption.isValid() && coordinatesOption.isAllInputValid(),
 				Arrays.asList(optionEntry, optionEntry1, optionEntry2)));
-		}, false));
+		}));
 
 		return entries;
 	}
@@ -784,17 +786,17 @@ public class DebugPanelDisplay extends Display {
 								   @Nullable Predicate<CommandPopupDisplay> allowCheck,
 								   @NotNull List<CommandOptionEntry> optionEntries) {
 			ArrayList<ListEntry> entries = new ArrayList<>();
-			SelectEntry actionEntry = new SelectEntry("Execute", () -> {
+			SelectEntry actionEntry = new SelectEntry(new DisplayString.StaticString("Execute"), () -> {
 				if (onAction.get()) // When necessary
 					Game.exitDisplay(2); // Exits both the current display and the debug panel.
-			}, false) {
+			}) {
 				@Override
 				public int getColor(boolean isSelected) {
 					return isSelectable() ? super.getColor(isSelected) : Color.DARK_GRAY;
 				}
 			};
 			builder = new Menu.Builder(true, 2, RelPos.CENTER)
-				.setTitle("minicraft.display.debug_panel.command_popup");
+				.setTitle(Localization.getStaticDisplay("minicraft.display.debug_panel.command_popup"));
 			optionEntries.forEach(e -> entries.addAll(e.getEntries()));
 			entries.add(actionEntry);
 			Action checkUpdateListener = () -> {
