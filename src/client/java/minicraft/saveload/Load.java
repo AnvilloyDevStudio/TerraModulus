@@ -711,6 +711,8 @@ public class Load {
 		}
 
 		ResourcePackDisplay.releaseUnloadedPacks();
+
+		Game.input.setControllerEnabled(json.optBoolean("controllerEnabled"));
 	}
 
 	private void loadUnlocksOld(String filename) {
