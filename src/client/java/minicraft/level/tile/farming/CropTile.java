@@ -6,7 +6,7 @@ import minicraft.entity.Entity;
 import minicraft.entity.mob.Mob;
 import minicraft.entity.mob.Player;
 import minicraft.entity.particle.Particle;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.StackableItem;
@@ -30,8 +30,13 @@ public class CropTile extends FarmTile {
 	}
 
 	@Override
-	public boolean hurt(Level level, int x, int y, Mob source, int dmg, Direction attackDir) {
+	protected void handleDamage(Level level, int x, int y, Entity source, @Nullable Item item, int dmg) {
 		harvest(level, x, y, source);
+	}
+
+	@Override
+	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
+		handleDamage(level, x, y, source, item, damage);
 		return true;
 	}
 
@@ -99,10 +104,11 @@ public class CropTile extends FarmTile {
 		return successful;
 	}
 
-	private static final SpriteLinker.LinkedSprite particleSprite = new SpriteLinker.LinkedSprite(SpriteLinker.SpriteType.Entity, "glint");
+	private static final SpriteManager.SpriteLink particleSprite =
+		new SpriteManager.SpriteLink.SpriteLinkBuilder(SpriteManager.SpriteType.Entity, "glint").createSpriteLink();
 
 	@Override
-	public boolean interact(Level level, int xt, int yt, Player player, Item item, Direction attackDir) {
+	public boolean use(Level level, int xt, int yt, Player player, @Nullable Item item, Direction attackDir) {
 		if (item instanceof StackableItem && item.getName().equalsIgnoreCase("Fertilizer")) {
 			((StackableItem) item).count--;
 			Random random = new Random();
@@ -127,7 +133,7 @@ public class CropTile extends FarmTile {
 			return true;
 		}
 
-		return super.interact(level, xt, yt, player, item, attackDir);
+		return false;
 	}
 
 	/**

@@ -1,13 +1,16 @@
 package minicraft.entity;
 
 import minicraft.core.Action;
+import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.item.Item;
 import minicraft.level.Level;
+import minicraft.level.tile.Tile;
 import minicraft.network.Network;
+import minicraft.util.DamageSource;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +34,19 @@ public abstract class Entity implements Tickable {
 	 * xt << 4 is the equivalent to xt * (2^4). Which means it's multiplying the X tile value by 16.
 	 *
 	 * These bit shift operators are used to easily get the X & Y coordinates of a tile that the entity is standing on.
+	 */
+
+	/*
+	 * In total there are 3 types of active entity interactions: attack, use and take.
+	 * While only players can use and take entities and tiles, generally all mobs may attack other entities and tiles.
+	 * This is because players could use different keys for different interactions, but not for mob AIs.
+	 * However, not all entities are able to be attacked (as well as use and take).
+	 * Tiles can also attack entities in the similar sense.
+	 * In the process of damage/hurting calculations and handling, the flow is like:
+	 * - 1. Attack: interaction triggered by damage source; damage with bonus intended to emit is calculated here
+	 *   - With a method if there exists an AI in the source
+	 * - 2. Hurt: target entity receives damage from damage source; calculation includes armors and shields
+	 * - 3. Handle damage: final damage value is passed to this when all damage calculations are completed
 	 */
 
 	// Entity coordinates are per pixel, not per tile; each tile is 16x16 entity pixels.
@@ -141,27 +157,104 @@ public abstract class Entity implements Tickable {
 	protected void touchedBy(Entity entity) {
 	}
 
+	public boolean isFireImmune() {
+		return false;
+	}
+
 	/**
-	 * Interacts with the entity this method is called on
-	 * @param player The player attacking
-	 * @param item The item the player attacked with
+	 * The amount of damage to attack when the item has no damage attribute set.
+	 * @return amount of damage by fists
+	 */
+	protected int baseDamage() {
+		return 1;
+	}
+
+	/**
+	 * An indicator for which the entity is attackable by certain entity, even under certain conditions.
+	 * This is invoked each time an entity is being targetted regardless it is interacted.
+	 * Most probably used by Player.
+	 * @return {@code false} if not attackable and {@link #hurt(DamageSource, Direction, int)} would not be invoked
+	 * when triggered.
+	 */
+	public abstract boolean isAttackable(Entity source, @Nullable Item item, Direction attackDir);
+
+	/**
+	 * An indicator for which the entity is attackable by certain entity, even under certain conditions.
+	 * This is invoked each time an entity is being targetted regardless it is interacted.
+	 * Most probably used by Player.
+	 * Though the usefulness of this is doubtable.
+	 * @return {@code false} if not attackable and {@link #hurt(DamageSource, Direction, int)} would not be
+	 * invoked when triggered.
+	 */
+	public abstract boolean isAttackable(Tile source, Level level, int x, int y, Direction attackDir);
+
+	public boolean isInvulnerableTo(DamageSource source) {
+		return isRemoved() ||
+			source.getCausingEntity() instanceof Player && Game.isMode("minicraft.settings.mode.creative") ||
+			source.getDamageType().isFireRelated() && isFireImmune();
+	}
+
+	/**
+	 * An indicator for which the entity is attackable by certain entity, even under certain conditions.
+	 * This is invoked each time an entity is being targetted regardless it is interacted.
+	 * Most probably used by Player.
+	 * @return {@code false} if not attackable and {@link #use(Player, Item, Direction)} would not be invoked
+	 * when triggered.
+	 */
+	public abstract boolean isUsable();
+
+	// TODO Here, attackDir may be changed to use an angle instead of axis to perform more accurate actions.
+
+	/**
+	 * Hurt the entity directly, based on only damage and a direction
+	 * Usually this is invoked by {@link #hurt(DamageSource, Direction, int)}.<p>
+	 * Note that using {@link #hurt(DamageSource, Direction, int)} is more recommended.
+	 * @param damage The amount of damage to hurt the entity with
+	 * @param attackDir The direction this entity was attacked from
+	 */
+	protected abstract void handleDamage(DamageSource source, Direction attackDir, int damage);
+
+	/**
+	 * Attacks the entity this method is called on
+	 * @param source The cause of damage
 	 * @param attackDir The direction to interact
+	 * @param damage The amount of damage intended to emit this time
 	 * @return If the interaction was successful
 	 */
-	public boolean interact(Player player, @Nullable Item item, Direction attackDir) {
+	public abstract boolean hurt(DamageSource source, Direction attackDir, int damage);
+
+	public static Direction getInteractionDir(Entity attacker, Entity hurt) {
+		return Direction.getDirection(hurt.x - attacker.x, hurt.y - attacker.y);
+	}
+
+	/**
+	 * Called when the player presses the USE key in front of this.
+	 */
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		return false;
+	}
+
+	/**
+	 * Picks up this entity
+	 * @param player The player interacting
+	 * @return the item picked up; {@code null} if picking up failed
+	 */
+	public @Nullable Item take(Player player) {
+		return null;
 	}
 
 	/**
 	 * Moves an entity horizontally and vertically. Returns whether entity was unimpeded in it's movement.
 	 */
 	public boolean move(int xd, int yd) {
+		// TODO Validate existence of `Updater.saving` here, may potentially cause issue
 		if (Updater.saving || (xd == 0 && yd == 0)) return true; // Pretend that it kept moving
 
 		boolean stopped = true; // Used to check if the entity has BEEN stopped, COMPLETELY; below checks for a lack of collision.
+		// Either xd or yd must be non-zero, so at least either one of them is invoked.
 		//noinspection RedundantIfStatement
-		if (moveX(xd)) stopped = false; // Becomes false if horizontal movement was successful.
-		if (moveY(yd)) stopped = false; // Becomes false if vertical movement was successful.
+		if (xd != 0 && moveX(xd)) stopped = false; // Becomes false if horizontal movement was successful.
+		if (yd != 0 && moveY(yd)) stopped = false; // Becomes false if vertical movement was successful.
 		if (!stopped) {
 			int xt = x >> 4; // The x tile coordinate that the entity is standing on.
 			int yt = y >> 4; // The y tile coordinate that the entity is standing on.
@@ -172,13 +265,12 @@ public abstract class Entity implements Tickable {
 
 	/**
 	 * Moves the entity a long only on X axis without "teleporting".
-	 * Will throw exception otherwise.
-	 * @param d Displacement relative to the axis.
+	 * Will throw exception otherwise.<br>
+	 * Note that this should only be invoked by {@link #move(int, int)}.
+	 * @param d Displacement relative to the axis; should be non-zero
 	 * @return true if the move was successful, false if not.
 	 */
 	protected boolean moveX(int d) {
-		if (d == 0) return true; // Was not stopped
-
 		//boolean interact = true;//!Game.isValidClient() || this instanceof ClientTickable;
 
 		// Taking the axis of movement (towards) as the front axis, and the horizontal axis with another axis.
@@ -205,13 +297,12 @@ public abstract class Entity implements Tickable {
 
 	/**
 	 * Moves the entity a long only on X axis without "teleporting".
-	 * Will throw exception otherwise.
-	 * @param d Displacement relative to the axis.
-	 * @return true if the move was successful, false if not.
+	 * Will throw exception otherwise.<br>
+	 * Note that this should only be invoked by {@link #move(int, int)}.
+	 * @param d Displacement relative to the axis; should be non-zero
+	 * @return true if there is movement, false if not.
 	 */
 	protected boolean moveY(int d) {
-		if (d == 0) return true; // Was not stopped
-
 		//boolean interact = true;//!Game.isValidClient() || this instanceof ClientTickable;
 
 		// Taking the axis of movement (towards) as the front axis, and the horizontal axis with another axis.
@@ -309,7 +400,7 @@ public abstract class Entity implements Tickable {
 	/**
 	 * This exists as a way to signify that the entity has been removed through player action and/or world action; basically, it's actually gone, not just removed from a level because it's out of range or something. Calls to this method are used to, say, drop items.
 	 */
-	public void die() {
+	public void die() { // TODO damage type
 		remove();
 	}
 

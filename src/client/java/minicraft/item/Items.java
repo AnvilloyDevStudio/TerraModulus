@@ -5,6 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class Items {
 
@@ -44,6 +48,8 @@ public class Items {
 		addAll(SummonItem.getAllInstances());
 		addAll(HeartItem.getAllInstances());
 		addAll(WateringCanItem.getAllInstances());
+		addAll(DyeItem.getAllInstances());
+		addAll(WoolItem.getAllInstances());
 	}
 
 	public static ArrayList<Item> getAll() {
@@ -141,6 +147,10 @@ public class Items {
 				if (!(i instanceof PowerGloveItem)) add(i.copy());
 			});
 		}
+	}
+
+	public static Set<String> getRegisteredItemKeys() {
+		return items.stream().map(Item::getName).collect(Collectors.toCollection(TreeSet::new));
 	}
 }
 
