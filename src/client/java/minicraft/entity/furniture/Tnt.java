@@ -9,14 +9,15 @@ import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.PowerGloveItem;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.AchievementsDisplay;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Timer;
 
@@ -36,7 +37,8 @@ public class Tnt extends Furniture {
 	 * Creates a new tnt furniture.
 	 */
 	public Tnt() {
-		super("Tnt", new LinkedSprite(SpriteType.Entity, "tnt"), new LinkedSprite(SpriteType.Item, "tnt"), 3, 2);
+		super("Tnt", new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "tnt").createSpriteLink(),
+			new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "tnt").createSpriteLink(), 3, 2);
 		fuseLit = false;
 		ftik = 0;
 	}
@@ -99,17 +101,18 @@ public class Tnt extends Furniture {
 	}
 
 	@Override
-	public boolean interact(Player player, Item heldItem, Direction attackDir) {
-		if (heldItem instanceof PowerGloveItem) {
-			if (!fuseLit) {
-				return super.interact(player, heldItem, attackDir);
-			}
-		} else {
-			if (!fuseLit) {
-				fuseLit = true;
-				Sound.play("fuse");
-				return true;
-			}
+	public @Nullable Item take(Player player) {
+		if (!fuseLit)
+			return super.take(player);
+		return null;
+	}
+
+	@Override
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
+		if (!fuseLit) {
+			fuseLit = true;
+			Sound.play("fuse");
+			return true;
 		}
 
 		return false;

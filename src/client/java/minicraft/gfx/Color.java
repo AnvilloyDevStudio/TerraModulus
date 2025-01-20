@@ -36,6 +36,7 @@ public class Color {
 	public static final int YELLOW = Color.get(1, 255, 255, 0);
 	public static final int MAGENTA = Color.get(1, 255, 0, 255);
 	public static final int CYAN = Color.get(1, 90, 204, 204);
+	public static final int GOLD = Color.get(1, 255, 193, 37);
 
 	public static final char COLOR_CHAR = '\u00A7';
 
@@ -50,6 +51,11 @@ public class Color {
 	public static final String YELLOW_CODE = Color.toStringCode(Color.YELLOW);
 	public static final String MAGENTA_CODE = Color.toStringCode(Color.MAGENTA);
 	public static final String CYAN_CODE = Color.toStringCode(Color.CYAN);
+
+	// Reset color to the original setting of the string.
+	public static final String RESET_CODE = COLOR_CHAR + "\u0002\u0000\u0000\u0000";
+	// Set the color before the last color code; if the last code is: RESET or unset: no operation; REDO: RESET.
+	public static final String REDO_CODE = COLOR_CHAR + "\u0003\u0000\u0000\u0000";
 
 	/**
 	 * This returns a minicraftrgb.

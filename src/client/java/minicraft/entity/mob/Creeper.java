@@ -9,19 +9,20 @@ import minicraft.entity.ExplosionTileTicker;
 import minicraft.entity.furniture.Spawner;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
+import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.item.Items;
 import minicraft.level.tile.Tiles;
+import minicraft.util.DamageSource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Creeper extends EnemyMob {
-	private static LinkedSprite[][][] sprites = new LinkedSprite[][][] {
-		new LinkedSprite[][] { Mob.compileSpriteList(0, 0, 2, 2, 0, 2, "creeper") },
-		new LinkedSprite[][] { Mob.compileSpriteList(0, 2, 2, 2, 0, 2, "creeper") },
-		new LinkedSprite[][] { Mob.compileSpriteList(0, 4, 2, 2, 0, 2, "creeper") },
-		new LinkedSprite[][] { Mob.compileSpriteList(0, 6, 2, 2, 0, 2, "creeper") }
+	private static SpriteLink[][][] sprites = new SpriteLink[][][] {
+		new SpriteLink[][] { Mob.compileSpriteList(0, 0, 2, 2, 0, 2, "creeper") },
+		new SpriteLink[][] { Mob.compileSpriteList(0, 2, 2, 2, 0, 2, "creeper") },
+		new SpriteLink[][] { Mob.compileSpriteList(0, 4, 2, 2, 0, 2, "creeper") },
+		new SpriteLink[][] { Mob.compileSpriteList(0, 6, 2, 2, 0, 2, "creeper") }
 	};
 
 	private static final int MAX_FUSE_TIME = 60;
@@ -97,7 +98,9 @@ public class Creeper extends EnemyMob {
 						int distx = Math.abs(mob.x - x);
 						int disty = Math.abs(mob.y - y);
 						float distDiag = (float) Math.sqrt(distx * distx + disty * disty);
-						mob.hurt(this, (int) (lvlDamage * (1 / (distDiag + 1)) + Settings.getIdx("diff")));
+						entity.hurt(new DamageSource(DamageSource.DamageType.EXPLOSION, this, null),
+							getInteractionDir(this, mob),
+							(int) (lvlDamage * (1 / (distDiag + 1)) + Settings.getIdx("diff")));
 					} else if (entity instanceof Spawner) {
 						spawners.add(entity);
 					}
@@ -155,7 +158,7 @@ public class Creeper extends EnemyMob {
 				fuseTime = MAX_FUSE_TIME;
 				fuseLit = true;
 			}
-			((Player) entity).hurt(this, 1);
+			attack(entity);
 		}
 	}
 

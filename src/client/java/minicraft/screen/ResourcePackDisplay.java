@@ -13,11 +13,12 @@ import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
-import minicraft.gfx.SpriteLinker;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.saveload.Save;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectEntry;
+import minicraft.screen.entry.StringEntry;
 import minicraft.util.BookData;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
@@ -196,6 +197,8 @@ public class ResourcePackDisplay extends Display {
 			menus[1].translate(menus[0].getBounds().getRight() - menus[1].getBounds().getLeft() + padding, 0);
 
 		fileWatcher = new WatcherThread();
+		((StringEntry) Objects.requireNonNull(helpPositionTextEntryMenu.getCurEntry()))
+			.setExceedingAlternatingScrollingTicker();
 	}
 
 	@Override
@@ -335,6 +338,8 @@ public class ResourcePackDisplay extends Display {
 
 	@Override
 	public void tick(InputHandler input) {
+		helpPositionTextEntryMenu.tick(input); // For rendering purpose
+
 		// Overrides the default tick handler.
 		if (input.getMappedKey("shift+cursor-right").isClicked()) { // Move the selected pack to the second list.
 			if (selection == 0 && resourcePacks.size() > 0) {
@@ -393,6 +398,11 @@ public class ResourcePackDisplay extends Display {
 		super.tick(input);
 	}
 
+	private final Menu helpPositionTextEntryMenu = new Menu.Builder(false, 0, RelPos.CENTER,
+		new StringEntry("minicraft.displays.resource_packs.display.help.position", Color.DARK_GRAY))
+		.setPositioning(new Point(Screen.w / 2, Screen.h), RelPos.TOP)
+		.createMenu();
+
 	@Override
 	public void render(Screen screen) {
 		super.render(screen);
@@ -401,11 +411,11 @@ public class ResourcePackDisplay extends Display {
 		Font.drawCentered(Localization.getLocalized("minicraft.displays.resource_packs.display.title"), screen, 6, Color.WHITE);
 
 		// Info text at the bottom.
-		if (Game.input.anyControllerConnected())
+		if (Game.input.isControllerEnabled())
 			Font.drawCentered(Localization.getLocalized("minicraft.displays.resource_packs.display.help.keyboard_needed"), screen, Screen.h - 33, Color.DARK_GRAY);
 		Font.drawCentered(Localization.getLocalized("minicraft.displays.resource_packs.display.help.move", Game.input.getMapping("cursor-down"), Game.input.getMapping("cursor-up")), screen, Screen.h - 25, Color.DARK_GRAY);
 		Font.drawCentered(Localization.getLocalized("minicraft.displays.resource_packs.display.help.select", Game.input.getMapping("SELECT")), screen, Screen.h - 17, Color.DARK_GRAY);
-		Font.drawCentered(Localization.getLocalized("minicraft.displays.resource_packs.display.help.position"), screen, Screen.h - 9, Color.DARK_GRAY);
+		helpPositionTextEntryMenu.render(screen);
 
 		ArrayList<ResourcePack> packs = selection == 0 ? resourcePacks : loadedPacks;
 		if (packs.size() > 0) { // If there is any pack that can be selected.
@@ -419,7 +429,7 @@ public class ResourcePackDisplay extends Display {
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
 					// Resource pack logo
-					screen.render(xo + x * 8, yo + y * 8, x, y, 0, logo);
+					screen.render(null, xo + x * 8, yo + y * 8, x, y, 0, logo);
 				}
 			}
 		}
@@ -731,7 +741,7 @@ public class ResourcePackDisplay extends Display {
 		Collections.reverse(loadQuery);
 
 		// Clear all previously loaded resources.
-		Renderer.spriteLinker.resetSprites();
+		Renderer.spriteManager.resetSprites();
 		Localization.resetLocalizations();
 		BookData.resetBooks();
 		Sound.resetSounds();
@@ -750,13 +760,13 @@ public class ResourcePackDisplay extends Display {
 			}
 		}
 
-		SpriteAnimation.refreshAnimations();
-		Renderer.spriteLinker.updateLinkedSheets();
-		Localization.loadLanguage();
-
 		// Refreshing skins
 		SkinDisplay.refreshSkins();
 		SkinDisplay.releaseSkins();
+
+		SpriteAnimation.refreshAnimations();
+		Renderer.spriteManager.updateLinkedSheets();
+		Localization.loadLanguage();
 	}
 
 	/**
@@ -812,7 +822,7 @@ public class ResourcePackDisplay extends Display {
 			for (String m : pack.getFiles(path, (p, isDir) -> p.toString().endsWith(".png.json") && !isDir)) {
 				try {
 					JSONObject obj = new JSONObject(readStringFromInputStream(pack.getResourceAsStream(m)));
-					SpriteLinker.SpriteMeta meta = new SpriteLinker.SpriteMeta();
+					SpriteManager.SpriteMeta meta = new SpriteManager.SpriteMeta();
 					String imgName = m.substring(0, m.length() - 5);
 					pngs.remove(imgName);
 					BufferedImage image = ImageIO.read(pack.getResourceAsStream(imgName));
@@ -831,7 +841,7 @@ public class ResourcePackDisplay extends Display {
 						validateImageAsset(pack, imgName, image, 16, 16);
 						sheet = new MinicraftImage(image, 16, 16);
 					}
-					Renderer.spriteLinker.setSprite(type, m.substring(path.length(), m.length() - 9), sheet);
+					Renderer.spriteManager.setSprite(type, m.substring(path.length(), m.length() - 9), sheet);
 
 					JSONObject borderObj = obj.optJSONObject("border");
 					if (borderObj != null) {
@@ -843,7 +853,7 @@ public class ResourcePackDisplay extends Display {
 							try {
 								BufferedImage img = ImageIO.read(pack.getResourceAsStream(borderK));
 								validateImageAsset(pack, borderK, img, 24, 24);
-								Renderer.spriteLinker.setSprite(type, meta.border, new MinicraftImage(img, 24, 24));
+								Renderer.spriteManager.setSprite(type, meta.border, new MinicraftImage(img, 24, 24));
 							} catch (IOException e) {
 								Logging.RESOURCEHANDLER_RESOURCEPACK.warn(e, "Unable to read {} with {} in pack: {}", borderK, m, pack.name);
 								meta.border = null;
@@ -858,7 +868,7 @@ public class ResourcePackDisplay extends Display {
 							try {
 								BufferedImage img = ImageIO.read(pack.getResourceAsStream(cornerK));
 								validateImageAsset(pack, cornerK, img, 16, 16);
-								Renderer.spriteLinker.setSprite(type, meta.corner, new MinicraftImage(img, 16, 16));
+								Renderer.spriteManager.setSprite(type, meta.corner, new MinicraftImage(img, 16, 16));
 							} catch (IOException e) {
 								Logging.RESOURCEHANDLER_RESOURCEPACK.warn(e, "Unable to read {} with {} in pack: {}", cornerK, m, pack.name);
 								meta.corner = null;
@@ -890,7 +900,7 @@ public class ResourcePackDisplay extends Display {
 					sheet = new MinicraftImage(image);
 				}
 
-				Renderer.spriteLinker.setSprite(type, p.substring(path.length(), p.length() - 4), sheet);
+				Renderer.spriteManager.setSprite(type, p.substring(path.length(), p.length() - 4), sheet);
 			} catch (IOException e) {
 				Logging.RESOURCEHANDLER_RESOURCEPACK.warn("Unable to load {} in pack : {}", p, pack.name);
 			}

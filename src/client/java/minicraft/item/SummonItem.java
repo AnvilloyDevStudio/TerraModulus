@@ -8,8 +8,8 @@ import minicraft.entity.furniture.KnightStatue;
 import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import org.jetbrains.annotations.NotNull;
@@ -23,19 +23,20 @@ public class SummonItem extends StackableItem {
 	protected static ArrayList<Item> getAllInstances() {
 		ArrayList<Item> items = new ArrayList<>();
 
-		items.add(new SummonItem("Totem of Air", new LinkedSprite(SpriteType.Item, "air_totem"), "Air Wizard"));
-		items.add(new SummonItem("Obsidian Poppet", new LinkedSprite(SpriteType.Item, "knight_statue"), "Obsidian Knight")); //TODO: Obsidian Poppet Textures
+		items.add(new SummonItem("Totem of Air", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "air_totem").createSpriteLink(), "Air Wizard"));
+		items.add(new SummonItem("Obsidian Poppet", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "knight_statue")
+			.createSpriteLink(), "Obsidian Knight")); //TODO: Obsidian Poppet Textures
 
 		return items;
 	}
 
 	private final String mob;
 
-	private SummonItem(String name, LinkedSprite sprite, String mob) {
+	private SummonItem(String name, SpriteLink sprite, String mob) {
 		this(name, sprite, 1, mob);
 	}
 
-	private SummonItem(String name, LinkedSprite sprite, int count, String mob) {
+	private SummonItem(String name, SpriteLink sprite, int count, String mob) {
 		super(name, sprite, count);
 		this.mob = mob;
 	}
@@ -43,7 +44,7 @@ public class SummonItem extends StackableItem {
 	/**
 	 * What happens when the player uses the item on a tile
 	 */
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		boolean success = false;
 
 		switch (mob) {
@@ -60,10 +61,10 @@ public class SummonItem extends StackableItem {
 							success = true;
 						}
 					} else {
-						Game.notifications.add(Localization.getLocalized("minicraft.notification.boss_limit"));
+						Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.boss_limit"));
 					}
 				} else {
-					Game.notifications.add(Localization.getLocalized("minicraft.notification.wrong_level_sky"));
+					Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.wrong_level_sky"));
 				}
 
 				break;
@@ -89,16 +90,16 @@ public class SummonItem extends StackableItem {
 									success = true;
 								}
 							} else {
-								Game.notifications.add(Localization.getLocalized("minicraft.notification.knight_statue_exists"));
+								Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.knight_statue_exists"));
 							}
 						} else {
-							Game.notifications.add(Localization.getLocalized("minicraft.notification.boss_limit"));
+							Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.boss_limit"));
 						}
 					} else {
-						Game.notifications.add(Localization.getLocalized("minicraft.notification.spawn_on_boss_tile"));
+						Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.spawn_on_boss_tile"));
 					}
 				} else {
-					Game.notifications.add(Localization.getLocalized("minicraft.notification.wrong_level_dungeon"));
+					Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.wrong_level_dungeon"));
 				}
 				break;
 			default:
@@ -107,11 +108,6 @@ public class SummonItem extends StackableItem {
 		}
 
 		return super.interactOn(success);
-	}
-
-	@Override
-	public boolean interactsWithWorld() {
-		return false;
 	}
 
 	public @NotNull SummonItem copy() {

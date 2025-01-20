@@ -3,29 +3,57 @@ package minicraft.entity.furniture;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Localization;
+import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteAnimation;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.item.DyeItem;
+import minicraft.item.Item;
 import minicraft.level.Level;
+import minicraft.util.MyUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
 public class Bed extends Furniture {
 
+	private static final HashMap<DyeItem.DyeColor, SpriteLink> sprites = new HashMap<>();
+	private static final HashMap<DyeItem.DyeColor, SpriteLink> itemSprites = new HashMap<>();
+
+	@Override
+	public @NotNull Furniture copy() {
+		return new Bed(color);
+	}
+
+	static {
+		for (DyeItem.DyeColor color : DyeItem.DyeColor.values()) {
+			sprites.put(color, new SpriteLink.SpriteLinkBuilder(SpriteType.Entity,
+				color.toString().toLowerCase() + "_bed").createSpriteLink());
+			itemSprites.put(color, new SpriteLink.SpriteLinkBuilder(SpriteType.Item,
+				color.toString().toLowerCase() + "_bed").createSpriteLink());
+		}
+	}
+
 	private static int playersAwake = 1;
 	private static final HashMap<Player, Bed> sleepingPlayers = new HashMap<>();
+
+	public final DyeItem.DyeColor color;
 
 	/**
 	 * Creates a new furniture with the name Bed and the bed sprite and color.
 	 */
-	public Bed() {
-		super("Bed", new LinkedSprite(SpriteType.Entity, "bed"), new LinkedSprite(SpriteType.Item, "bed"), 3, 2);
+	public Bed() { this(DyeItem.DyeColor.RED); }
+	public Bed(DyeItem.DyeColor color) {
+		super(MyUtils.capitalizeFully(color.toString().replace('_', ' ')) + " Bed", sprites.get(color), itemSprites.get(color), 3, 2);
+		this.color = color;
 	}
 
 	/**
 	 * Called when the player attempts to get in bed.
 	 */
-	public boolean use(Player player) {
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		if (checkCanSleep(player)) { // If it is late enough in the day to sleep...
 
 			// Set the player spawn coord. to their current position, in tile coords (hence " >> 4")
@@ -48,7 +76,7 @@ public class Bed extends Furniture {
 			// It is too early to sleep; display how much time is remaining.
 			int sec = (int) Math.ceil((Updater.sleepStartTime - Updater.tickCount) * 1.0 / Updater.normSpeed); // gets the seconds until sleeping is allowed. // normSpeed is in tiks/sec.
 			String note = Localization.getLocalized("minicraft.notification.cannot_sleep", sec / 60, sec % 60);
-			Game.notifications.add(note); // Add the notification displaying the time remaining in minutes and seconds.
+			Game.inGameNotifications.add(note); // Add the notification displaying the time remaining in minutes and seconds.
 
 			return false;
 		}

@@ -4,20 +4,22 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
+import minicraft.entity.Direction;
 import minicraft.entity.Entity;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.UnlimitedInventory;
+import org.jetbrains.annotations.Nullable;
 
 public class DeathChest extends Chest {
-	private static LinkedSprite normalSprite = new LinkedSprite(SpriteType.Entity, "chest");
-	private static LinkedSprite redSprite = new LinkedSprite(SpriteType.Entity, "red_chest");
+	private static SpriteLink normalSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "chest").createSpriteLink();
+	private static SpriteLink redSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "red_chest").createSpriteLink();
 
 	public int time; // Time passed (used for death chest despawn)
 	private int redtick = 0; //This is used to determine the shade of red when the chest is about to expire.
@@ -27,7 +29,7 @@ public class DeathChest extends Chest {
 	 * Creates a custom chest with the name Death Chest
 	 */
 	public DeathChest() {
-		super(new UnlimitedInventory(), "Death Chest", new LinkedSprite(SpriteType.Item, "dungeon_chest"));
+		super(new UnlimitedInventory(), "Death Chest", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "dungeon_chest").createSpriteLink());
 		this.sprite = normalSprite;
 
 		/// Set the expiration time based on the world difficulty.
@@ -88,7 +90,7 @@ public class DeathChest extends Chest {
 		Font.draw(timeString, screen, x - Font.textWidth(timeString) / 2, y - Font.textHeight() - getBounds().getHeight() / 2, Color.WHITE);
 	}
 
-	public boolean use(Player player) {
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		return false;
 	} // can't open it, just walk into it.
 
@@ -98,7 +100,7 @@ public class DeathChest extends Chest {
 			Inventory playerInv = ((Player) other).getInventory();
 			for (Item i : inventory.getItemsView()) {
 				if (playerInv.add(i) != null) {
-					Game.notifications.add("Your inventory is full!");
+					Game.inGameNotifications.add("Your inventory is full!");
 					return;
 				}
 
@@ -106,7 +108,7 @@ public class DeathChest extends Chest {
 			}
 
 			remove();
-			Game.notifications.add(Localization.getLocalized("minicraft.notification.death_chest_retrieved"));
+			Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.death_chest_retrieved"));
 		}
 	}
 }

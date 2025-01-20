@@ -9,10 +9,13 @@ import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
 import minicraft.saveload.Save;
+import minicraft.screen.DebugPanelDisplay;
 import minicraft.screen.Display;
 import minicraft.screen.EndGameDisplay;
 import minicraft.screen.LevelTransitionDisplay;
+import minicraft.screen.AppToast;
 import minicraft.screen.PlayerDeathDisplay;
+import minicraft.screen.Toast;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldSelectDisplay;
 import minicraft.util.AdvancementElement;
@@ -30,6 +33,7 @@ public class Updater extends Game {
 	public static float gamespeed = 1; // Measured in MULTIPLES OF NORMSPEED.
 	public static boolean paused = true; // If the game is paused.
 
+	public static boolean timeFlow = true;
 	public static int tickCount = 0; // The number of ticks since the beginning of the game day.
 	static int time = 0; // Facilites time of day / sunlight.
 	public static final int dayLength = 64800; // This value determines how long one game day is.
@@ -92,7 +96,6 @@ public class Updater extends Game {
 	// VERY IMPORTANT METHOD!! Makes everything keep happening.
 	// In the end, calls menu.tick() if there's a menu, or level.tick() if no menu.
 	public static void tick() {
-
 		if (input.getMappedKey("FULLSCREEN").isClicked()) {
 			Updater.FULLSCREEN = !Updater.FULLSCREEN;
 			Updater.updateFullscreen();
@@ -157,7 +160,7 @@ public class Updater extends Game {
 		}
 
 		// Increment tickCount if the game is not paused
-		if (!paused) setTime(tickCount + 1);
+		if (!paused && timeFlow) setTime(tickCount + 1);
 
 		// SCORE MODE ONLY
 
@@ -170,7 +173,20 @@ public class Updater extends Game {
 			scoreTime--;
 		}
 
+		Renderer.appStatusBar.tick();
+		if (input.getMappedKey("BACK_QUOTE").isDown())
+			Renderer.appStatusBar.show(1);
 		if (updateNoteTick) notetick++;
+		AppToast appToast;
+		if ((appToast = inAppToasts.peek()) != null) {
+			boolean refresh = true;
+			if (appToast.isExpired()) {
+				inAppToasts.pop(); // Removes
+				refresh = (appToast = inAppToasts.peek()) != null; // Tries getting new
+			}
+
+			if (refresh) appToast.tick();
+		}
 
 		Sound.tick();
 
@@ -208,6 +224,16 @@ public class Updater extends Game {
 				}
 
 				player.tick(); // Ticks the player when there's no menu.
+				Toast gameToast;
+				if ((gameToast = inGameToasts.peek()) != null) {
+					boolean refresh = true;
+					if (gameToast.isExpired()) {
+						inGameToasts.pop(); // Removes
+						refresh = (gameToast = inGameToasts.peek()) != null; // Tries getting new
+					}
+
+					if (refresh) gameToast.tick();
+				}
 
 				if (level != null) {
 					level.tick(true);
@@ -219,79 +245,9 @@ public class Updater extends Game {
 				}
 
 				// For debugging only
-				{
-					// Quick Level change: move the player for -1, or 1 levels
-					if (isMode("minicraft.settings.mode.creative") && input.getMappedKey("SHIFT-S").isClicked()) {
-						Game.setDisplay(new LevelTransitionDisplay(-1));
-
-					} else if (isMode("minicraft.settings.mode.creative") && input.getMappedKey("SHIFT-W").isClicked()) {
-						Game.setDisplay(new LevelTransitionDisplay(1));
-					}
-					
-					if (input.getMappedKey("F3-L").isClicked()) {
-						// Print all players on all levels, and their coordinates.
-						Logging.WORLD.info("Printing players on all levels.");
-						for (Level value : levels) {
-							if (value == null) continue;
-							value.printEntityLocs(Player.class);
-						}
-					}
-
-					// Host-only cheats.
-					if (input.getMappedKey("F3-T-1").isClicked()) changeTimeOfDay(Time.Morning);
-					if (input.getMappedKey("F3-T-2").isClicked()) changeTimeOfDay(Time.Day);
-					if (input.getMappedKey("F3-T-3").isClicked()) changeTimeOfDay(Time.Evening);
-					if (input.getMappedKey("F3-T-4").isClicked()) changeTimeOfDay(Time.Night);
-
-					String prevMode = (String) Settings.get("mode");
-					if (input.getMappedKey("F3-F4-2").isClicked()) {
-						Settings.set("mode", "minicraft.settings.mode.creative");
-						Logging.WORLDNAMED.trace("Game mode changed from {} into {}.", prevMode, "minicraft.settings.mode.creative");
-					}
-					if (input.getMappedKey("F3-F4-1").isClicked()) {
-						Settings.set("mode", "minicraft.settings.mode.survival");
-						Logging.WORLDNAMED.trace("Game mode changed from {} into {}.", prevMode, "minicraft.settings.mode.survival");
-					}
-					if (input.getMappedKey("F3-F4-3").isClicked()) {
-						Settings.set("mode", "minicraft.settings.mode.score");
-						Logging.WORLDNAMED.trace("Game mode changed from {} into {}.", prevMode, "minicraft.settings.mode.score");
-					}
-
-					if (isMode("minicraft.settings.mode.score") && input.getMappedKey("F3-SHIFT-T").isClicked()) {
-						scoreTime = normSpeed * 5; // 5 seconds
-					}
-
-					float prevSpeed = gamespeed;
-					if (input.getMappedKey("F3-S-0").isClicked()) {
-						gamespeed = 1;
-						Logging.WORLDNAMED.trace("Tick speed reset from {} into 1.", prevSpeed);
-					}
-					if (input.getMappedKey("F3-S-equals").isClicked()) {
-						if (gamespeed < 1) gamespeed *= 2;
-						else if (normSpeed * gamespeed < 2000) gamespeed++;
-						Logging.WORLDNAMED.trace("Tick speed increased from {} into {}.", prevSpeed, gamespeed);
-					}
-					if (input.getMappedKey("F3-S-minus").isClicked()) {
-						if (gamespeed > 1) gamespeed--;
-						else if (normSpeed * gamespeed > 5) gamespeed /= 2;
-						Logging.WORLDNAMED.trace("Tick speed decreased from {} into {}.", prevSpeed, gamespeed);
-					}
-
-					if (input.getMappedKey("F3-h").isClicked()) player.health--;
-					if (input.getMappedKey("F3-b").isClicked()) player.hunger--;
-
-					if (input.getMappedKey("F3-M-0").isClicked()) player.moveSpeed = 1;
-					if (input.getMappedKey("F3-M-equals").isClicked()) player.moveSpeed++;
-					if (input.getMappedKey("F3-M-minus").isClicked() && player.moveSpeed > 1)
-						player.moveSpeed--; // -= 0.5D;
-
-					if (input.getMappedKey("F3-u").isClicked()) {
-						levels[currentLevel].setTile(player.x >> 4, player.y >> 4, Tiles.get("Stairs Up"));
-					}
-					if (input.getMappedKey("F3-d").isClicked()) {
-						levels[currentLevel].setTile(player.x >> 4, player.y >> 4, Tiles.get("Stairs Down"));
-					}
-				} // End debug only cond.
+				if (debug && currentDisplay == null && input.getMappedKey("F4").isClicked()) {
+					Game.setDisplay(new DebugPanelDisplay());
+				}
 			} // End "menu-null" conditional
 		} // End hasfocus conditional
 	} // End tick()
@@ -340,7 +296,7 @@ public class Updater extends Game {
 
 	public static void notifyAll(String msg, int notetick) {
 		msg = Localization.getLocalized(msg);
-		notifications.add(msg);
+		inGameNotifications.add(msg);
 		Updater.notetick = notetick;
 	}
 }

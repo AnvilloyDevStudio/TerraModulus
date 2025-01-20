@@ -5,8 +5,8 @@ import minicraft.core.Game;
 import minicraft.entity.Direction;
 import minicraft.entity.ItemHolder;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.BoundedInventory;
 import minicraft.item.FixedInventory;
 import minicraft.item.Inventory;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Chest extends Furniture implements ItemHolder {
-	protected static final LinkedSprite defaultSprite = new LinkedSprite(SpriteType.Item, "chest");
+	protected static final LinkedSprite defaultSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "chest").createSpriteLink();
 	protected final Inventory inventory; // Inventory of the chest
 
 	public Chest() {
@@ -31,24 +31,21 @@ public class Chest extends Furniture implements ItemHolder {
 	public Chest(String name) {
 		this(name, defaultSprite);
 	}
-
 	/**
 	 * Creates a chest with a custom name.
 	 * @param name Name of chest.
 	 */
-	public Chest(String name, LinkedSprite itemSprite) {
+	public Chest(String name, SpriteLink itemSprite) {
 		this(new FixedInventory(), name, itemSprite); // Default with bounded inventory
 	}
 
 	protected Chest(Inventory inventory, String name, LinkedSprite itemSprite) {
-		super(name, new LinkedSprite(SpriteType.Entity, "chest"), itemSprite, 3, 3); // Name of the chest
+		super(name, new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "chest").createSpriteLink(), itemSprite, 3, 3); // Name of the chest
 		this.inventory = inventory; // Initialize the inventory.
 	}
 
-	/**
-	 * This is what occurs when the player uses the "Menu" command near this
-	 */
-	public boolean use(Player player) {
+	@Override
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		Game.setDisplay(new ContainerDisplay(player, this));
 		return true;
 	}
@@ -76,10 +73,10 @@ public class Chest extends Furniture implements ItemHolder {
 	}
 
 	@Override
-	public boolean interact(Player player, @Nullable Item item, Direction attackDir) {
+	public @Nullable Item take(Player player) {
 		if (inventory.invSize() == 0)
-			return super.interact(player, item, attackDir);
-		return false;
+			return super.take(player);
+		return null; // TODO a state that the item cannot be put into inventory
 	}
 
 	@Override

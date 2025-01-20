@@ -31,7 +31,7 @@ public enum PotionType {
 	Time(Color.get(1, 163), 1800),
 	Lava(Color.get(1, 199, 58, 58), 7200),
 	Shield(Color.get(1, 84, 84, 204), 5400),
-	Haste(Color.get(1, 201, 71, 201), 4800),
+	Haste(Color.get(1, 201, 71, 201), 4800), // Currently no use
 
 	Escape(Color.get(1, 222, 162, 162), 0) {
 		public boolean toggleEffect(Player player, boolean addEffect) {
@@ -40,7 +40,7 @@ public enum PotionType {
 
 				if (playerDepth == 0) {
 					// player is in overworld
-					Game.notifications.add("You can't escape from here!");
+					Game.inGameNotifications.add("You can't escape from here!");
 					return false;
 				}
 

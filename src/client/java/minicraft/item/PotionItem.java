@@ -3,8 +3,8 @@ package minicraft.item;
 import minicraft.core.Game;
 import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.screen.AchievementsDisplay;
@@ -30,12 +30,13 @@ public class PotionItem extends StackableItem {
 	}
 
 	private PotionItem(PotionType type, int count) {
-		super(type.name, new LinkedSprite(SpriteType.Item, "potion").setColor(type.dispColor), count);
+		super(type.name, new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "potion")
+			.setColor(type.dispColor).createSpriteLink(), count);
 		this.type = type;
 	}
 
 	// The return value is used to determine if the potion was used, which means being discarded.
-	public boolean interactOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
+	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
 		if (type.equals(PotionType.Lava)) {
 			AchievementsDisplay.setAchievement("minicraft.achievement.lava", true);
 		}
@@ -76,11 +77,6 @@ public class PotionItem extends StackableItem {
 	@Override
 	public int hashCode() {
 		return super.hashCode() + type.name.hashCode();
-	}
-
-	@Override
-	public boolean interactsWithWorld() {
-		return false;
 	}
 
 	public @NotNull PotionItem copy() {

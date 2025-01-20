@@ -7,8 +7,8 @@ import minicraft.entity.mob.Player;
 import minicraft.entity.particle.SmashParticle;
 import minicraft.entity.particle.TextParticle;
 import minicraft.gfx.Color;
-import minicraft.gfx.SpriteLinker.LinkedSprite;
-import minicraft.gfx.SpriteLinker.SpriteType;
+import minicraft.gfx.SpriteManager.SpriteLink;
+import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
 import minicraft.item.StackableItem;
@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class DungeonChest extends Chest {
-	private static final LinkedSprite openSprite = new LinkedSprite(SpriteType.Entity, "dungeon_chest");
-	private static final LinkedSprite lockSprite = new LinkedSprite(SpriteType.Entity, "white_chest");
+	private static final SpriteLink openSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "dungeon_chest").createSpriteLink();
+	private static final SpriteLink lockSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "white_chest").createSpriteLink();
 
 	private boolean isLocked;
 
@@ -46,7 +46,7 @@ public class DungeonChest extends Chest {
 		return new DungeonChest(null, !this.isLocked);
 	}
 
-	public boolean use(Player player) {
+	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
 		if (isLocked) {
 			boolean activeKey = player.activeItem != null && player.activeItem.equals(Items.get("Key"));
 			boolean invKey = player.getInventory().count(Items.get("key")) > 0;
@@ -71,11 +71,11 @@ public class DungeonChest extends Chest {
 					level.dropItem(x, y, 5, Items.get("Gold Apple"));
 				}
 
-				return super.use(player); // the player unlocked the chest.
+				return super.use(player, item, attackDir); // the player unlocked the chest.
 			}
 
 			return false; // the chest is locked, and the player has no key.
-		} else return super.use(player); // the chest was already unlocked.
+		} else return super.use(player, item, attackDir); // the chest was already unlocked.
 	}
 
 	/**
@@ -110,9 +110,9 @@ public class DungeonChest extends Chest {
 	}
 
 	@Override
-	public boolean interact(Player player, @Nullable Item item, Direction attackDir) {
+	public @Nullable Item take(Player player) {
 		if (!isLocked)
-			return super.interact(player, item, attackDir);
-		return false;
+			return super.take(player);
+		return null;
 	}
 }

@@ -81,7 +81,7 @@ public class World extends Game {
 		playerDeadTime = 0;
 		currentLevel = 3;
 		Updater.asTick = 0;
-		Updater.notifications.clear();
+		Updater.inGameNotifications.clear();
 
 		// Adds a new player
 		if (keepPlayer) {
@@ -104,7 +104,9 @@ public class World extends Game {
 	 * This method is used to create a brand new world, or to load an existing one from a file.
 	 * For the loading screen updates to work, it it assumed that *this* is called by a thread *other* than the one rendering the current *menu*.
 	 **/
-	public static void initWorld() { // This is a full reset; everything.
+	public static void initWorld()
+		throws Load.BackupCreationFailedException, Load.WorldLoadingFailedException,
+		Load.UserPromptCancelledException { // This is a full reset; everything.
 		Logging.WORLD.debug("Resetting world...");
 
 		PlayerDeathDisplay.shouldRespawn = false;
@@ -113,6 +115,7 @@ public class World extends Game {
 		Bed.removePlayers();
 		Updater.gameTime = 0;
 		Updater.gamespeed = 1;
+		Updater.timeFlow = true;
 		lastWorldEnterTime = System.currentTimeMillis();
 
 		Updater.changeTimeOfDay(Updater.Time.Morning); // Resets tickCount; game starts in the day, so that it's nice and bright.

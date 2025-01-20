@@ -13,7 +13,7 @@ import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
-import minicraft.gfx.SpriteLinker;
+import minicraft.gfx.SpriteManager;
 import minicraft.saveload.Load;
 import minicraft.screen.entry.BlankEntry;
 import minicraft.screen.entry.ListEntry;
@@ -309,12 +309,12 @@ public class QuestsDisplay extends Display {
 			private final int[] rasterPixels;
 			private final Screen simulatedRasterScreen = new Screen(new BufferedImage(Screen.w, Screen.h, BufferedImage.TYPE_INT_RGB)) {
 				@Override
-				public void render(int xp, int yp, int xt, int yt, int bits, MinicraftImage sheet, int whiteTint, boolean fullbright, int color) {
+				public void render(RenderingLimitingModel limitingModel, int xp, int yp, int xt, int yt, int bits, MinicraftImage sheet, int whiteTint, boolean fullbright, int color) {
 					if (sheet == null) return; // Verifying that sheet is not null.
 					// Ignoring mirror.
 					// Validation check
 					if (xt * 8 + yt * 8 * sheet.width + 7 + 7 * sheet.width >= sheet.pixels.length) {
-						sheet = Renderer.spriteLinker.missingSheet(SpriteLinker.SpriteType.Item);
+						sheet = Renderer.spriteManager.missingSheet(SpriteManager.SpriteType.Item);
 						xt = 0;
 						yt = 0;
 					}
@@ -508,7 +508,7 @@ public class QuestsDisplay extends Display {
 				renderRaster();
 				// Border
 				screen.drawRect(rasterX - 1, rasterY - 1, rasterWidth + 2, rasterHeight + 2, Color.WHITE);
-				screen.render(rasterX, rasterY, 0, 0, rasterWidth, rasterHeight, image);
+				screen.render(null, rasterX, rasterY, 0, 0, rasterWidth, rasterHeight, image);
 			}
 
 			private void renderRaster() {
