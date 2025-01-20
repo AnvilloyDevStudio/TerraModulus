@@ -82,6 +82,11 @@ public class Rectangle {
 		);
 	}
 
+	public boolean contains(Point pt) { return contains(pt.x, pt.y); }
+	public boolean contains(int x, int y) { // inclusive
+		return getLeft() <= x && x <= getRight() && getTop() <= y && y <= getBottom();
+	}
+
 	public boolean isWithin(Rectangle other) {
 		return getTop() >= other.getTop() // Top is below the other top
 			&& getBottom() <= other.getBottom() // Bottom is above the other bottom

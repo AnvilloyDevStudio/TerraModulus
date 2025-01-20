@@ -82,10 +82,10 @@ public class ContainerDisplay extends Display {
 			// Expanded counter
 			if (sizeLeft < 10) { // At the moment at most just 2 digits and always 2 digits for capacity (no worry yet)
 				// Background
-				screen.render(boundsLeft.getRight() + 2 - (23 - 5), boundsLeft.getTop() - 3,
+				screen.render(null, boundsLeft.getRight() + 2 - (23 - 5), boundsLeft.getTop() - 3,
 					12, 12, 3, 13, counterSheet);
 				// Skips the middle part as that is for more digits
-				screen.render(boundsLeft.getRight() + 2 - 15, boundsLeft.getTop() - 3,
+				screen.render(null, boundsLeft.getRight() + 2 - 15, boundsLeft.getTop() - 3,
 					20, 12, 15, 13, counterSheet);
 
 				// Digits
@@ -95,7 +95,7 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, capLeft, Color.GRAY);
 			} else {
 				// Background
-				screen.render(boundsLeft.getRight() + 2 - 23, boundsLeft.getTop() - 3,
+				screen.render(null, boundsLeft.getRight() + 2 - 23, boundsLeft.getTop() - 3,
 					12, 12, 23, 13, counterSheet);
 
 				// Digits
@@ -112,10 +112,10 @@ public class ContainerDisplay extends Display {
 			// Minimized counter
 			if (sizeRight < 10) { // no worry yet, really
 				// Background
-				screen.render(boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
+				screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
 					0, 12, 4, 9, counterSheet);
 				// Skips the middle part as that is for more digits
-				screen.render(boundsRight.getLeft() + 8, boundsRight.getTop() - 1,
+				screen.render(null, boundsRight.getLeft() + 8, boundsRight.getTop() - 1,
 					8, 12, 4, 9, counterSheet);
 
 				// Digits
@@ -123,7 +123,7 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, sizeRight, fadeColor(colorByHeaviness(calculateHeaviness(sizeRight, capRight), false)));
 			} else {
 				// Background
-				screen.render(boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
+				screen.render(null, boundsRight.getLeft() + 4, boundsRight.getTop() - 1,
 					0, 12, 12, 9, counterSheet);
 
 				// Digits
@@ -138,10 +138,10 @@ public class ContainerDisplay extends Display {
 			// Minimized counter
 			if (sizeLeft < 10) {
 				// Background
-				screen.render(boundsLeft.getRight() - 4 - 8, boundsLeft.getTop() - 1,
+				screen.render(null, boundsLeft.getRight() - 4 - 8, boundsLeft.getTop() - 1,
 					0, 12, 4, 9, counterSheet);
 				// Skips the middle part as that is for more digits
-				screen.render(boundsLeft.getRight() - 4 - 4, boundsLeft.getTop() - 1,
+				screen.render(null, boundsLeft.getRight() - 4 - 4, boundsLeft.getTop() - 1,
 					8, 12, 4, 9, counterSheet);
 
 				// Digits
@@ -149,7 +149,7 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
 			} else {
 				// Background
-				screen.render(boundsLeft.getRight() - 4 - 12, boundsLeft.getTop() - 1,
+				screen.render(null, boundsLeft.getRight() - 4 - 12, boundsLeft.getTop() - 1,
 					0, 12, 12, 9, counterSheet);
 
 				// Digits
@@ -164,10 +164,10 @@ public class ContainerDisplay extends Display {
 			// Expanded counter (background horizontally mirrored)
 			if (sizeRight < 10) {
 				// Background
-				screen.render(boundsRight.getLeft() - 2 + (20 - 5), boundsRight.getTop() - 3,
+				screen.render(null, boundsRight.getLeft() - 2 + (20 - 5), boundsRight.getTop() - 3,
 					12, 12, 3, 13, counterSheet, 1);
 				// Skips the middle part as that is for more digits
-				screen.render(boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
+				screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
 					20, 12, 15, 13, counterSheet, 1);
 
 				// Digits
@@ -177,7 +177,7 @@ public class ContainerDisplay extends Display {
 					0, 4, 5, capRight, Color.GRAY);
 			} else {
 				// Background
-				screen.render(boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
+				screen.render(null, boundsRight.getLeft() - 2, boundsRight.getTop() - 3,
 					12, 12, 23, 13, counterSheet, 1);
 
 				// Digits
@@ -193,7 +193,7 @@ public class ContainerDisplay extends Display {
 	private void renderCounterNumber(Screen screen, int xp, int yp, int ys, int w, int h, int n, int color) {
 		String display = String.valueOf(n);
 		for (int i = 0; i < display.length(); ++i) {
-			screen.render(xp + i * w, yp, w * (display.charAt(i) - '0'), ys, w, h, counterSheet, 0, color);
+			screen.render(null, xp + i * w, yp, w * (display.charAt(i) - '0'), ys, w, h, counterSheet, 0, color);
 		}
 	}
 

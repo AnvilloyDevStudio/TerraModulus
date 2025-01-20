@@ -131,6 +131,6 @@ public class Arrow extends Entity implements ClientTickable {
 
 	@Override
 	public void render(Screen screen) {
-		screen.render(x - 4, y - 4, sprite);
+		screen.render(null, x - 4, y - 4, sprite);
 	}
 }
