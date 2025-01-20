@@ -129,7 +129,7 @@ public class Menu {
 		doScroll();
 	}
 
-	void setSelection(int idx) {
+	public void setSelection(int idx) {
 		if (idx >= entries.size())
 			idx = entries.size() - 1;
 
@@ -140,8 +140,7 @@ public class Menu {
 		doScroll();
 	}
 
-	int getSelection() {
-		return selection;
+	public int getSelection() { return selection;
 	}
 
 	int getDispSelection() {
@@ -162,13 +161,8 @@ public class Menu {
 		this.entries.addAll(entries);
 	}
 
-	@Nullable ListEntry getCurEntry() {
-		return entries.size() == 0 ? null : entries.get(selection);
-	}
-
-	int getNumOptions() {
-		return entries.size();
-	}
+	public @Nullable ListEntry getCurEntry() { return entries.size() == 0 ? null : entries.get(selection); }
+	int getNumOptions() { return entries.size(); }
 
 	Rectangle getBounds() {
 		return new Rectangle(bounds);
