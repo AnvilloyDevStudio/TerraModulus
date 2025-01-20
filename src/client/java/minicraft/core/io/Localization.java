@@ -1,11 +1,13 @@
 package minicraft.core.io;
 
+import minicraft.util.DisplayString;
 import minicraft.core.Game;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.tinylog.Logger;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +30,80 @@ public class Localization {
 	private static final HashMap<Locale, ArrayList<String>> unloadedLocalization = new HashMap<>();
 	private static final HashMap<Locale, LocaleInformation> localeInfo = new HashMap<>();
 
+	private static final HashSet<HookedLocalizedBufArgString> hookedLocalizedStrings = new HashSet<>();
+
+	public static DisplayString getStaticDisplay(@NotNull String key) {
+		return new DisplayString.StaticString(getLocalized0(key));
+	}
+
+	public static DisplayString getStaticDisplay(@NotNull String key, Object @NotNull ...args) {
+		return DisplayString.staticArgString(getLocalized0(key), args);
+	}
+
+	public static class LocalizedBufArgFixedString extends DisplayString.BufArgFixedString {
+		public LocalizedBufArgFixedString(@NotNull String key, Object @NotNull ...args) {
+			super(getLocalized0(key), args);
+		}
+	}
+
+	public static class LocalizedDynArgFixedString extends DisplayString.DynArgFixedString {
+		public LocalizedDynArgFixedString(@NotNull String key, Object @NotNull ...args) {
+			super(getLocalized0(key), args);
+		}
+	}
+
+	/** Updates in buffer (for parameterized string) are based on hooks. */
+	public static class HookedLocalizedBufArgString extends DisplayString.BufArgString implements Closeable {
+		private final @NotNull String key;
+		private String bufParamStr;
+
+		/* Localized String Buffering
+		 *
+		 * When the string is not localized at all, there does not exist such problem as the key is saved and
+		 * no further process is made when converted to string. It does not affect if it is buffered or not.
+		 *
+		 * Dynamic argumented string is different from buffered one. Dynamic is used when it is updated frequently and
+		 * buffering could seem to be pointless and be a waste of memory.
+		 *
+		 * However, several scenarios may happen when the string is localized. If the localized DisplayString is rendered
+		 * consistently, even if it is not parameterized, the localization source may be updated, so it is important to
+		 * keep such updated, and thus it should not be buffered. As it is not always the case, HookedLocalizedBufArgString
+		 * exists to overcome the situation. If the output is preferred to use buffer, but it
+		 * is not buffered at all, there is no point to involve buffers. Buffered is outputted if and only if the
+		 * output prefers to use buffer, and it is buffered. The output may refresh the buffer in case of any change.
+		 * The localization string is changed only when the language setting is changed or the resource is updated.
+		 *
+		 * Note that buffering plays a vital role as in some cases this may be used very frequently and localized,
+		 * or complexly localized. Besides, if getLocalized is used all the time, it is like not using buffering;
+		 * but if it is buffered from the beginning, synchronization bugs or inconsistencies could be obvious.
+		 * In many cases, it is safe to buffer.
+		 *
+		 * If instant localization is the case (e.g. rendering or #toString()), getLocalize is still preferred
+		 * unless instantaneousness is not the case. Still, if buffering can be used, it might be better to use that.
+		 */
+
+		public HookedLocalizedBufArgString(@NotNull String key, Object @NotNull ...args) {
+			super(args);
+			this.key = key;
+			hookedLocalizedStrings.add(this);
+		}
+
+		private void refreshParamStrBuf() {
+			bufParamStr = getLocalized0(key);
+			refreshBuf();
+		}
+
+		@Override
+		protected @NotNull String getParameterizedString() {
+			return bufParamStr == null ? bufParamStr = getLocalized0(key) : bufParamStr;
+		}
+
+		@Override
+		public void close() {
+			hookedLocalizedStrings.remove(this);
+		}
+	}
+
 	/**
 	 * Get the provided key's localization for the currently selected language.
 	 * @param key The key to localize.
@@ -43,6 +119,16 @@ public class Localization {
 			return key; // This is a number; don't try to localize it
 		}
 
+		String localString = getLocalized0(key);
+
+		if (localString != null) {
+			localString = String.format(getSelectedLocale(), localString, arguments);
+		}
+
+		return (localString == null ? key : localString);
+	}
+
+	private static String getLocalized0(String key) {
 		String localString = localization.get(key);
 
 		if (localString == null && Game.debug) {
@@ -52,10 +138,6 @@ public class Localization {
 				Logger.tag("LOC").trace(unlocalizedStringTracing ? new Throwable("Tracing") : null, "{}: '{}' is unlocalized.", selectedLocale.toLanguageTag(), key);
 				knownUnlocalizedStrings.get(selectedLocale).add(key);
 			}
-		}
-
-		if (localString != null) {
-			localString = String.format(getSelectedLocale(), localString, arguments);
 		}
 
 		return (localString == null ? key : localString);
@@ -138,6 +220,8 @@ public class Localization {
 				}
 			}
 		}
+
+		hookedLocalizedStrings.forEach(HookedLocalizedBufArgString::refreshParamStrBuf);
 	}
 
 	public static void resetLocalizations() {

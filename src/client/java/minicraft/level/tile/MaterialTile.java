@@ -84,7 +84,7 @@ public class MaterialTile extends Tile {
 							drop = Items.get("Raw Obsidian");
 							break;
 						default:
-							throw new IllegalStateException("Unexpected value: " + type);
+							throw new IllegalStateException(String.format("Unexpected value: %s", type));
 					}
 					Sound.play("monsterhurt");
 					level.dropItem((x << 4) + 8, (y << 4) + 8, drop);

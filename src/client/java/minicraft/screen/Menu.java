@@ -14,8 +14,10 @@ import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.screen.entry.BlankEntry;
+import minicraft.screen.entry.ItemEntry;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectableStringEntry;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +41,7 @@ public class Menu {
 	private Rectangle entryRenderingBounds = null;
 	private RelPos entryPos = RelPos.CENTER; // the x part of this is re-applied per entry, while the y part is calculated once using the cumulative height of all entries and spacing.
 
-	private String title = "";
+	private @Nullable DisplayString title = null;
 	private int titleColor;
 	private Point titleLoc = null; // standard point is anchor, with anchor.x + SpriteSheet.boxWidth
 	private boolean drawVertically = false;
@@ -48,6 +50,7 @@ public class Menu {
 	private boolean renderOutOfFrame = false;
 
 	private boolean selectable = false;
+	private boolean renderSelectionLevel = false;
 	boolean shouldRender = true;
 
 	private int displayLength = 0;
@@ -91,6 +94,7 @@ public class Menu {
 		drawVertically = m.drawVertically;
 		hasFrame = m.hasFrame;
 		selectable = m.selectable;
+		renderSelectionLevel = m.renderSelectionLevel;
 		shouldRender = m.shouldRender;
 		displayLength = m.displayLength;
 		padding = m.padding;
@@ -141,7 +145,7 @@ public class Menu {
 
 		if (idx < 0) idx = 0;
 
-		this.selection = idx;
+		updateEntrySelection(idx);
 
 		doScroll();
 	}
@@ -174,7 +178,7 @@ public class Menu {
 		return new Rectangle(bounds);
 	}
 
-	String getTitle() {
+	DisplayString getTitle() {
 		return title;
 	}
 
@@ -200,6 +204,13 @@ public class Menu {
 		titleLoc.translate(xoff, yoff);
 	}
 
+	private void updateEntrySelection(int newSel) {
+		if (selection == newSel) return;
+		if (selection >= 0 && selection < entries.size())
+			entries.get(selection).resetRelativeAnchorsSynced(entryPos); // Reset old selectable entry position
+		selection = newSel;
+	}
+
 	public void tick(InputHandler input) {
 		if (!selectable) {
 			if (!entries.isEmpty()) entries.get(selection).tick(input);
@@ -209,19 +220,20 @@ public class Menu {
 		}
 
 		int prevSel = selection;
-		if (input.getMappedKey("ALT").isDown()) {
+		if (input.getMappedKey("ALT").isDown() && !entries.get(selection).delegate.isScrollingTickerSet()) {
 			if (input.inputPressed("cursor-left"))
 				entries.get(selection).translateX(MinicraftImage.boxWidth, true);
 			if (input.inputPressed("cursor-right"))
 				entries.get(selection).translateX(-MinicraftImage.boxWidth, true);
 		} else {
-			if (input.inputPressed("cursor-up")) selection--;
-			if (input.inputPressed("cursor-down")) selection++;
+			if (input.inputPressed("cursor-up")) updateEntrySelection(selection - 1);
+			if (input.inputPressed("cursor-down")) updateEntrySelection(selection + 1);
 			if (input.getMappedKey("shift+cursor-up").isClicked() && selectionSearcher == 0) selectionSearcher -= 2;
 			if (input.getMappedKey("shift+cursor-down").isClicked() && selectionSearcher == 0) selectionSearcher += 2;
-			if (prevSel != selection && selectionSearcher != 0) selection = prevSel;
+			if (prevSel != selection && selectionSearcher != 0) updateEntrySelection(prevSel);
 		}
 
+		int newSel = selection;
 		if (useSearcherBar) {
 			if (input.getMappedKey("searcher-bar").isClicked()) {
 				searcherBarActive = !searcherBarActive;
@@ -278,23 +290,25 @@ public class Menu {
 			if (selectionSearcher != 0) {
 				boolean downDirection = selectionSearcher > 0;
 				selectionSearcher += downDirection ? -1 : 1;
-				selection += downDirection ? 1 : -1;
+				newSel += downDirection ? 1 : -1;
 			}
 		}
 
-		int delta = selection - prevSel;
-		selection = prevSel;
+		int delta = newSel - prevSel;
+		updateEntrySelection(prevSel);
 		if (delta == 0) {
 			entries.get(selection).tick(input); // only ticks the entry on a frame where the selection cursor has not moved.
 			return;
 		} else
 			Sound.play("select");
 
+		newSel = selection;
 		do {
-			selection += delta;
-			if (selection < 0) selection = entries.size() - 1;
-			selection = selection % entries.size();
-		} while (!entries.get(selection).delegate.isSelectable() && selection != prevSel);
+			newSel += delta;
+			if (newSel < 0) newSel = entries.size() - 1;
+			newSel = newSel % entries.size();
+		} while (!entries.get(newSel).delegate.isSelectable() && newSel != prevSel);
+		updateEntrySelection(newSel);
 
 		// update offset and selection displayed
 		dispSelection += selection - prevSel;
@@ -330,22 +344,25 @@ public class Menu {
 		this.offset = offset;
 	}
 
-	public void render(Screen screen) {
-		renderFrame(screen);
+	public void render(Screen screen) { render(screen, true); }
+	public void render(Screen screen, boolean selected) {
+		renderFrame(screen, selected);
 
 		// render the title
-		if (title.length() > 0) {
+		if (title != null) {
+			String title = this.title.toString();
+			int spriteX = !renderSelectionLevel || selected ? 3 : 7;
 			if (drawVertically) {
 				for (int i = 0; i < title.length(); i++) {
 					if (hasFrame)
-						screen.render(null, titleLoc.x, titleLoc.y + i * Font.textHeight(), 3, 6, 0, hudSheet.get());
+						screen.render(null, titleLoc.x, titleLoc.y + i * Font.textHeight(), spriteX, 6, 0, hudSheet.get());
 					Font.draw(title.substring(i, i + 1), screen, titleLoc.x, titleLoc.y + i * Font.textHeight(), titleColor);
 				}
 			} else {
 				for (int i = 0; i < title.length(); i++) {
 					if (hasFrame)
-						screen.render(null, titleLoc.x + i * Font.textWidth(" "), titleLoc.y, 3, 6, 0, hudSheet.get());
-					Font.draw(title.substring(i, i + 1), screen, titleLoc.x + i * Font.textWidth(" "), titleLoc.y, titleColor);
+						screen.render(null, titleLoc.x + i * 8, titleLoc.y, spriteX, 6, 0, hudSheet.get());
+					Font.draw(title.substring(i, i + 1), screen, titleLoc.x + i * 8, titleLoc.y, titleColor);
 				}
 			}
 		}
@@ -355,7 +372,8 @@ public class Menu {
 			int spaceWidth = Font.textWidth(" ");
 			int leading = typingSearcher.length() * spaceWidth / 2;
 			// int xSearcherBar = titleLoc.x + title.length() * spaceWidth / 3 - title.length() / 2;
-			int xSearcherBar = titleLoc.x + title.length() * 8 / 2 - 16;
+			int xSearcherBar = titleLoc.x - 16;
+			if (title != null) xSearcherBar += title.toString().length() * 8 / 2;
 
 			if (xSearcherBar - leading < 0) {
 				leading += xSearcherBar - leading;
@@ -366,7 +384,7 @@ public class Menu {
 					screen.render(null, xSearcherBar + spaceWidth * i - leading, titleLoc.y - 8, 3, 6, 0, hudSheet.get());
 				}
 
-				Font.draw("> " + typingSearcher + " <", screen, xSearcherBar - leading, titleLoc.y - 8, typingSearcher.length() < Menu.LIMIT_TYPING_SEARCHER ? Color.YELLOW : Color.RED);
+				Font.draw(String.format("> %s <", typingSearcher), screen, xSearcherBar - leading, titleLoc.y - 8, typingSearcher.length() < Menu.LIMIT_TYPING_SEARCHER ? Color.YELLOW : Color.RED);
 			}
 		}
 
@@ -408,9 +426,9 @@ public class Menu {
 		entries.remove(selection);
 
 		if (selection >= entries.size())
-			selection = entries.size() - 1;
+			updateEntrySelection(entries.size() - 1);
 		if (selection < 0)
-			selection = 0;
+			updateEntrySelection(0);
 
 		doScroll();
 	}
@@ -419,18 +437,19 @@ public class Menu {
 		titleColor = model.titleColor;
 	}
 
-	private void renderFrame(Screen screen) {
+	private void renderFrame(Screen screen, boolean selected) {
 		if (!hasFrame) return;
 
 		int bottom = bounds.getBottom() - MinicraftImage.boxWidth;
 		int right = bounds.getRight() - MinicraftImage.boxWidth;
+		int xOffset = !renderSelectionLevel || selected ? 0 : 4;
 
 		for (int y = bounds.getTop(); y <= bottom; y += MinicraftImage.boxWidth) { // loop through the height of the bounds
 			for (int x = bounds.getLeft(); x <= right; x += MinicraftImage.boxWidth) { // loop through the width of the bounds
 
 				boolean xend = x == bounds.getLeft() || x == right;
 				boolean yend = y == bounds.getTop() || y == bottom;
-				int spriteoffset = (xend && yend ? 0 : (yend ? 1 : (xend ? 2 : 3))); // determines which sprite to use
+				int spriteoffset = (xend && yend ? 0 : (yend ? 1 : (xend ? 2 : 3))) + xOffset; // determines which sprite to use
 				int mirrors = (x == right ? 1 : 0) + (y == bottom ? 2 : 0); // gets mirroring
 
 				screen.render(null, x, y, spriteoffset, 6, mirrors, hudSheet.get());
@@ -444,19 +463,48 @@ public class Menu {
 		}
 	}
 
+	private Builder builder = null;
+
+	public Builder builder() {
+		return builder;
+	}
+
 	/** Acts as an internal wrapping decorator of a {@link ListEntry} for the {@link Menu} environment. */
 	private class MenuListEntry extends Screen.EntryRenderingUnit {
 		private class MenuEntryLimitingModel extends EntryLimitingModel {}
+		private class ItemMenuEntryLimitingModel extends MenuEntryLimitingModel {
+			@Override
+			public int getLeftBound() {
+				return super.getLeftBound() + 2 * MinicraftImage.boxWidth;
+			}
+		}
 
 		private class MenuEntryXAccessor extends EntryXAccessor {}
+		private class ItemMenuEntryXAccessor extends MenuEntryXAccessor {
+			@Override
+			public int getLeftBound(RelPos anchor) {
+				return anchor.xIndex *
+					(getDelegate().getWidth() - getEntryBounds().getWidth() + 2 * MinicraftImage.boxWidth) / 2;
+			}
+		}
 
-		public final MenuEntryLimitingModel limitingModel = new MenuEntryLimitingModel();
-		public final MenuEntryXAccessor accessor = new MenuEntryXAccessor();
+		public final MenuEntryLimitingModel limitingModel;
+		public final MenuEntryXAccessor accessor;
 		public final ListEntry delegate;
 
 		public MenuListEntry(ListEntry delegate, @NotNull RelPos anchor) {
 			super(anchor);
 			this.delegate = delegate;
+			resetRelativeAnchorsSynced(anchor);
+			limitingModel = delegate instanceof ItemEntry ? new ItemMenuEntryLimitingModel() : new MenuEntryLimitingModel();
+			accessor = delegate instanceof ItemEntry ? new ItemMenuEntryXAccessor() : new MenuEntryXAccessor();
+		}
+
+		@Override
+		public void resetRelativeAnchorsSynced(RelPos newAnchor) {
+			super.resetRelativeAnchorsSynced(newAnchor);
+			if (delegate instanceof ItemEntry)
+				xPos = 2 * MinicraftImage.boxWidth;
 		}
 
 		@Override
@@ -513,12 +561,14 @@ public class Menu {
 		}
 
 		protected void renderExtra(Screen screen, int x, int y, int entryWidth, boolean selected) {
-			if (selected && delegate.isSelectable()) {
-				if (delegate.isScrollingTickerSet()) {
-					entryWidth = Math.min(entryWidth, getEntryBounds().getWidth());
-					x = getEntryBounds().getLeft();
-				}
+			if (delegate.isScrollingTickerSet()) {
+				entryWidth = Math.min(entryWidth, getEntryBounds().getWidth());
+				x = getEntryBounds().getLeft();
+			}
 
+			if (delegate instanceof ItemEntry)
+				((ItemEntry) delegate).renderIcon(screen, x, y);
+			if (selected && delegate.isSelectable()) {
 				Font.draw(null, "> ", screen, x - 2 * MinicraftImage.boxWidth, y, ListEntry.COL_SLCT);
 				Font.draw(null, " <", screen, x + entryWidth, y, ListEntry.COL_SLCT);
 			}
@@ -602,16 +652,16 @@ public class Menu {
 			return this;
 		}
 
-		public Builder setTitle(String title) {
+		public Builder setTitle(DisplayString title) {
 			menu.title = title;
 			return this;
 		}
 
-		public Builder setTitle(String title, int color) {
+		public Builder setTitle(DisplayString title, int color) {
 			return setTitle(title, color, false);
 		}
 
-		public Builder setTitle(String title, int color, boolean fullColor) {
+		public Builder setTitle(DisplayString title, int color, boolean fullColor) {
 			menu.title = title;
 
 			fullTitleColor = fullColor;
@@ -647,6 +697,11 @@ public class Menu {
 			return this;
 		}
 
+		public Builder setShouldRenderSelectionLevel(boolean renderSelectionLevel) {
+			menu.renderSelectionLevel = renderSelectionLevel;
+			return this;
+		}
+
 		public Builder setSelection(int sel) {
 			menu.selection = sel;
 			return this;
@@ -673,8 +728,6 @@ public class Menu {
 			if (b == this)
 				return copy().createMenu(this);
 
-			menu.title = Localization.getLocalized(menu.title);
-
 			// set default selectability
 			if (!setSelectable) {
 				for (MenuListEntry entry : menu.entries) {
@@ -684,13 +737,26 @@ public class Menu {
 				}
 			}
 
+			recalculateFrame();
+
+			menu.useSearcherBar = searcherBar;
+
+			// done setting defaults/values; return the new menu
+
+			menu.builder = this;
+			menu.init(); // any setup the menu does by itself right before being finished.
+			return menu;
+		}
+
+		public void recalculateFrame() {
 			// check the centering of the title, and find the dimensions of the title's display space.
 
 			menu.drawVertically = titlePos == RelPos.LEFT || titlePos == RelPos.RIGHT;
 
+			String title = menu.title == null ? "" : menu.title.toString();
 			Dimension titleDim = menu.drawVertically ?
-				new Dimension(Font.textHeight() * 2, Font.textWidth(menu.title)) :
-				new Dimension(Font.textWidth(menu.title), Font.textHeight() * 2);
+				new Dimension(Font.textHeight() * 2, Font.textWidth(title)) :
+				new Dimension(Font.textWidth(title), Font.textHeight() * 2);
 
 			// find the area used by the title and/or frame, that can't be used by the entries
 
@@ -713,7 +779,7 @@ public class Menu {
 				border = new Insets();
 
 				// add title insets
-				if (menu.title.length() > 0 && titlePos != RelPos.CENTER) {
+				if (title.length() > 0 && titlePos != RelPos.CENTER) {
 					RelPos c = titlePos;
 					int space = MinicraftImage.boxWidth * 2;
 					if (c.yIndex == 0)
@@ -801,11 +867,11 @@ public class Menu {
 				menu.titleLoc.x -= MinicraftImage.boxWidth;
 
 			// set the menu title color
-			if (menu.title.length() > 0) {
+			if (title.length() > 0) {
 				if (fullTitleColor)
 					menu.titleColor = titleCol;
 				else {
-					if (!setTitleColor) titleCol = menu.hasFrame ? Color.YELLOW : Color.WHITE;
+					if (!setTitleColor) titleCol = menu.hasFrame ? Color.YELLOW : Color.SILVER;
 					menu.titleColor = titleCol; // make it match the frame color, or be transparent
 				}
 			}
@@ -813,13 +879,6 @@ public class Menu {
 			if (padding < 0) padding = 0;
 			if (padding > 1) padding = 1;
 			menu.padding = (int) Math.floor(padding * menu.displayLength / 2);
-
-			menu.useSearcherBar = searcherBar;
-
-			// done setting defaults/values; return the new menu
-
-			menu.init(); // any setup the menu does by itself right before being finished.
-			return menu;
 		}
 
 		// returns a new Builder instance, that can be further modified to create another menu.
@@ -844,6 +903,6 @@ public class Menu {
 	}
 
 	public String toString() {
-		return title + "-Menu[" + bounds + "]";
+		return String.format("%s-Menu[%s]", title, bounds);
 	}
 }

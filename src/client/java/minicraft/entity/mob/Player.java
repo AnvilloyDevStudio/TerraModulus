@@ -5,6 +5,7 @@ import minicraft.core.Renderer;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.InputHandler;
+import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.ClientTickable;
@@ -57,6 +58,7 @@ import minicraft.screen.SkinDisplay;
 import minicraft.screen.WorldSelectDisplay;
 import minicraft.util.AdvancementElement;
 import minicraft.util.DamageSource;
+import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 import minicraft.util.MyUtils;
 import minicraft.util.Vector2;
@@ -211,7 +213,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	}
 
 	public int getMultiplier() {
-		return Game.isMode("minicraft.settings.mode.score") ? multiplier : 1;
+		return Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? multiplier : 1;
 	}
 
 	void resetMultiplier() {
@@ -220,7 +222,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	}
 
 	public void addMultiplier(int value) {
-		if (!Game.isMode("minicraft.settings.mode.score")) return;
+		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.score")) return;
 		multiplier = Math.min(MAX_MULTIPLIER, multiplier + value);
 		multipliertime = Math.max(multipliertime, mtm - 5);
 	}
@@ -336,7 +338,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		} else if (onStairDelay > 0)
 			onStairDelay--; // Decrements stairDelay if it's > 0, but not on stair tile... does the player get removed from the tile beforehand, or something?
 
-		if (onTile == Tiles.get("Infinite Fall") && !Game.isMode("minicraft.settings.mode.creative")) {
+		if (onTile == Tiles.get("Infinite Fall") && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			if (onFallDelay <= 0) {
 				World.scheduleLevelChange(-1);
 				onFallDelay = 40;
@@ -344,7 +346,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		} else if (onFallDelay > 0) onFallDelay--;
 
-		if (Game.isMode("minicraft.settings.mode.creative")) {
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			// Prevent stamina/hunger decay in creative mode.
 			stamina = maxStamina;
 			hunger = maxHunger;
@@ -525,7 +527,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 			if (Game.getDisplay() == null) {
 				if (input.inputPressed("craft")) { // obtain SHIFT modifier input with E
-					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, "minicraft.displays.crafting", this, true));
+					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, Localization.getStaticDisplay(
+						"minicraft.displays.crafting"), this, true));
 					return;
 				} else if (input.inputPressed("INVENTORY")) {
 					Game.setDisplay(new PlayerInvDisplay(this));
@@ -728,7 +731,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 					}
 					if (itemData.startsWith(";")) {
 						// For secret messages :=)
-						Game.inGameNotifications.add(itemData.substring(1));
+						Game.inGameNotifications.add(new DisplayString.StaticString(itemData.substring(1)));
 					} else {
 						if (Items.get(itemData).equals(Items.get("Raw Fish"))) {
 							AchievementsDisplay.setAchievement("minicraft.achievement.fish", true);
@@ -1124,7 +1127,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 	@Override
 	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative") || hurtTime > 0 || Bed.inBed(this))
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") || hurtTime > 0 || Bed.inBed(this))
 			return false; // Can't get hurt in creative, hurt cooldown, or while someone is in bed
 
 		int healthDam = 0, armorDam = 0, suffered = 0;
@@ -1143,7 +1146,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 			// Adds a text particle telling how much damage was done to the player, and the armor.
 			if (armorDam > 0) {
-				level.add(new TextParticle("" + damage, x, y, Color.GRAY));
+				level.add(new TextParticle(String.valueOf(damage), x, y, Color.GRAY));
 				armor -= armorDam;
 				if (armor <= 0) {
 					healthDam -= armor; // Adds armor damage overflow to health damage (minus b/c armor would be negative)
@@ -1155,7 +1158,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		}
 
 		if (healthDam > 0 || this != Game.player) {
-			level.add(new TextParticle("" + damage, x, y, Color.get(-1, 504)));
+			level.add(new TextParticle(String.valueOf(damage), x, y, Color.get(-1, 504)));
 			if (this == Game.player) handleDamage(source, attackDir, healthDam); // Sets knockback, and takes away health.
 		}
 
@@ -1168,7 +1171,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 	@Override
 	public void remove() {
-		Logging.WORLD.trace("Removing player from level " + getLevel());
+		Logging.WORLD.trace("Removing player from level {}", getLevel());
 		super.remove();
 	}
 
@@ -1178,7 +1181,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	}
 
 	public String getDebugHunger() {
-		return hungerStamCnt + "_" + stamHungerTicks;
+		return String.format("%d_%d", hungerStamCnt, stamHungerTicks);
 	}
 
 	/**

@@ -46,7 +46,7 @@ public class OnScreenKeyboardMenu extends Menu {
 		return null;
 	}
 
-	public class VirtualKey {
+	private static class VirtualKey {
 		public final char output;
 
 		public VirtualKey(char out) {
@@ -58,7 +58,7 @@ public class OnScreenKeyboardMenu extends Menu {
 		}
 	}
 
-	public class StickyVirtualKey extends VirtualKey {
+	private static class StickyVirtualKey extends VirtualKey {
 		private boolean sticky = false;
 		private final Consumer<Boolean> stickyListener;
 
@@ -88,8 +88,6 @@ public class OnScreenKeyboardMenu extends Menu {
 	private int keyPressed = 0; // Controls whether to render the selected key as pressed.
 
 	private void initKeyboard() {
-		InputHandler input = Game.input;
-
 		spaceBar = new VirtualKey(' ');
 		backspace = new VirtualKey('\b');
 		shiftKey = new StickyVirtualKey(this::setShiftPressed);

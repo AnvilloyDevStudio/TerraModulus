@@ -1,6 +1,7 @@
 package minicraft.entity.furniture;
 
 import minicraft.core.Game;
+import minicraft.core.io.Localization;
 import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.SpriteManager.SpriteLink;
@@ -61,7 +62,7 @@ public class Crafter extends Furniture {
 	}
 
 	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
-		Game.setDisplay(new CraftingDisplay(type.recipes, (type.name().equalsIgnoreCase("DyeVat") ? "Dye Vat" : type.name()), player));
+		Game.setDisplay(new CraftingDisplay(type.recipes, Localization.getStaticDisplay((type.name().equalsIgnoreCase("DyeVat") ? "Dye Vat" : type.name())), player));
 		return true;
 	}
 

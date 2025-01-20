@@ -19,6 +19,7 @@ import minicraft.screen.Toast;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldSelectDisplay;
 import minicraft.util.AdvancementElement;
+import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 
 import java.awt.GraphicsDevice;
@@ -164,7 +165,7 @@ public class Updater extends Game {
 
 		// SCORE MODE ONLY
 
-		if (isMode("minicraft.settings.mode.score") && (!paused && !gameOver)) {
+		if (isMode("minicraft.displays.world_create.options.game_mode.score") && (!paused && !gameOver)) {
 			if (scoreTime <= 0) { // GAME OVER
 				gameOver = true;
 				setDisplay(new EndGameDisplay());
@@ -200,6 +201,7 @@ public class Updater extends Game {
 			input.tick(); // INPUT TICK; no other class should call this, I think...especially the *Menu classes.
 			TutorialDisplayHandler.tick(input);
 			AdvancementElement.AdvancementTrigger.tick();
+			Renderer.tickHotBar();
 
 			if (currentDisplay != null) {
 				// A menu is active.
@@ -279,7 +281,7 @@ public class Updater extends Game {
 		if (t > 0 && t < times.length)
 			changeTimeOfDay(times[t]); // It just references the other one.
 		else
-			Logging.WORLD.info("Time " + t + " does not exist.");
+			Logging.WORLD.info("Time {} does not exist.", t);
 	}
 
 	public static Time getTime() {
@@ -290,12 +292,11 @@ public class Updater extends Game {
 	/**
 	 * This adds a notification to all player games.
 	 */
-	public static void notifyAll(String msg) {
+	public static void notifyAll(DisplayString msg) {
 		notifyAll(msg, 0);
 	}
 
-	public static void notifyAll(String msg, int notetick) {
-		msg = Localization.getLocalized(msg);
+	public static void notifyAll(DisplayString msg, int notetick) {
 		inGameNotifications.add(msg);
 		Updater.notetick = notetick;
 	}

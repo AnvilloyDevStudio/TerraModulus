@@ -12,13 +12,15 @@ import minicraft.gfx.SpriteManager;
 import minicraft.item.Item;
 import minicraft.item.ToolItem;
 import minicraft.level.Level;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.Nullable;
 
 public class BossWallTile extends WallTile {
 	private static SpriteAnimation obsidian = new SpriteAnimation(SpriteManager.SpriteType.Tile, "obsidian_wall")
 		.setConnectionChecker((level, x, y, tile, side) -> tile instanceof WallTile);
 
-	private static final String wallMsg = "minicraft.notification.defeat_obsidian_knight_first";
+	private static final DisplayString wallMsg = Localization.getStaticDisplay(
+		"minicraft.notification.defeat_obsidian_knight_first");
 
 	protected BossWallTile() {
 		super(Material.Obsidian, "Boss Wall");
@@ -27,12 +29,12 @@ public class BossWallTile extends WallTile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if ((!ObsidianKnight.beaten || ObsidianKnight.active) && !Game.isMode("minicraft.settings.mode.creative") && source instanceof Player) {
+		if ((!ObsidianKnight.beaten || ObsidianKnight.active) && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && source instanceof Player) {
 			if (item instanceof ToolItem) {
 				ToolItem tool = (ToolItem) item;
 				if (tool.type == type.getRequiredTool()) {
 					if (((Player) source).payStamina(1)) {
-						Game.inGameNotifications.add(Localization.getLocalized(wallMsg));
+						Game.inGameNotifications.add(wallMsg);
 						Sound.play("monsterhurt");
 						return true;
 					}

@@ -24,8 +24,7 @@ public final class MyUtils {
 
 	// num should be a natural number.
 	public static String plural(int num, String word) {
-		String p = num <= 1 ? "" : "s";
-		return num + " " + word + p;
+		return String.format("%d %s%s", num, word, num <= 1 ? "" : "s");
 	}
 
 	/**

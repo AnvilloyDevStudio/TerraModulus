@@ -1,6 +1,7 @@
 package minicraft.item;
 
 import minicraft.util.Logging;
+import minicraft.util.MyUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,14 +97,14 @@ public abstract class Inventory {
 			removed += amountRemoving;
 			if (removed == count) break;
 			if (removed > count) { // Just in case...
-				Logging.INVENTORY.info("SCREW UP while removing items from stack: " + (removed - count) + " too many.");
+				Logging.INVENTORY.info("SCREW UP while removing items from stack: {} too many.", removed - count);
 				break;
 			}
 			// If not all have been removed, look for another stack.
 		}
 
 		if (removed < count)
-			Logging.INVENTORY.info("Inventory: could not remove all items; " + (count - removed) + " left.");
+			Logging.INVENTORY.info("Inventory: could not remove all items; {} left.", count - removed);
 		return removed;
 	}
 
@@ -138,7 +139,8 @@ public abstract class Inventory {
 		}
 
 		if (count > 0)
-			Logging.INVENTORY.warn("Could not remove " + count + " " + given + (count > 1 ? "s" : "") + " from inventory");
+			Logging.INVENTORY.warn("Could not remove {} * {} from inventory",
+				count, MyUtils.plural(count, given.toString()));
 	}
 
 	/**

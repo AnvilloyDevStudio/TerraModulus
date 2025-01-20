@@ -125,7 +125,7 @@ public class TreeTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			handleDamage(level, x, y, source, item, MAX_HEALTH);
 			return true; // Go directly to hurt method
 		}
@@ -157,7 +157,7 @@ public class TreeTile extends Tile {
 		level.add(new SmashParticle(x * 16, y * 16));
 		Sound.play("monsterhurt");
 
-		level.add(new TextParticle("" + dmg, x * 16 + 8, y * 16 + 8, Color.RED));
+		level.add(new TextParticle(String.valueOf(dmg), x * 16 + 8, y * 16 + 8, Color.RED));
 		if (damage >= MAX_HEALTH) {
 			level.dropItem(x * 16 + 8, y * 16 + 8, 1, 3, Items.get("Wood"));
 			level.dropItem(x * 16 + 8, y * 16 + 8, 0, 2, Items.get("Acorn"));

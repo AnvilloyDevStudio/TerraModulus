@@ -263,10 +263,10 @@ public class LevelGen {
 				val += 1 - 4 * Math.pow((w - dist * 2.0) / w, 4);
 
 				switch ((String) Settings.get("Type")) {
-					case "minicraft.settings.type.island":
+					case "minicraft.displays.world_create.options.terrain_type.island":
 
 						if (val < -1) {
-							if (Settings.get("Theme").equals("minicraft.settings.theme.hell"))
+							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell"))
 								map[i] = Tiles.get("lava").id;
 							else
 								map[i] = Tiles.get("water").id;
@@ -277,10 +277,10 @@ public class LevelGen {
 						}
 
 						break;
-					case "minicraft.settings.type.box":
+					case "minicraft.displays.world_create.options.terrain_type.box":
 
 						if (val < -1 || dist < 10 && mval > -2) {
-							if (Settings.get("Theme").equals("minicraft.settings.theme.hell")) {
+							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
 								map[i] = Tiles.get("lava").id;
 							} else {
 								map[i] = Tiles.get("water").id;
@@ -292,12 +292,12 @@ public class LevelGen {
 						}
 
 						break;
-					case "minicraft.settings.type.mountain":
+					case "minicraft.displays.world_create.options.terrain_type.mountain":
 
 						if (val < -0.6 && mval > -2) {
 							map[i] = Tiles.get("grass").id;
 						} else if (val > 0.6 && mval < -1.5) {
-							if (Settings.get("Theme").equals("minicraft.settings.theme.hell")) {
+							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
 								map[i] = Tiles.get("lava").id;
 							} else {
 								map[i] = Tiles.get("water").id;
@@ -307,12 +307,12 @@ public class LevelGen {
 						}
 						break;
 
-					case "minicraft.settings.type.irregular":
+					case "minicraft.displays.world_create.options.terrain_type.irregular":
 						if (val < -0.5 && mval < -0.5) {
-							if (Settings.get("Theme").equals("minicraft.settings.theme.hell")) {
+							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
 								map[i] = Tiles.get("lava").id;
 							}
-							if (!Settings.get("Theme").equals("minicraft.settings.theme.hell")) {
+							if (!Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
 								map[i] = Tiles.get("water").id;
 							}
 						} else if (val > 0.5 && mval < -1) {
@@ -326,7 +326,7 @@ public class LevelGen {
 		}
 
 		// Sand
-		if (Settings.get("Theme").equals("minicraft.settings.theme.desert")) {
+		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.desert")) {
 			// Mainly sand
 			for (int i = 0; i < w * h / 200; i++) {
 				int xs = random.nextInt(w);
@@ -401,7 +401,7 @@ public class LevelGen {
 		}
 
 		// Trees
-		if (Settings.get("Theme").equals("minicraft.settings.theme.plain")) {
+		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.plain")) {
 			// Raw trees
 			for (int i = 0; i < w * h / 2800; i++) {
 				int x = random.nextInt(w);
@@ -417,7 +417,7 @@ public class LevelGen {
 				}
 			}
 		} else {
-			if (Settings.get("Theme").equals("minicraft.settings.theme.forest")) {
+			if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.forest")) {
 				// Concentrated trees
 				for (int i = 0; i < w * h / 200; i++) {
 					int x = random.nextInt(w);

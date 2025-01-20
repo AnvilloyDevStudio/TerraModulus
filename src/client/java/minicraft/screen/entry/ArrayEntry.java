@@ -4,37 +4,31 @@ import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
 import minicraft.core.io.Sound;
 import minicraft.gfx.Font;
+import minicraft.util.DisplayString;
 
 import java.util.Arrays;
 
 public class ArrayEntry<T> extends ListEntry implements UserMutable {
 
-	private final String label;
+	private final DisplayString label;
 	private T[] options;
 	private boolean[] optionVis;
 
 	private int selection;
 	private boolean wrap;
-	private boolean localize;
 
 	private ChangeListener changeAction;
 
 	@SafeVarargs
-	public ArrayEntry(String label, T... options) {
-		this(label, true, true, options);
+	public ArrayEntry(DisplayString label, T... options) {
+		this(label, true, options);
 	}
 
 	@SafeVarargs
-	public ArrayEntry(String label, boolean wrap, T... options) {
-		this(label, wrap, true, options);
-	}
-
-	@SafeVarargs
-	public ArrayEntry(String label, boolean wrap, boolean localize, T... options) {
+	public ArrayEntry(DisplayString label, boolean wrap, T... options) {
 		this.label = label;
 		this.options = options;
 		this.wrap = wrap;
-		this.localize = localize;
 
 		optionVis = new boolean[options.length];
 		Arrays.fill(optionVis, true);
@@ -53,12 +47,8 @@ public class ArrayEntry<T> extends ListEntry implements UserMutable {
 		setSelection(getIndex(value)); // if it is -1, setSelection simply won't set the value.
 	}
 
-	protected String getLabel() {
-		return label;
-	}
-
-	protected String getLocalizationOption(T option) {
-		return option.toString();
+	protected String getLocalizedOption(T option) { // instant localization
+		return option instanceof String ? Localization.getLocalized((String) option) : option.toString();
 	}
 
 	public int getSelection() {
@@ -68,6 +58,8 @@ public class ArrayEntry<T> extends ListEntry implements UserMutable {
 	public T getValue() {
 		return options[selection];
 	}
+
+	public T getValue(int idx) { return options[idx]; }
 
 	public boolean valueIs(Object value) {
 		if (value instanceof String && options instanceof String[])
@@ -149,12 +141,7 @@ public class ArrayEntry<T> extends ListEntry implements UserMutable {
 
 	@Override
 	public String toString() {
-		String str = Localization.getLocalized(label) + ": ";
-		String option = options[selection].toString();
-
-		str += localize ? Localization.getLocalized(option) : option;
-
-		return str;
+		return Localization.getLocalized("minicraft.display.entry", label, getLocalizedOption(options[selection]));
 	}
 
 	@Override

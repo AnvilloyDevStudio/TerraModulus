@@ -3,6 +3,7 @@ package minicraft.saveload;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
+import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Bed;
@@ -40,6 +41,7 @@ import minicraft.item.StackableItem;
 import minicraft.item.UnknownItem;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
+import minicraft.screen.LoadingDisplay;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -177,24 +179,30 @@ public class HistoricLoad {
 
 	static void loadSave(String worldName) throws Load.LoadingSessionFailedException {
 		String location = Game.gameDir + "/saves/" + worldName + "/";
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.historic"));
 		try {
 			Game.player.getInventory().clearInv(); // Prepare for loading.
 			loadGame(location + "Game" + Save.extension);
+			LoadingDisplay.progress(10);
 			// KeyPrefs is handled later.
 			try {
 				for (int i = 0; i < 6; ++i) {
 					loadLevel(location + "Level" + i + Save.extension, location + "Level" + i + "data" + Save.extension, i);
+					LoadingDisplay.progress(10);
 				}
 			} catch (Load.MalformedSaveDataException e) {
 				throw new Load.MalformedSaveException("World", e);
 			}
 
 			loadPlayer(location + "Player" + Save.extension);
+			LoadingDisplay.progress(10);
 			loadInventory(location + "Inventory" + Save.extension);
+			LoadingDisplay.progress(10);
 			// loadEntities is not checked by me, but I assume that it is implemented correctly.
 			loadEntities(location + "Entities" + Save.extension); // Most parts of the code are not modified.
+			LoadingDisplay.progress(10);
 		} catch (Load.MalformedSaveException e) {
-			throw new Load.LoadingSessionFailedException("Failed to load world \"" + worldName + "\"", e);
+			throw new Load.LoadingSessionFailedException(String.format("Failed to load world \"%s\"", worldName), e);
 		} catch (IndexOutOfBoundsException e) {
 			// By design, all checks should be done and this exception should not be thrown anywhere here.
 			// MalformedSaveDataFormatException is expected to be used here in case of this.
@@ -230,7 +238,7 @@ public class HistoricLoad {
 		try {
 			return Arrays.asList(Load.loadFromFile(path, true).split(","));
 		} catch (IOException e) {
-			throw new Load.FileLoadingException("Failed to load \"" + path + "\"", e);
+			throw new Load.FileLoadingException(String.format("Failed to load \"%s\"", path), e);
 		}
 	}
 
@@ -265,7 +273,7 @@ public class HistoricLoad {
 	private static void validateIntegralData(int data, @Nullable Predicate<Integer> condition)
 		throws Load.IllegalSaveDataValueException {
 		if (!(condition == null ? POSITIVE_INTEGER_CHECK : condition).test(data))
-			throw new Load.IllegalSaveDataValueException("Input: " + data);
+			throw new Load.IllegalSaveDataValueException(String.format("Input: %d", data));
 	}
 
 	/** Validates for integral data when it is not loaded but a validation is required. */
@@ -313,7 +321,7 @@ public class HistoricLoad {
 			List<String> data = loadFile(path);
 			if (data.size() < 3) // Avoids the needs for IndexOutOfBoundsException catch clauses.
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (data count: " + data.size() + ")");
+					String.format("Corrupted .miniplussave (data count: %d)", data.size()));
 
 			try {
 				Updater.setTime(Integer.parseInt(data.get(0)));
@@ -365,7 +373,7 @@ public class HistoricLoad {
 				validateBooleanSaveData(data.get(4), "Tertiary version, Index 4 (Sound toggle)");
 			} else // If data count does not match, it is not able to load as it depends on the count.
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (data count: " + data.size() + ")");
+					String.format("Corrupted .miniplussave (data count: %d)", data.size()));
 		} catch (Load.FileLoadingException | Load.MalformedSaveDataFormatException |
 		         Load.MalformedSaveDataValueException e) {
 			throw new Load.MalformedSaveException("Game", new Load.MalformedSaveDataException("Game", e));
@@ -380,7 +388,7 @@ public class HistoricLoad {
 			List<String> dataB = loadFile(pathB);
 			if (dataA.size() < 3)
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (Level data count: " + dataA.size() + ")");
+					String.format("Corrupted .miniplussave (Level data count: %d)", dataA.size()));
 
 			int w, h, depth;
 			//noinspection DuplicatedCode
@@ -409,7 +417,7 @@ public class HistoricLoad {
 				// Prevents badly formed level
 				Logging.SAVELOAD.error("Non-squared ({}, {}) level size is not supported.", w, h);
 				throw new Load.MalformedSaveDataValueException("Level width (Index 0) & height (Index 1)",
-					new Load.IllegalSaveDataValueException("width: " + w + "; height: " + h));
+					new Load.IllegalSaveDataValueException(String.format("width: %d; height: %d", w, h)));
 			}
 
 			// Recovery attempt for a known bug about corrupted world size; details above
@@ -533,10 +541,10 @@ public class HistoricLoad {
 
 			if (dataA.size() < 3 + w * h)
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (Level data count: " + dataA.size() + ")");
+					String.format("Corrupted .miniplussave (Level data count: %d)", dataA.size()));
 			if (dataB.size() < w * h)
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (Level data data count: " + dataA.size() + ")");
+					String.format("Corrupted .miniplussave (Level data data count: %d)", dataA.size()));
 
 			Settings.set("size", w);
 			short[] tiles = new short[w * h];
@@ -548,18 +556,18 @@ public class HistoricLoad {
 					try { // For old saves, these are bytes.
 						int id = Byte.parseByte(dataA.get(src + 3)) & 0xFF;
 						if (id >= Tiles.oldids.size())
-							throw new Load.IllegalSaveDataValueException("Input: " + id);
+							throw new Load.IllegalSaveDataValueException(String.format("Input: %d", id));
 						// This should not throw IndexOutOfBoundsException as it is checked above.
 						tiles[trg] = Tiles.get(Tiles.oldids.get(id)).id;
 					} catch (NumberFormatException | Load.IllegalSaveDataValueException e) {
 						throw new Load.MalformedSaveDataValueException(
-							"Index " + (src + 3) + " (Tile id " + trg + "/" + x + ";" + y + ")", e);
+							String.format("Index %d (Tile id %d/%d;%d)", src + 3, trg, x, y), e);
 					}
 					try {
 						data[trg] = (short) (Byte.parseByte(dataB.get(src)) & 0xFF);
 					} catch (NumberFormatException e) {
 						throw new Load.MalformedSaveDataValueException(
-							"Index " + src + " (Tile data " + trg + "/" + x + ";" + y + ")", e);
+							String.format("Index %d (Tile data %d/%d;%d)", src, trg, x, y), e);
 					}
 				}
 			}
@@ -590,7 +598,7 @@ public class HistoricLoad {
 				mode = Integer.parseInt(split[0]);
 				validateIntegralData(mode, v -> v >= 1 && v <= 4);
 			} catch (NumberFormatException | Load.IllegalSaveDataValueException e) {
-				throw new Load.MalformedSaveDataValueException("Mode index: " + split[0], e);
+				throw new Load.MalformedSaveDataValueException(String.format("Mode index: %s", split[0]), e);
 			}
 
 			int time;
@@ -598,12 +606,12 @@ public class HistoricLoad {
 				time = Integer.parseInt(split[1]);
 				validateIntegralData(time, NON_NEGATIVE_INTEGER_CHECK);
 			} catch (NumberFormatException | Load.IllegalSaveDataValueException e) {
-				throw new Load.MalformedSaveDataValueException("Score time: " + split[1], e);
+				throw new Load.MalformedSaveDataValueException(String.format("Score time: %s", split[1]), e);
 			}
 
 			if (mode == 4) Updater.scoreTime = time;
 			else throw new Load.MalformedSaveDataValueException("Mode",
-				new Load.IllegalSaveDataValueException("Score time is illegal in mode \"" + mode + "\""));
+				new Load.IllegalSaveDataValueException(String.format("Score time is illegal in mode \"%d\"", mode)));
 		} else {
 			try {
 				mode = Integer.parseInt(data);
@@ -651,7 +659,7 @@ public class HistoricLoad {
 			// It is assumed that normal RGB is used here.
 			Game.player.shirtColor = Color.get(1, r, g, b);
 		} else
-			throw new Load.MalformedSaveDataValueException("Clothing color: " + data);
+			throw new Load.MalformedSaveDataValueException(String.format("Clothing color: %s", data));
 	}
 
 	private static final Pattern POTION_EFFECTS_REGEX = Pattern.compile("PotionEffects\\[([.\\w;:]+)]");
@@ -686,10 +694,10 @@ public class HistoricLoad {
 							case "Shield": PotionItem.applyPotion(Game.player, PotionType.Shield, time); break;
 							case "Haste": PotionItem.applyPotion(Game.player, PotionType.Haste, time); break;
 							default:
-								throw new Load.IllegalSaveDataValueException("Invalid potion type: " + split[0]);
+								throw new Load.IllegalSaveDataValueException(String.format("Invalid potion type: %s", split[0]));
 						}
 					} catch (Load.IllegalSaveDataValueException | Load.MalformedSaveDataValueException e) {
-						throw new Load.MalformedSaveDataValueException("Potion effect (index: " + count + ")", e);
+						throw new Load.MalformedSaveDataValueException(String.format("Potion effect (index: %d)", count), e);
 					}
 
 					count++;
@@ -706,7 +714,7 @@ public class HistoricLoad {
 			List<String> data = loadFile(path);
 			if (data.size() <  6)
 				throw new Load.MalformedSaveDataFormatException(
-					"Corrupted .miniplussave (data count: " + data.size() + ")");
+					String.format("Corrupted .miniplussave (data count: %d)", data.size()));
 
 			try {
 				Game.player.x = Integer.parseInt(data.get(0));
@@ -820,7 +828,7 @@ public class HistoricLoad {
 					// Data count 10-11
 					if (data.size() != 10 && data.size() != 11)
 						throw new Load.MalformedSaveDataFormatException(
-							"Corrupted .miniplussave (data count: " + data.size() + ")");
+							String.format("Corrupted .miniplussave (data count: %d)", data.size()));
 
 					try {
 						loadClothingColor(data.get(9));
@@ -838,7 +846,7 @@ public class HistoricLoad {
 					// Data count 11-12
 					if (data.size() != 11 && data.size() != 12)
 						throw new Load.MalformedSaveDataFormatException(
-							"Corrupted .miniplussave (data count: " + data.size() + ")");
+								String.format("Corrupted .miniplussave (data count: %d)", data.size()));
 
 					try {
 						loadPotionEffects(data.get(9), false);
@@ -917,7 +925,7 @@ public class HistoricLoad {
 						if (item instanceof ArmorItem)
 							Game.player.curArmor = (ArmorItem) item;
 						else
-							throw new Load.IllegalSaveDataValueException("Input: " + val);
+							throw new Load.IllegalSaveDataValueException(String.format("Input: %s", val));
 					} catch (NumberFormatException | Load.IllegalSaveDataValueException e) {
 						throw new Load.MalformedSaveDataValueException(
 							"Secondary version revised, Index 14 (Player active armor)", e);
@@ -945,7 +953,7 @@ public class HistoricLoad {
 					try {
 						loadToInventory(data.get(i), inv, deathChest);
 					} catch (Load.IllegalSaveDataValueException | Load.MalformedDataValueException e) {
-						throw new Load.MalformedSaveDataValueException("Index " + i, e);
+						throw new Load.MalformedSaveDataValueException(String.format("Index %d", i), e);
 					}
 				}
 			} catch (Load.MalformedSaveDataValueException e) {
@@ -996,7 +1004,7 @@ public class HistoricLoad {
 				}
 			}
 		} else {
-			throw new Load.IllegalSaveDataValueException("Input: " + data);
+			throw new Load.IllegalSaveDataValueException(String.format("Input: %s", data));
 		}
 	}
 
@@ -1132,7 +1140,7 @@ public class HistoricLoad {
 								try {
 									loadToInventory(itemData, chest.getInventory(), null);
 								} catch (Load.IllegalSaveDataValueException | Load.MalformedDataValueException e) {
-									throw new Load.IllegalSaveDataValueException("Data Index " + idx, e);
+									throw new Load.IllegalSaveDataValueException(String.format("Data Index %d", idx), e);
 								}
 							}
 
@@ -1231,7 +1239,7 @@ public class HistoricLoad {
 			case "particle.FireParticle": // Added since Mar 18, 2017 (04:44) c15adeb8
 				return new FireParticle(0, 0);
 			default:
-				Logger.tag("SaveLoad/HistoricLoad").error("Unknown entity requested: " + string);
+				Logger.tag("SaveLoad/HistoricLoad").error("Unknown entity requested: {}", string);
 				throw new Load.IllegalDataValueException("Input: " + string);
 		}
 	}

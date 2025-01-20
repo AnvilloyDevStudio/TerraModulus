@@ -18,6 +18,7 @@ import minicraft.item.Items;
 import minicraft.item.ToolItem;
 import minicraft.level.Level;
 import minicraft.util.AdvancementElement;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.Nullable;
 
 public class WallTile extends Tile {
@@ -30,7 +31,8 @@ public class WallTile extends Tile {
 	private static SpriteAnimation obsidian = new SpriteAnimation(SpriteType.Tile, "obsidian_wall")
 		.setConnectionChecker((level, x, y, tile, side) -> tile instanceof WallTile);
 
-	private static final String obrickMsg = "minicraft.notification.defeat_air_wizard_first";
+	private static final DisplayString obrickMsg = Localization.getStaticDisplay(
+		"minicraft.notification.defeat_air_wizard_first");
 	protected Material type;
 
 	protected WallTile(Material type) {
@@ -38,7 +40,7 @@ public class WallTile extends Tile {
 	}
 
 	protected WallTile(Material type, String name) {
-		super(type.name() + " " + (name == null ? "Wall" : name), null);
+		super(String.format("%s %s", type.name(), name == null ? "Wall" : name), null);
 		this.type = type;
 		switch (type) {
 			case Wood:
@@ -59,7 +61,7 @@ public class WallTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			handleDamage(level, x, y, source, item, MAX_HEALTH);
 			return true;
 		}
@@ -92,7 +94,7 @@ public class WallTile extends Tile {
 		level.add(new SmashParticle(x << 4, y << 4));
 		Sound.play("monsterhurt");
 
-		level.add(new TextParticle("" + dmg, (x << 4) + 8, (y << 4) + 8, Color.RED));
+		level.add(new TextParticle(String.valueOf(dmg), (x << 4) + 8, (y << 4) + 8, Color.RED));
 		if (damage >= MAX_HEALTH) {
 			String itemName = "", tilename = "";
 			switch (type) { // Get what tile to set and what item to drop

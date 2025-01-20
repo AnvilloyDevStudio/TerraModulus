@@ -3,12 +3,14 @@ package minicraft.screen;
 import com.studiohartman.jamepad.ControllerButton;
 import minicraft.core.Game;
 import minicraft.core.io.InputHandler;
+import minicraft.core.io.Localization;
 import minicraft.gfx.MinicraftImage;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.screen.entry.InputEntry;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.StringEntry;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class PopupDisplay extends Display {
 	public PopupDisplay(@Nullable PopupConfig config, boolean clearScreen, boolean menuFrame, ListEntry... entries) {
 		super(clearScreen, true);
 
-		builder = new Menu.Builder(menuFrame, 0, RelPos.CENTER, entries);
+		builder = new Menu.Builder(menuFrame, config != null ? config.entrySpacing : 2, RelPos.CENTER, entries);
 
 		if (config != null) {
 			if (config.title != null)
@@ -67,13 +69,16 @@ public class PopupDisplay extends Display {
 		Rectangle menuBounds = menus[onScreenKeyboardMenu == null ? 0 : 1].getBounds();
 		for (ListEntry entry : entries) {
 			if (entry instanceof InputEntry) {
-				((InputEntry) entry).setChangeListener(v -> update());
+				((InputEntry) entry).addChangeListener(v -> update());
 			}
 		}
 	}
 
 	private void update() {
-		menus[onScreenKeyboardMenu == null ? 0 : 1] = builder.createMenu();
+		menus[onScreenKeyboardMenu == null ? 0 : 1].builder()
+			.setDisplayLength(0)
+			.setMenuSize(null)
+			.recalculateFrame();
 	}
 
 	OnScreenKeyboardMenu onScreenKeyboardMenu;
@@ -170,11 +175,12 @@ public class PopupDisplay extends Display {
 	}
 
 	public static class PopupConfig {
-		public String title;
-		public ArrayList<PopupActionCallback> callbacks;
+		public @Nullable DisplayString title;
+		public @Nullable ArrayList<PopupActionCallback> callbacks;
 		public int entrySpacing;
 
-		public PopupConfig(@Nullable String title, @Nullable ArrayList<PopupActionCallback> callbacks, int entrySpacing) {
+		public PopupConfig(@Nullable DisplayString title,
+		                   @Nullable ArrayList<PopupActionCallback> callbacks, int entrySpacing) {
 			this.title = title;
 			this.callbacks = callbacks;
 			this.entrySpacing = entrySpacing;

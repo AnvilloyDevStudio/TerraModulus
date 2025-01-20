@@ -1,6 +1,7 @@
 package minicraft.level.tile;
 
 import minicraft.core.Game;
+import minicraft.core.io.Localization;
 import minicraft.core.io.Sound;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
@@ -57,7 +58,7 @@ public class HardRockTile extends Tile {
 					return true;
 				}
 			} else {
-				Game.inGameNotifications.add("minicraft.notification.gem_pickaxe_required");
+				Game.inGameNotifications.add(Localization.getStaticDisplay("minicraft.notification.gem_pickaxe_required"));
 			}
 		}
 
@@ -71,7 +72,7 @@ public class HardRockTile extends Tile {
 		level.add(new SmashParticle(x << 4, y << 4));
 		Sound.play("monsterhurt");
 
-		level.add(new TextParticle("" + dmg, (x << 4) + 8, (y << 4) + 8, Color.RED));
+		level.add(new TextParticle(String.valueOf(dmg), (x << 4) + 8, (y << 4) + 8, Color.RED));
 		if (damage >= MAX_HEALTH) {
 			level.setTile(x, y, Tiles.get("dirt"));
 			level.dropItem((x << 4) + 8, (y << 4) + 8, 1, 3, Items.get("Stone"));

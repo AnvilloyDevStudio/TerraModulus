@@ -3,6 +3,7 @@ package minicraft.screen.entry;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
 import minicraft.gfx.Color;
+import minicraft.util.DisplayString;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,20 +11,16 @@ public class SelectableStringEntry extends ListEntry {
 
 	private static final int DEFAULT_COLOR = Color.WHITE;
 
-	private String text;
+	private DisplayString text;
 	private final int color;
-	private final boolean localize;
 
 	private EntryScrollingTicker ticker;
 
-	public SelectableStringEntry(String text) {
+	public SelectableStringEntry(DisplayString text) {
 		this(text, DEFAULT_COLOR);
 	}
-	public SelectableStringEntry(String text, boolean localize) { this(text, DEFAULT_COLOR, localize); } // This might be false as the text might have been localized already.
-	public SelectableStringEntry(String text, int color) { this(text, color, true); } // This should be always true with the new localization IDs.
-	public SelectableStringEntry(String text, int color, boolean localize) {
+	public SelectableStringEntry(DisplayString text, int color) {
 		this.text = text;
-		this.localize = localize;
 		this.color = color;
 	}
 
@@ -36,7 +33,7 @@ public class SelectableStringEntry extends ListEntry {
 		ticker = new HorizontalScrollerScrollingTicker(direction);
 	}
 
-	public void setText(String text) {
+	public void setText(DisplayString text) {
 		this.text = text;
 	}
 
@@ -58,5 +55,5 @@ public class SelectableStringEntry extends ListEntry {
 	public int getColor(boolean isSelected) { return color; }
 
 	@Override
-	public String toString() { return localize? Localization.getLocalized(text): text; }
+	public String toString() { return text.toString(); }
 }

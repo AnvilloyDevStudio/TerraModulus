@@ -8,6 +8,7 @@ import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
 import minicraft.screen.RelPos;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.intellij.lang.annotations.RegExp;
@@ -24,26 +25,26 @@ public class InputEntry extends ListEntry implements UserMutable {
 
 	protected static final int DARK_RED = Color.tint(Color.RED, -1, true);
 
-	private String prompt;
-	private String regex;
-	private int maxLength;
+	private final @Nullable DisplayString prompt;
+	private final String regex;
+	private final int maxLength;
 	private RelPos entryPos;
 
 	private String userInput;
 
 	protected ChangeListener listener;
 
-	private ClipboardHandler clipboardHandler = new ClipboardHandler();
+	private final ClipboardHandler clipboardHandler = new ClipboardHandler();
 
-	public InputEntry(String prompt) {
+	public InputEntry(@Nullable DisplayString prompt) {
 		this(prompt, null, 0);
 	}
 
-	public InputEntry(String prompt, String regex, int maxLen) {
+	public InputEntry(@Nullable DisplayString prompt, String regex, int maxLen) {
 		this(prompt, regex, maxLen, "");
 	}
 
-	public InputEntry(String prompt, String regex, int maxLen, String initValue) {
+	public InputEntry(@Nullable DisplayString prompt, String regex, int maxLen, String initValue) {
 		this.prompt = prompt;
 		this.regex = regex;
 		this.maxLength = maxLen;
@@ -66,9 +67,9 @@ public class InputEntry extends ListEntry implements UserMutable {
 		if (maxLength > 0 && userInput.length() > maxLength)
 			userInput = userInput.substring(0, maxLength); // truncates extra
 		if (input.getMappedKey("CTRL-V").isClicked()) {
-			userInput = userInput + clipboardHandler.getClipboardContents();
+			userInput += clipboardHandler.getClipboardContents();
 		}
-		if (!userInput.equals("")) {
+		if (!userInput.isEmpty()) {
 			if (input.getMappedKey("CTRL-C").isClicked()) {
 				clipboardHandler.setClipboardContents(userInput);
 			}
@@ -96,12 +97,12 @@ public class InputEntry extends ListEntry implements UserMutable {
 	}
 
 	public String toString() {
-		return Localization.getLocalized(prompt) + (prompt.length() == 0 ? "" : ": ") + userInput;
+		return prompt == null ? userInput : Localization.getLocalized("minicraft.display.entry", prompt, userInput);
 	}
 
 	@Override
 	public void render(Screen screen, @Nullable Screen.RenderingLimitingModel limitingModel, int x, int y, boolean isSelected) {
-		Font.draw(limitingModel, toString(), screen, x, y, isValid() ? isSelected ? Color.GREEN : COL_UNSLCT : isSelected ? Color.RED : DARK_RED);
+		Font.draw(limitingModel, toString(), screen, x, y, isValid() ? isSelected ? Color.WHITE : COL_UNSLCT : isSelected ? Color.RED : DARK_RED);
 	}
 
 	// TODO Review this, if userInput contains any unmatched char, it is either regex or InputHanlder#getKeyTyped is corrupted.
@@ -112,5 +113,16 @@ public class InputEntry extends ListEntry implements UserMutable {
 	@Override
 	public void setChangeListener(ChangeListener l) {
 		listener = l;
+	}
+
+	public void addChangeListener(ChangeListener l) {
+		if (listener == null) listener = l;
+		else {
+			ChangeListener orig = listener;
+			listener = o -> {
+				orig.onChange(o);
+				l.onChange(o);
+			};
+		}
 	}
 }

@@ -5,7 +5,6 @@ import minicraft.core.Renderer;
 import minicraft.screen.entry.ListEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,9 +46,8 @@ public class Font {
 		}
 	}
 
-	public static void drawColor(String message, Screen screen, int x, int y) { drawColor(null, message, screen, x, y, -1); }
-	public static void drawColor(String message, Screen screen, int x, int y, int whiteTint) { drawColor(null, message, screen, x, y, whiteTint); }
 	public static void drawColor(@Nullable Screen.RenderingLimitingModel bounds, String message, Screen screen, int x, int y) { drawColor(bounds, message, screen, x, y, -1); }
+	public static void drawColor(String message, Screen screen, int x, int y, int whiteTint) { drawColor(null, message, screen, x, y, whiteTint); }
 	public static void drawColor(@Nullable Screen.RenderingLimitingModel bounds, String message, Screen screen, int x, int y, int whiteTint) {
 		AtomicInteger leading = new AtomicInteger();
 		AtomicReference<StringBuilder> toRender = new AtomicReference<>(new StringBuilder());
@@ -161,6 +159,10 @@ public class Font {
 		new FontStyle(color).setYPos(y).draw(msg, screen);
 	}
 
+	public static void drawColorCentered(String msg, Screen screen, int y, int color) {
+		drawColor(msg, screen, Screen.w / 2 - Font.textWidth(msg) / 2, y, color);
+	}
+
 
 	/// note: the y centering values in the FontStyle object will be used as a paragraph y centering value instead.
 	public static void drawParagraph(String para, Screen screen, FontStyle style, int lineSpacing) {
@@ -238,7 +240,7 @@ public class Font {
 		for (i = 1; i < words.length; i++) {
 			if (words[i].equals("\n")) break;
 
-			curWidth += textWidth(" " + words[i]);
+			curWidth += textWidth(words[i]) + 8;
 			if (curWidth > maxWidth)
 				break;
 		}

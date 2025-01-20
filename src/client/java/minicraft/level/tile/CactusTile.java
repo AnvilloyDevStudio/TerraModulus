@@ -49,7 +49,7 @@ public class CactusTile extends Tile {
 	protected void handleDamage(Level level, int x, int y, Entity source, @Nullable Item item, int dmg) {
 		int damage = level.getData(x, y) + dmg;
 		level.add(new SmashParticle(x << 4, y << 4));
-		level.add(new TextParticle("" + dmg, (x << 4) + 8, (y << 4) + 8, Color.RED));
+		level.add(new TextParticle(String.valueOf(dmg), (x << 4) + 8, (y << 4) + 8, Color.RED));
 
 		if (damage >= MAX_HEALTH) {
 			//int count = random.nextInt(2) + 2;
@@ -70,13 +70,13 @@ public class CactusTile extends Tile {
 	public void bumpedInto(Level level, int x, int y, Entity entity) {
 		if (!(entity instanceof Mob)) return;
 		Mob m = (Mob) entity;
-		if (Settings.get("diff").equals("minicraft.settings.difficulty.easy")) {
+		if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.easy")) {
 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
 				m.dir.getOpposite(), 1);
-		} else if (Settings.get("diff").equals("minicraft.settings.difficulty.normal")) {
+		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.normal")) {
 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
 				m.dir.getOpposite(), 1);
-		} else if (Settings.get("diff").equals("minicraft.settings.difficulty.hard")) {
+		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
 				m.dir.getOpposite(), 2);
 		}

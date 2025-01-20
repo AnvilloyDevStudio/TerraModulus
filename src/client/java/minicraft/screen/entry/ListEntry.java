@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class ListEntry implements Screen.ScreenEntry {
 
-	public static final int COL_UNSLCT = Color.GRAY;
+	public static final int COL_UNSLCT = Color.LIGHT_GRAY;
 	public static final int COL_SLCT = Color.WHITE;
 
 	private boolean selectable = true, visible = true;
@@ -43,7 +43,8 @@ public abstract class ListEntry implements Screen.ScreenEntry {
 
 		String string = toString();
 
-		Font.drawColor(bounds, string.replace(contain, Color.toStringCode(containColor) + contain + Color.REDO_CODE), screen, x, y);
+		Font.drawColor(bounds, string.replace(contain, String.format("%s%s%s", Color.toStringCode(isSelected ? containColor :
+				Color.tint(containColor, -1, true)), contain, Color.REDO_CODE)), screen, x, y);
 	}
 
 	/**

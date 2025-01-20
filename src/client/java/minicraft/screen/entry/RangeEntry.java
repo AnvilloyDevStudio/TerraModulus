@@ -1,5 +1,8 @@
 package minicraft.screen.entry;
 
+import minicraft.core.io.Localization;
+import minicraft.util.DisplayString;
+
 public class RangeEntry extends ArrayEntry<Integer> {
 
 	private static Integer[] getIntegerArray(int min, int max) {
@@ -13,7 +16,7 @@ public class RangeEntry extends ArrayEntry<Integer> {
 
 	private int min, max;
 
-	public RangeEntry(String label, int min, int max, int initial) {
+	public RangeEntry(DisplayString label, int min, int max, int initial) {
 		super(label, false, getIntegerArray(min, max));
 
 		this.min = min;

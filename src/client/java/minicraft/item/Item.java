@@ -3,6 +3,7 @@ package minicraft.item;
 import minicraft.core.io.Localization;
 import minicraft.entity.Direction;
 import minicraft.entity.mob.Player;
+import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteManager;
@@ -10,9 +11,18 @@ import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
+import minicraft.screen.entry.ListEntry;
+import minicraft.screen.entry.StringEntry;
+import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class Item {
+	public static final String DATA_FORMAT = "%s_%d";
 
 	/* Note: Most of the stuff in the class is expanded upon in StackableItem/PowerGloveItem/FurnitureItem/etc */
 
@@ -37,7 +47,7 @@ public abstract class Item {
 	public void renderHUD(Screen screen, int x, int y, int fontColor) {
 		String dispName = getDisplayName();
 		screen.render(null, x, y, sprite);
-		Font.drawBackground(null, dispName, screen, x + 8, y, fontColor);
+		Font.drawBackground(null, " " + dispName, screen, x + 8, y, fontColor);
 	}
 
 	/** Determines what happens when the player attacks a tile */
@@ -90,8 +100,57 @@ public abstract class Item {
 	/**
 	 * Gets the description used for display item information.
 	 */
-	public String getDescription() {
-		return getName();
+	public ItemDescription getDescription() {
+		return new ItemDescription.Builder(Localization.getLocalized(getName())).create();
+	}
+
+	public static class ItemDescription {
+		private final String displayName;
+		private final List<String> description;
+		private final List<String> attributes;
+
+		private ItemDescription(String displayName, List<String> description, List<String> attributes) {
+			this.displayName = displayName;
+			this.description = description;
+			this.attributes = attributes;
+		}
+
+		public static class Builder {
+			private final String displayName;
+			private final ArrayList<String> description = new ArrayList<>();
+			private final ArrayList<String> attributes = new ArrayList<>();
+
+			public Builder(String displayName) {
+				this.displayName = displayName;
+			}
+
+			public Builder appendDescription(String line) {
+				description.add(line);
+				return this;
+			}
+
+			public Builder appendAttribute(String line) {
+				attributes.add(line);
+				return this;
+			}
+
+			public ItemDescription create() {
+				return new ItemDescription(displayName, description, attributes);
+			}
+		}
+
+		public List<ListEntry> toEntries() { return toEntries(null); }
+		public List<ListEntry> toEntries(@Nullable List<String> lore) {
+			ArrayList<ListEntry> entries = new ArrayList<>();
+			entries.add(new StringEntry(Localization.getStaticDisplay(displayName)));
+			for (String l : description)
+				entries.add(new StringEntry(new DisplayString.StaticString(l), Color.LIGHT_GRAY));
+			if (lore != null) for (String l : lore)
+				entries.add(new StringEntry(new DisplayString.StaticString(l), Color.GRAY));
+			for (String l : attributes)
+				entries.add(new StringEntry(Localization.getStaticDisplay(l), Color.WHITE));
+			return entries;
+		}
 	}
 
 	public final String getName() {
@@ -99,7 +158,11 @@ public abstract class Item {
 	}
 
 	// Returns the String that should be used to display this item in a menu or list.
-	public String getDisplayName() {
-		return " " + Localization.getLocalized(getName());
+	public String getDisplayName() { // instant localization
+		return Localization.getLocalized(getName());
+	}
+
+	public String getDisplayNameUndecorated() {
+		return Localization.getLocalized(getName());
 	}
 }

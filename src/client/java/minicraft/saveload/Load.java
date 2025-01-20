@@ -72,6 +72,7 @@ import minicraft.screen.ResourcePackDisplay;
 import minicraft.screen.SignDisplay;
 import minicraft.screen.SkinDisplay;
 import minicraft.screen.TutorialDisplayHandler;
+import minicraft.screen.WorldCreateDisplay;
 import minicraft.screen.WorldSelectDisplay;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.StringEntry;
@@ -116,7 +117,6 @@ public class Load {
 	private static @Nullable AutoDataFixer dataFixer = null;
 
 	private static final String extension = Save.extension;
-	private float percentInc;
 
 	private ArrayList<String> data;
 	private ArrayList<String> extradata; // These two are changed when loading a new file. (see loadFromFile())
@@ -164,9 +164,9 @@ public class Load {
 
 		if (!loadGame) return;
 
-		// Is dev build
-		if (Game.VERSION.isDev() && worldVer != null && worldVer.compareTo(Game.VERSION) < 0) {
-			Logging.SAVELOAD.info("Old world detected, backup prompting...");
+		// Is dev build or newer version
+		if (worldVer != null && (Game.VERSION.isDev() || worldVer.compareTo(Game.VERSION) < 0)) {
+			Logging.SAVELOAD.info("World of unexpected version detected, backup prompting...");
 			ArrayList<ListEntry> entries = new ArrayList<>();
 			entries.addAll(Arrays.asList(StringEntry.useLines(Color.WHITE, false,
 				Localization.getLocalized("minicraft.displays.save.popup_display.world_backup_prompt.msg",
@@ -200,8 +200,9 @@ public class Load {
 			}));
 
 			Game.setDisplay(new PopupDisplay(new PopupDisplay.PopupConfig(
-					"minicraft.displays.save.popup_display.world_backup_prompt", callbacks, 2),
-					entries.toArray(new ListEntry[0])));
+					Localization.getStaticDisplay("minicraft.displays.save.popup_display.world_backup_prompt"),
+				callbacks, 2),
+				entries.toArray(new ListEntry[0])));
 
 			while (true) {
 				if (acted.get()) {
@@ -213,7 +214,7 @@ public class Load {
 							File f = new File(location + "/saves/", filename);
 							while (f.exists()) { // Increments world name if world exists
 								i++;
-								filename = worldname + " (" + i + ")";
+								filename = String.format("%s (%d)", worldname, i);
 								f = new File(location + "/saves/", filename);
 							}
 							f.mkdirs();
@@ -245,7 +246,7 @@ public class Load {
 			}
 		}
 
-		if (worldVer == null) {
+		if (worldVer == null) { // < 1.9.1
 			try {
 				HistoricLoad.loadSave(worldname);
 			} catch (LoadingSessionFailedException e) {
@@ -257,17 +258,18 @@ public class Load {
 		} else {
 			location += "/saves/" + worldname + "/";
 
-			percentInc = 5 + World.levels.length - 1; // For the methods below, and world.
-
-			percentInc = 100f / percentInc;
-
-			LoadingDisplay.setPercentage(0);
 			loadGame("Game"); // More of the version will be determined here
+			// 10%
 			loadWorld("Level");
+			// 65%
 			loadEntities("Entities");
+			// 75%
 			loadInventory("Inventory", Game.player.getInventory());
+			// 85%
 			loadPlayer("Player", Game.player);
+			// 100%
 
+			LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.completing"));
 			if (!overflowingItems.isEmpty()) {
 				Game.player.getLevel().add(new RewardChest(overflowingItems), Game.player.x, Game.player.y);
 				Logging.SAVELOAD.debug("Added a RewardChest containing inventory-overflowing items.");
@@ -310,7 +312,8 @@ public class Load {
 					if (acted.get()) {
 						if (continues.get()) {
 							Logging.SAVELOAD.trace("Regenerating dungeon (B4)...");
-							LoadingDisplay.setMessage("minicraft.displays.loading.message.dungeon_regeneration");
+							LoadingDisplay.setMessage(Localization.getStaticDisplay(
+								"minicraft.displays.loading.message.dungeon_regeneration"));
 							int lvlidx = World.lvlIdx(-4);
 							boolean reAdd = Game.player.getLevel().depth == -4;
 							Level oriLevel = World.levels[lvlidx];
@@ -395,10 +398,6 @@ public class Load {
 		}
 	}
 
-	public Version getWorldVersion() {
-		return worldVer;
-	}
-
 	public static ArrayList<String> loadFile(String filename) throws IOException {
 		ArrayList<String> lines = new ArrayList<>();
 
@@ -437,8 +436,6 @@ public class Load {
 				ex.printStackTrace();
 			}
 		}
-
-		LoadingDisplay.progress(percentInc);
 	}
 
 	/**
@@ -513,6 +510,7 @@ public class Load {
 	}
 
 	private void loadGame(String filename) {
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.game"));
 		loadFromFile(location + filename + extension);
 
 		worldVer = new Version(data.remove(0)); // Gets the world version
@@ -554,6 +552,8 @@ public class Load {
 			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
 			Settings.set("tutorials", Boolean.parseBoolean(data.remove(0)));
 		}
+
+		LoadingDisplay.progress(10);
 	}
 
 	private void loadMode(String modedata) {
@@ -679,6 +679,7 @@ public class Load {
 		Settings.set("fps", json.getInt("fps"));
 		Settings.set("showquests", json.optBoolean("showquests", true));
 		if (json.has("hwa")) Settings.set("hwa", json.getBoolean("hwa")); // Default should have been configured
+		Settings.set("updatecheck", json.opt("updateChecking"));
 
 		if (partialLoad) return; // Partial loading only loads basic settings.
 
@@ -748,9 +749,10 @@ public class Load {
 	}
 
 	private void loadWorld(String filename) {
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.levels"));
 		assert worldVer != null;
 		for (int l = World.maxLevelDepth; l >= World.minLevelDepth; l--) {
-			LoadingDisplay.setMessage(Level.getDepthString(l), false);
+			LoadingDisplay.setMessage(Level.getDepthString(l));
 			int lvlidx = World.lvlIdx(l);
 			loadFromFile(location + filename + lvlidx + extension);
 
@@ -774,7 +776,7 @@ public class Load {
 						if (Tiles.oldids.get(tileID) != null)
 							tilename = Tiles.oldids.get(tileID);
 						else {
-							Logging.SAVELOAD.warn("Tile list doesn't contain tile " + tileID);
+							Logging.SAVELOAD.warn("Tile list doesn't contain tile {}", tileID);
 							tilename = "grass";
 						}
 					}
@@ -853,9 +855,11 @@ public class Load {
 					parent.setTile(p.x, p.y, Tiles.get("Stairs Down"));
 				}
 			}
+
+			LoadingDisplay.progress(50f / World.levels.length);
 		}
 
-		LoadingDisplay.setMessage("minicraft.displays.loading.message.quests");
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.quests"));
 
 		if (new File(location + "Quests.json").exists()) {
 			Logging.SAVELOAD.warn("Quest.json exists and it has been deprecated; renaming...");
@@ -917,6 +921,8 @@ public class Load {
 		if (!signsLoadSucceeded) {
 			SignDisplay.resetSignTexts();
 		}
+
+		LoadingDisplay.progress(5);
 	}
 
 	private static final Pattern OLD_TORCH_TILE_REGEX = Pattern.compile("TORCH ([\\w ]+)");
@@ -937,9 +943,10 @@ public class Load {
 	}
 
 	public void loadPlayer(String filename, Player player) {
-		LoadingDisplay.setMessage("Player");
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.player"));
 		loadFromFile(location + filename + extension);
 		loadPlayer(player, data);
+		LoadingDisplay.progress(15);
 	}
 
 	public void loadPlayer(Player player, List<String> origData) {
@@ -1007,7 +1014,7 @@ public class Load {
 			for (int i = 0; i < cols.length; i++)
 				cols[i] = Integer.parseInt(color[i]) / 50;
 
-			String col = "" + cols[0] + cols[1] + cols[2];
+			String col = String.format("%d%d%d", cols[0], cols[1], cols[2]);
 			Logging.SAVELOAD.debug("Getting color as " + col);
 			player.shirtColor = Integer.parseInt(col);
 		} else if (worldVer.compareTo(new Version("2.0.6-dev4")) < 0) {
@@ -1106,8 +1113,10 @@ public class Load {
 	}
 
 	public void loadInventory(String filename, Inventory inventory) {
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.inventory"));
 		loadFromFile(location + filename + extension);
 		loadInventory(inventory, data);
+		LoadingDisplay.progress(10);
 	}
 
 	public void loadInventory(Inventory inventory, List<String> data) {
@@ -1153,7 +1162,7 @@ public class Load {
 	}
 
 	private void loadEntities(String filename) {
-		LoadingDisplay.setMessage("minicraft.displays.loading.message.entities");
+		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.entities"));
 		loadFromFile(location + filename + extension);
 
 		for (int i = 0; i < World.levels.length; i++) {
@@ -1168,6 +1177,8 @@ public class Load {
 			World.levels[i].checkChestCount();
 			World.levels[i].checkAirWizard();
 		}
+
+		LoadingDisplay.progress(10);
 	}
 
 	@Nullable
@@ -1264,7 +1275,7 @@ public class Load {
 				enemyMob.lvl = Integer.parseInt(info.get(info.size() - 2));
 
 				if (enemyMob.lvl == 0) {
-					Logging.SAVELOAD.debug("Level 0 mob: " + entityName);
+					Logging.SAVELOAD.debug("Level 0 mob: {}", entityName);
 					enemyMob.lvl = 1;
 				} else if (enemyMob.lvl > enemyMob.getMaxLevel()) {
 					enemyMob.lvl = enemyMob.getMaxLevel();
@@ -1438,7 +1449,7 @@ public class Load {
 				return new Crafter(Crafter.Type.DyeVat);
 			case "RepairBench": return new RepairBench();
 			default:
-				Logging.SAVELOAD.error("LOAD ERROR: Unknown or outdated entity requested: " + string);
+				Logging.SAVELOAD.error("LOAD ERROR: Unknown or outdated entity requested: {}", string);
 				return null;
 		}
 	}
@@ -1475,10 +1486,12 @@ public class Load {
 			private final Timer t;
 			private final Ellipsis ellipsis = new Ellipsis.SmoothEllipsis(new Ellipsis.DotUpdater.TimeUpdater());
 			private final String worldName;
+			private final WorldCreateDisplay.WorldSettings settings;
 
-			private DataFixerDisplay(String worldName) {
+			private DataFixerDisplay(String worldName, WorldCreateDisplay.WorldSettings settings) {
 				super(true, false);
 				this.worldName = worldName;
+				this.settings = settings;
 				t = new Timer(200, e -> new Thread(() -> performFix(worldName),
 					"World Save Corruption Data Recovery Thread").start());
 				t.setRepeats(false);
@@ -1499,7 +1512,7 @@ public class Load {
 						Game.exitDisplay(); // Returns to world selection menu.
 					} else if (input.getMappedKey("SELECT").isClicked()) {
 						Game.exitDisplay(); // Exits this display first.
-						Game.setDisplay(new LoadingDisplay()); // Loads the same world again.
+						Game.setDisplay(new LoadingDisplay(settings)); // Loads the same world again.
 					}
 				} else {
 					if (input.getMappedKey("EXIT|SELECT").isClicked()) {
@@ -1546,8 +1559,8 @@ public class Load {
 			}
 		}
 
-		public void startFixer(String worldName) {
-			Game.setDisplay(display = new DataFixerDisplay(worldName));
+		public void startFixer(String worldName, WorldCreateDisplay.WorldSettings settings) {
+			Game.setDisplay(display = new DataFixerDisplay(worldName, settings));
 		}
 	}
 

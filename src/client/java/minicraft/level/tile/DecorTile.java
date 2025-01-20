@@ -115,7 +115,7 @@ public class DecorTile extends Tile {
 							drop = Items.get("Ornate Wood");
 							break;
 						default:
-							throw new IllegalStateException("Unexpected value: " + thisType);
+							throw new IllegalStateException(String.format("Unexpected value: %s", thisType));
 					}
 					Sound.play("monsterhurt");
 					level.dropItem((x << 4) + 8, (y << 4) + 8, drop);

@@ -40,7 +40,7 @@ public class StairsTile extends Tile {
 	@Override
 	public @Nullable Item take(Level level, int x, int y, Player player) {
 		// Makes it so you can remove the stairs if you are in creative and debug mode.
-		if (Game.isMode("minicraft.settings.mode.creative") && Game.debug) {
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && Game.debug) {
 			level.setTile(x, y, Tiles.get("Grass"));
 			Sound.play("monsterhurt");
 		}

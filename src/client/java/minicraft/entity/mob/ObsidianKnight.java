@@ -59,7 +59,7 @@ public class ObsidianKnight extends EnemyMob {
 	public ObsidianKnight(int health) {
 		super(1, armored, MaxHealth, false, 16 * 8, -1, 10, 50);
 
-		Updater.notifyAll(Localization.getLocalized("minicraft.notification.obsidian_knight_awoken")); // On spawn tell player.
+		Updater.notifyAll(Localization.getStaticDisplay("minicraft.notification.obsidian_knight_awoken")); // On spawn tell player.
 
 		active = true;
 		speed = 1;
@@ -88,7 +88,7 @@ public class ObsidianKnight extends EnemyMob {
 			lvlSprites = broken; // Refreshing phased sprites
 		}
 
-		if (Game.isMode("minicraft.settings.mode.creative")) return; // Should not attack if player is in creative
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return; // Should not attack if player is in creative
 
 		if (attackPhaseCooldown == 0) {
 			AttackPhase newPhase;
@@ -217,10 +217,8 @@ public class ObsidianKnight extends EnemyMob {
 
 		int textcol = Color.get(1, 0, 204, 0);
 		int textcol2 = Color.get(1, 0, 51, 0);
-		int percent = health / (maxHealth / 100);
-		String h = percent + "%";
-
-		if (percent < 1) h = "1%";
+		int percent = Math.max(health * 100 / maxHealth, 1);
+		String h = Localization.getLocalized("minicraft.display.boss.health_indicator", percent);
 
 		if (percent < 16) {
 			textcol = Color.get(1, 204, 0, 0);
@@ -262,7 +260,7 @@ public class ObsidianKnight extends EnemyMob {
 		Sound.play("bossdeath");
 
 		//Analytics.AirWizardDeath.ping();
-		Updater.notifyAll(Localization.getLocalized("minicraft.notification.obsidian_knight_defeated"));
+		Updater.notifyAll(Localization.getStaticDisplay("minicraft.notification.obsidian_knight_defeated"));
 
 
 		// If this is the first time we beat the obsidian knight.

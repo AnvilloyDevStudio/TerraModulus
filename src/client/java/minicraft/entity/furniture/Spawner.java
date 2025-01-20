@@ -182,11 +182,11 @@ public class Spawner extends Furniture {
 			Item item = source.getItem();
 			Sound.play("monsterhurt");
 			int dmg = item instanceof ToolItem ? ((ToolItem) item).getAttackDamageBonus(this) : 1;
-			if (Game.isMode("minicraft.settings.mode.creative"))
+			if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
 				dmg = health;
 
 			health -= dmg;
-			level.add(new TextParticle("" + dmg, x, y, Color.get(-1, 200, 300, 400)));
+			level.add(new TextParticle(String.valueOf(dmg), x, y, Color.get(-1, 200, 300, 400)));
 			if (health <= 0) {
 				level.remove(this);
 				Sound.play("death");
@@ -211,7 +211,7 @@ public class Spawner extends Furniture {
 
 	@Override
 	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
-		if (Game.isMode("minicraft.settings.mode.creative") && mob instanceof EnemyMob) {
+		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && mob instanceof EnemyMob) {
 			lvl++;
 			if (lvl > maxMobLevel) lvl = 1;
 			try {
