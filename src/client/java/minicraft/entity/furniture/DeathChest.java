@@ -14,6 +14,7 @@ import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
+import minicraft.item.UnlimitedInventory;
 import org.jetbrains.annotations.Nullable;
 
 public class DeathChest extends Chest {
@@ -23,15 +24,12 @@ public class DeathChest extends Chest {
 	public int time; // Time passed (used for death chest despawn)
 	private int redtick = 0; //This is used to determine the shade of red when the chest is about to expire.
 	private boolean reverse; // What direction the red shade (redtick) is changing.
-	private Inventory inventory = new Inventory() {{
-		unlimited = true;
-	}}; // Implement the inventory locally instead.
 
 	/**
 	 * Creates a custom chest with the name Death Chest
 	 */
 	public DeathChest() {
-		super("Death Chest", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "dungeon_chest").createSpriteLink());
+		super(new UnlimitedInventory(), "Death Chest", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "dungeon_chest").createSpriteLink());
 		this.sprite = normalSprite;
 
 		/// Set the expiration time based on the world difficulty.
@@ -48,7 +46,7 @@ public class DeathChest extends Chest {
 		this();
 		this.x = player.x;
 		this.y = player.y;
-		for (Item i : player.getInventory().getItems()) {
+		for (Item i : player.getInventory().getItemsView()) {
 			inventory.add(i.copy());
 		}
 	}
@@ -100,7 +98,7 @@ public class DeathChest extends Chest {
 	public void touchedBy(Entity other) {
 		if (other instanceof Player) {
 			Inventory playerInv = ((Player) other).getInventory();
-			for (Item i : inventory.getItems()) {
+			for (Item i : inventory.getItemsView()) {
 				if (playerInv.add(i) != null) {
 					Game.inGameNotifications.add("Your inventory is full!");
 					return;
@@ -112,10 +110,5 @@ public class DeathChest extends Chest {
 			remove();
 			Game.inGameNotifications.add(Localization.getLocalized("minicraft.notification.death_chest_retrieved"));
 		}
-	}
-
-	@Override
-	public Inventory getInventory() {
-		return inventory;
 	}
 }

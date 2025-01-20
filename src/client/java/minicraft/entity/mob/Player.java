@@ -27,8 +27,10 @@ import minicraft.gfx.Sprite;
 import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.ArmorItem;
+import minicraft.item.BoundedInventory;
 import minicraft.item.FishingData;
 import minicraft.item.FishingRodItem;
+import minicraft.item.FixedInventory;
 import minicraft.item.FurnitureItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
@@ -92,7 +94,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	public static SpriteLink[][] sprites;
 	public static SpriteLink[][] carrySprites;
 
-	private final Inventory inventory;
+	private final BoundedInventory inventory;
 
 	public @Nullable Item activeItem;
 
@@ -146,7 +148,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		y = 24;
 		this.input = input;
 		// Since this implementation will be deleted by Better Creative Mode Inventory might not implemented correctly
-		inventory = new Inventory() { // Registering all triggers to InventoryChanged.
+		inventory = new FixedInventory() { // Registering all triggers to InventoryChanged.
 			private void triggerTrigger() {
 				AdvancementElement.AdvancementTrigger.InventoryChangedTrigger.INSTANCE.trigger(
 					new AdvancementElement.AdvancementTrigger.InventoryChangedTrigger.InventoryChangedTriggerConditionHandler.InventoryChangedTriggerConditions(this)
@@ -176,12 +178,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			@Override
 			public void removeItems(Item given, int count) {
 				super.removeItems(given, count);
-				triggerTrigger();
-			}
-
-			@Override
-			public void updateInv(String items) {
-				super.updateInv(items);
 				triggerTrigger();
 			}
 		};
@@ -1176,7 +1172,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	}
 
 	@Override
-	public Inventory getInventory() {
+	public BoundedInventory getInventory() {
 		return inventory;
 	}
 

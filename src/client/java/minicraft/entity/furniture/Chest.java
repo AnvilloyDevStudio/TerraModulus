@@ -7,6 +7,8 @@ import minicraft.entity.ItemHolder;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.SpriteManager.SpriteLink;
 import minicraft.gfx.SpriteManager.SpriteType;
+import minicraft.item.BoundedInventory;
+import minicraft.item.FixedInventory;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
@@ -19,23 +21,27 @@ import java.util.List;
 import java.util.Random;
 
 public class Chest extends Furniture implements ItemHolder {
-	private Inventory inventory; // Inventory of the chest
+	protected static final LinkedSprite defaultSprite = new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "chest").createSpriteLink();
+	protected final Inventory inventory; // Inventory of the chest
 
 	public Chest() {
 		this("Chest");
 	}
 
 	public Chest(String name) {
-		this(name, new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "chest").createSpriteLink());
+		this(name, defaultSprite);
 	}
 	/**
 	 * Creates a chest with a custom name.
 	 * @param name Name of chest.
 	 */
 	public Chest(String name, SpriteLink itemSprite) {
-		super(name, new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "chest").createSpriteLink(), itemSprite, 3, 3); // Name of the chest
+		this(new FixedInventory(), name, itemSprite); // Default with bounded inventory
+	}
 
-		inventory = new Inventory(); // Initialize the inventory.
+	protected Chest(Inventory inventory, String name, LinkedSprite itemSprite) {
+		super(name, new SpriteLink.SpriteLinkBuilder(SpriteType.Entity, "chest").createSpriteLink(), itemSprite, 3, 3); // Name of the chest
+		this.inventory = inventory; // Initialize the inventory.
 	}
 
 	@Override
@@ -81,7 +87,7 @@ public class Chest extends Furniture implements ItemHolder {
 	@Override
 	public void die() {
 		if (level != null) {
-			List<Item> items = inventory.getItems();
+			List<Item> items = inventory.getItemsView();
 			level.dropItem(x, y, items.toArray(new Item[0]));
 		}
 		super.die();
