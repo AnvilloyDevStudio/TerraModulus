@@ -8,7 +8,7 @@ with several changes conducted.
 
 ## Information
 
-Active development is in the main branch. Early Stage has been ended at
+Active development is in the [main branch](https://github.com/AnvilloyDevStudio/TerraModulus/tree/main). Early Stage has been ended at
 [`b2a8b103`](https://github.com/AnvilloyDevStudio/TerraModulus/commit/b2a8b103afe7c9122d8b40b1d2f20dc7fcc98d5c)
 in this branch. Only very early development changes would be made here, and referred to the main branch.
 No any open contribution related to this is allowed, but you may fork and/or build this source code yourself.
