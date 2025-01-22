@@ -52,13 +52,11 @@ Contributing guidelines will be drafted and made in the future for open contribu
 
 ### Early Stage
 
-Save directory will be kept under `/playminicraft/mods`, but named as `TerraModulus` instead of `Minicraft_Plus`.
-Mainly it is the migration of my pull requests from Minicraft+ to here.
-Version will be locked at `0.1.0` and no public release would be done.
-
-Therefore, if you would like to access the builds, you have to build them yourself.
+See branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/relictus).
 
 ### Engine Rewrite Stage
+
+At this stage, branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/relictus) would be taken as reference.
 
 Tasks:
 - [Feature Removals & Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
