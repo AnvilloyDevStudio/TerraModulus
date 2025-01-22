@@ -82,11 +82,7 @@ Tasks:
 
 ## License
 
-This repository is licensed under both GPLv3 and LGPLv3. All our content is licensed under LGPLv3, but all the works originated
-from the Minicraft+ project are still licensed as is as GPLv3. All the modifications made by us are still licensed under LGPL, but
-the combined works in individual files are licensed under GPLv3 according to the terms of GPLv3. However, if any parts have been
-overwritten, such parts will be re-licensed under LGPL. The media (including music tracks and graphics) originated in this project
-would be decided later about licensing. Although I could ask for granting permissions from them, I still mixed the licenses for them.
+This repository is licensed under LGPLv3.
 
 Complementary license in [`LICENSE`](/LICENSE), a copy of LGPL in [`LICENSE-LGPL`](/LICENSE-LGPL) and a copy of GPL in
 [`LICENSE-GPL`](/LICENSE-GPL).
