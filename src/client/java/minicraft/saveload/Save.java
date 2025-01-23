@@ -342,14 +342,14 @@ public class Save {
 
 		data.add(String.valueOf(player.shirtColor));
 
-		JSONObject unlockedRecipes = new JSONObject();
-		for (Recipe recipe : CraftingDisplay.getUnlockedRecipes()) {
-			JSONArray costs = new JSONArray();
-			recipe.getCosts().forEach((c, i) -> costs.put(String.format(StackableItem.STACK_DISPLAY_NAME_FORMAT, c, i)));
-			unlockedRecipes.put(String.format(StackableItem.STACK_DISPLAY_NAME_FORMAT,
-				recipe.getProduct().getName(), recipe.getAmount()), costs);
-		}
-		data.add(unlockedRecipes.toString());
+// 		JSONObject unlockedRecipes = new JSONObject();
+// 		for (Recipe recipe : CraftingDisplay.getUnlockedRecipes()) {
+// 			JSONArray costs = new JSONArray();
+// 			recipe.getCosts().forEach((c, i) -> costs.put(String.format(StackableItem.STACK_DISPLAY_NAME_FORMAT, c, i)));
+// 			unlockedRecipes.put(String.format(StackableItem.STACK_DISPLAY_NAME_FORMAT,
+// 				recipe.getProduct().getName(), recipe.getAmount()), costs);
+// 		}
+// 		data.add(unlockedRecipes.toString());
 	}
 
 	private void writeInventory(String filename, Player player) {

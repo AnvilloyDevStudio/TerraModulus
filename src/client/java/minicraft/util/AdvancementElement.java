@@ -355,10 +355,10 @@ public class AdvancementElement {
 				World.levels[World.currentLevel].add(new RewardChest(items), World.player.x, World.player.y);
 			}
 
-			ArrayList<Recipe> recipes = rewards.getRecipe();
-			if (!recipes.isEmpty()) {
-				recipes.forEach(CraftingDisplay::unlockRecipe);
-			}
+// 			ArrayList<Recipe> recipes = rewards.getRecipe();
+// 			if (!recipes.isEmpty()) {
+// 				recipes.forEach(CraftingDisplay::unlockRecipe);
+// 			}
 		}
 	}
 

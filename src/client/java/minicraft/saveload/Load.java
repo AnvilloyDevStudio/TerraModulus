@@ -1000,36 +1000,36 @@ public class Load {
 		}
 
 		// Loading unlocked recipes.
-		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0) {
-			ArrayList<Recipe> recipes = new ArrayList<>();
-			JSONObject unlockedRecipes = new JSONObject(data.remove(0));
-			for (String key : unlockedRecipes.keySet()) {
-				JSONArray costsJson = unlockedRecipes.getJSONArray(key);
-				String[] costs = new String[costsJson.length()];
-				for (int j = 0; j < costsJson.length(); j++) {
-					costs[j] = costsJson.getString(j);
-				}
-
-				// Skipping removed vanilla recipes
-				if (worldVer.compareTo(new Version("2.2.0-dev6")) <= 0) {
-					// Iron Ore * 4 + Coal * 1 => Iron * 1
-					if (key.equalsIgnoreCase("iron_1") &&
-						costs.length == 2 && costs[0].equalsIgnoreCase("iron Ore_4") &&
-						costs[1].equalsIgnoreCase("coal_1"))
-						continue;
-					// Gold Ore * 4 + Coal * 1 => Gold * 1
-					if (key.equalsIgnoreCase("gold_1") &&
-						costs.length == 2 && costs[0].equalsIgnoreCase("gold Ore_4") &&
-						costs[1].equalsIgnoreCase("coal_1"))
-						continue;
-				}
-
-				recipes.add(new Recipe(key, costs));
-			}
-
-			CraftingDisplay.loadUnlockedRecipes(recipes);
-		} else
-			CraftingDisplay.resetRecipeUnlocks();
+// 		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0) {
+// 			ArrayList<Recipe> recipes = new ArrayList<>();
+// 			JSONObject unlockedRecipes = new JSONObject(data.remove(0));
+// 			for (String key : unlockedRecipes.keySet()) {
+// 				JSONArray costsJson = unlockedRecipes.getJSONArray(key);
+// 				String[] costs = new String[costsJson.length()];
+// 				for (int j = 0; j < costsJson.length(); j++) {
+// 					costs[j] = costsJson.getString(j);
+// 				}
+//
+// 				// Skipping removed vanilla recipes
+// 				if (worldVer.compareTo(new Version("2.2.0-dev6")) <= 0) {
+// 					// Iron Ore * 4 + Coal * 1 => Iron * 1
+// 					if (key.equalsIgnoreCase("iron_1") &&
+// 						costs.length == 2 && costs[0].equalsIgnoreCase("iron Ore_4") &&
+// 						costs[1].equalsIgnoreCase("coal_1"))
+// 						continue;
+// 					// Gold Ore * 4 + Coal * 1 => Gold * 1
+// 					if (key.equalsIgnoreCase("gold_1") &&
+// 						costs.length == 2 && costs[0].equalsIgnoreCase("gold Ore_4") &&
+// 						costs[1].equalsIgnoreCase("coal_1"))
+// 						continue;
+// 				}
+//
+// 				recipes.add(new Recipe(key, costs));
+// 			}
+//
+// 			CraftingDisplay.loadUnlockedRecipes(recipes);
+// 		} else
+// 			CraftingDisplay.resetRecipeUnlocks();
 	}
 
 	protected static String subOldName(String name, Version worldVer) {
