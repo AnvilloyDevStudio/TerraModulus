@@ -46,7 +46,6 @@ public class Items {
 		addAll(PotionItem.getAllInstances());
 		addAll(FishingRodItem.getAllInstances());
 		addAll(SummonItem.getAllInstances());
-		addAll(HeartItem.getAllInstances());
 		addAll(WateringCanItem.getAllInstances());
 		addAll(DyeItem.getAllInstances());
 		addAll(WoolItem.getAllInstances());

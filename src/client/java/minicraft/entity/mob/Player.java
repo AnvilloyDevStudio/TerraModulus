@@ -87,8 +87,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 	// The maximum stats that the player can have.
 	public static final int maxStat = 10;
-	public static final int maxHealth = 30, maxStamina = maxStat, maxHunger = maxStat;
-	public static int extraHealth = 0;
+	public static final int// maxHealth = 30,
+		maxStamina = maxStat, maxHunger = maxStat;
 	public static int baseHealth = 10;
 	public static final int maxArmor = 100;
 
@@ -243,10 +243,10 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 		super.tick(); // Ticks Mob.java
 
-		if ((baseHealth + extraHealth) > maxHealth) {
-			extraHealth = maxHealth - 10;
-			Logging.PLAYER.warn("Current Max Health is greater than Max Health, downgrading.");
-		}
+// 		if ((baseHealth + extraHealth) > maxHealth) {
+// 			extraHealth = maxHealth - 10;
+// 			Logging.PLAYER.warn("Current Max Health is greater than Max Health, downgrading.");
+// 		}
 
 // 		if (potioneffects.size() > 0 && !Bed.inBed(this)) {
 // 			for (PotionType potionType : potioneffects.keySet().toArray(new PotionType[0])) {
