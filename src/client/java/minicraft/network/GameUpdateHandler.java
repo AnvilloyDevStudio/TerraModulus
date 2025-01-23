@@ -95,39 +95,39 @@ public class GameUpdateHandler {
 	}
 
 	public void checkForUpdate() {
-		String setting = (String) Settings.get("updatecheck");
-		if (!setting.equals("minicraft.settings.update_check.disabled")) {
-			boolean fullOnly = setting.equals("minicraft.settings.update_check.full_only");
-			checkDid = true;
-			executorService.submit(() -> {
-				Logging.NETWORK.debug("Fetching release list from GitHub..."); // Fetch the latest version from GitHub
-				try {
-					HttpResponse<JsonNode> response = Unirest.get(
-						"https://api.github.com/repos/MinicraftPlus/minicraft-plus-revived/releases").asJson();
-					if (response.getStatus() == 200) {
-						failureMessage = null;
-						VersionInfo versionInfo;
-						int idx = 0;
-						do {
-							versionInfo = new VersionInfo(
-								new JSONObject(response.getBody().getArray().getJSONObject(idx++).toString()));
-						} while (fullOnly && versionInfo.version.isDev());
-						latestUpdate = new UpdateMeta(versionInfo);
-					} else {
-						Logging.NETWORK.error("Version request returned status code {}: {}",
-							response.getStatus(), response.getStatusText());
-						Logging.NETWORK.error("Response body: {}", response.getBody());
-						latestUpdate = null;
-						failureMessage = Localization.getLocalized(
-							"minicraft.displays.title.update_checker.display.status.failed", response.getStatusText());
-					}
-				} catch (UnirestException e) {
-					Logging.NETWORK.error(e, "Unable to perform update check");
-					latestUpdate = null;
-					failureMessage = Localization.getLocalized(
-						"minicraft.displays.title.update_checker.display.status.failed.unknown");
-				}
-			});
-		}
+// 		String setting = (String) Settings.get("updatecheck");
+// 		if (!setting.equals("minicraft.settings.update_check.disabled")) {
+// 			boolean fullOnly = setting.equals("minicraft.settings.update_check.full_only");
+// 			checkDid = true;
+// 			executorService.submit(() -> {
+// 				Logging.NETWORK.debug("Fetching release list from GitHub..."); // Fetch the latest version from GitHub
+// 				try {
+// 					HttpResponse<JsonNode> response = Unirest.get(
+// 						"https://api.github.com/repos/MinicraftPlus/minicraft-plus-revived/releases").asJson();
+// 					if (response.getStatus() == 200) {
+// 						failureMessage = null;
+// 						VersionInfo versionInfo;
+// 						int idx = 0;
+// 						do {
+// 							versionInfo = new VersionInfo(
+// 								new JSONObject(response.getBody().getArray().getJSONObject(idx++).toString()));
+// 						} while (fullOnly && versionInfo.version.isDev());
+// 						latestUpdate = new UpdateMeta(versionInfo);
+// 					} else {
+// 						Logging.NETWORK.error("Version request returned status code {}: {}",
+// 							response.getStatus(), response.getStatusText());
+// 						Logging.NETWORK.error("Response body: {}", response.getBody());
+// 						latestUpdate = null;
+// 						failureMessage = Localization.getLocalized(
+// 							"minicraft.displays.title.update_checker.display.status.failed", response.getStatusText());
+// 					}
+// 				} catch (UnirestException e) {
+// 					Logging.NETWORK.error(e, "Unable to perform update check");
+// 					latestUpdate = null;
+// 					failureMessage = Localization.getLocalized(
+// 						"minicraft.displays.title.update_checker.display.status.failed.unknown");
+// 				}
+// 			});
+// 		}
 	}
 }

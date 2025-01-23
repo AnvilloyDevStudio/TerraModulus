@@ -180,20 +180,20 @@ public class DebugPanelDisplay extends Display {
 			ArrayEntry<String> modeEntry = new ArrayEntry<>(Localization.getStaticDisplay("minicraft.settings.mode"),
 				"minicraft.settings.mode.survival", "minicraft.settings.mode.creative",
 				"minicraft.settings.mode.hardcore", "minicraft.settings.mode.score");
-			modeEntry.setValue(Settings.get("mode"));
+// 			modeEntry.setValue(Settings.get("mode"));
 			CommandOptionEntry optionEntry = new CommandOptionEntry(modeEntry);
 			Game.setDisplay(new CommandPopupDisplay(null, () -> {
-				Object prevMode = Settings.get("mode");
+// 				Object prevMode = Settings.get("mode");
 				String distMode = modeEntry.getValue();
-				Settings.set("mode", distMode);
-				Logging.WORLDNAMED.info("Game mode changed from {} into {}.", prevMode, distMode);
+// 				Settings.set("mode", distMode);
+// 				Logging.WORLDNAMED.info("Game mode changed from {} into {}.", prevMode, distMode);
 				return true;
 			}, null, Collections.singletonList(optionEntry)));
 		}));
 		entries.add(new SelectEntry(new DisplayString.StaticString("Reset score time as 5 seconds"), () -> {
-			if (Game.isMode("minicraft.settings.mode.score")) {
-				Updater.scoreTime = Updater.normSpeed * 5; // 5 seconds
-			}
+// 			if (Game.isMode("minicraft.settings.mode.score")) {
+// 				Updater.scoreTime = Updater.normSpeed * 5; // 5 seconds
+// 			}
 			Game.exitDisplay();
 		}));
 		entries.add(new SelectEntry(new DisplayString.StaticString("Reset tick speed (TPS)"), () -> {

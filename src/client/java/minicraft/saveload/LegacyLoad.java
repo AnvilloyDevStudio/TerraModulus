@@ -184,12 +184,12 @@ public class LegacyLoad {
 		Updater.gameTime = 65000; // Prevents time cheating.
 
 		if (worldVer.compareTo(new Version("1.9.2")) < 0) {
-			Settings.set("autosave", Boolean.parseBoolean(data.get(3)));
-			Settings.set("sound", Boolean.parseBoolean(data.get(4)));
+// 			Settings.set("autosave", Boolean.parseBoolean(data.get(3)));
+// 			Settings.set("sound", Boolean.parseBoolean(data.get(4)));
 			if (worldVer.compareTo(new Version("1.9.2-dev2")) >= 0)
 				AirWizard.beaten = Boolean.parseBoolean(data.get(5));
 		} else { // This is 1.9.2 official or after
-			Settings.setIdx("diff", Integer.parseInt(data.get(3)));
+// 			Settings.setIdx("diff", Integer.parseInt(data.get(3)));
 			AirWizard.beaten = Boolean.parseBoolean(data.get(4));
 		}
 
@@ -207,7 +207,7 @@ public class LegacyLoad {
 			int lvlw = Integer.parseInt(data.get(0));
 			int lvlh = Integer.parseInt(data.get(1));
 			int lvldepth = Integer.parseInt(data.get(2));
-			Settings.set("size", lvlw);
+// 			Settings.set("size", lvlw);
 
 			short[] tiles = new short[lvlw * lvlh];
 			short[] tdata = new short[lvlw * lvlh];
@@ -262,7 +262,7 @@ public class LegacyLoad {
 			if (mode == 4) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode);
+// 		Settings.setIdx("mode", mode);
 
 		boolean hasEffects;
 		hasEffects = !data.get(10).equals("PotionEffects[]"); // Newer save

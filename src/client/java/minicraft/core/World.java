@@ -122,7 +122,7 @@ public class World extends Game {
 
 		levels = new Level[6];
 
-		Updater.scoreTime = (Integer) Settings.get("scoretime") * 60 * Updater.normSpeed;
+// 		Updater.scoreTime = (Integer) Settings.get("scoretime") * 60 * Updater.normSpeed;
 
 		LoadingDisplay.setPercentage(0); // This actually isn't necessary, I think; it's just in case.
 
@@ -135,7 +135,7 @@ public class World extends Game {
 		} else {
 			Analytics.WorldCreation.ping();
 
-			worldSize = (Integer) Settings.get("size");
+// 			worldSize = (Integer) Settings.get("size");
 
 			seed = settings.seed == null ? new Random().nextLong() : settings.seed;
 			random = new Random(seed);

@@ -534,7 +534,7 @@ public class Load {
 		if (worldVer.compareTo(new Version("1.9.3-dev3")) < 0)
 			diffIdx--; // Account for change in difficulty
 
-		Settings.setIdx("diff", diffIdx);
+// 		Settings.setIdx("diff", diffIdx);
 
 		AirWizard.beaten = Boolean.parseBoolean(data.remove(0));
 
@@ -547,8 +547,8 @@ public class Load {
 		}
 
 		if (worldVer.compareTo(new Version("2.2.0-dev1")) >= 0) {
-			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
-			Settings.set("tutorials", Boolean.parseBoolean(data.remove(0)));
+// 			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
+// 			Settings.set("tutorials", Boolean.parseBoolean(data.remove(0)));
 		}
 
 		LoadingDisplay.progress(10);
@@ -564,8 +564,8 @@ public class Load {
 				mode--; // We changed the min mode idx from 1 to 0.
 			if (mode == 3) {
 				Updater.scoreTime = Integer.parseInt(modeinfo[1]);
-				if (worldVer.compareTo(new Version("1.9.4")) >= 0)
-					Settings.set("scoretime", modeinfo[2]);
+// 				if (worldVer.compareTo(new Version("1.9.4")) >= 0)
+// 					Settings.set("scoretime", modeinfo[2]);
 			}
 		} else {
 			mode = Integer.parseInt(modedata);
@@ -575,7 +575,7 @@ public class Load {
 			if (mode == 3) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode);
+// 		Settings.setIdx("mode", mode);
 	}
 
 	private void loadPrefsOld(String filename, boolean partialLoad) {
@@ -585,11 +585,11 @@ public class Load {
 		if (!data.get(2).contains(";")) // signifies that this file was last written to by a version after 2.0.2.
 			prefVer = new Version(data.remove(0));
 
-		Settings.set("sound", Boolean.parseBoolean(data.remove(0)));
-		Settings.set("autosave", Boolean.parseBoolean(data.remove(0)));
+// 		Settings.set("sound", Boolean.parseBoolean(data.remove(0)));
+// 		Settings.set("autosave", Boolean.parseBoolean(data.remove(0)));
 
-		if (prefVer.compareTo(new Version("2.0.4-dev2")) >= 0)
-			Settings.set("fps", Integer.parseInt(data.remove(0)));
+// 		if (prefVer.compareTo(new Version("2.0.4-dev2")) >= 0)
+// 			Settings.set("fps", Integer.parseInt(data.remove(0)));
 
 		if (partialLoad) return; // Partial loading only loads basic settings.
 
@@ -672,12 +672,12 @@ public class Load {
 		Version prefVer = new Version(json.getString("version"));
 
 		// Settings
-		Settings.set("sound", json.getBoolean("sound"));
-		Settings.set("autosave", json.getBoolean("autosave"));
-		Settings.set("fps", json.getInt("fps"));
-		Settings.set("showquests", json.optBoolean("showquests", true));
-		if (json.has("hwa")) Settings.set("hwa", json.getBoolean("hwa")); // Default should have been configured
-		Settings.set("updatecheck", json.opt("updateChecking"));
+// 		Settings.set("sound", json.getBoolean("sound"));
+// 		Settings.set("autosave", json.getBoolean("autosave"));
+// 		Settings.set("fps", json.getInt("fps"));
+// 		Settings.set("showquests", json.optBoolean("showquests", true));
+// 		if (json.has("hwa")) Settings.set("hwa", json.getBoolean("hwa")); // Default should have been configured
+// 		Settings.set("updatecheck", json.opt("updateChecking"));
 
 		if (partialLoad) return; // Partial loading only loads basic settings.
 
@@ -723,8 +723,8 @@ public class Load {
 		for (String unlock : data) {
 			unlock = unlock.replace("HOURMODE", "H_ScoreTime").replace("MINUTEMODE", "M_ScoreTime").replace("M_ScoreTime", "_ScoreTime").replace("2H_ScoreTime", "120_ScoreTime");
 
-			if (unlock.contains("_ScoreTime"))
-				Settings.getEntry("scoretime").setValueVisibility(Integer.parseInt(unlock.substring(0, unlock.indexOf("_"))), true);
+// 			if (unlock.contains("_ScoreTime"))
+// 				Settings.getEntry("scoretime").setValueVisibility(Integer.parseInt(unlock.substring(0, unlock.indexOf("_"))), true);
 		}
 	}
 
@@ -738,7 +738,7 @@ public class Load {
 		}
 
 		for (Object i : json.getJSONArray("visibleScoreTimes")) {
-			Settings.getEntry("scoretime").setValueVisibility(i, true); // Minutes
+// 			Settings.getEntry("scoretime").setValueVisibility(i, true); // Minutes
 		}
 
 		// Load unlocked achievements.
@@ -759,7 +759,7 @@ public class Load {
 
 			boolean hasSeed = worldVer.compareTo(new Version("2.0.7-dev2")) >= 0;
 			long seed = hasSeed ? Long.parseLong(data.get(2)) : 0;
-			Settings.set("size", lvlw);
+// 			Settings.set("size", lvlw);
 
 			short[] tiles = new short[lvlw * lvlh];
 			short[] tdata = new short[lvlw * lvlh];

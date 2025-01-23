@@ -56,7 +56,7 @@ public class AirWizard extends EnemyMob {
 	public void tick() {
 		super.tick();
 
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return; // Should not attack if player is in creative
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return; // Should not attack if player is in creative
 
 		if (attackDelay > 0) {
 			xmov = ymov = 0;

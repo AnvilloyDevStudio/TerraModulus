@@ -29,7 +29,7 @@ public class BossWallTile extends WallTile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if ((!ObsidianKnight.beaten || ObsidianKnight.active) && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && source instanceof Player) {
+		if ((!ObsidianKnight.beaten || ObsidianKnight.active)){// && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && source instanceof Player) {
 			if (item instanceof ToolItem) {
 				ToolItem tool = (ToolItem) item;
 				if (tool.type == type.getRequiredTool()) {

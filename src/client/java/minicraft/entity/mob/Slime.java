@@ -70,7 +70,7 @@ public class Slime extends EnemyMob {
 	}
 
 	public void die() {
-		dropItem(1, 4 - Settings.getIdx("diff"), Items.get("slime"));
+// 		dropItem(1, 4 - Settings.getIdx("diff"), Items.get("slime"));
 
 		super.die(); // Parent death call
 	}

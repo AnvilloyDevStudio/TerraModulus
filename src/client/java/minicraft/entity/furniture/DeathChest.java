@@ -32,14 +32,14 @@ public class DeathChest extends Chest {
 		super(new UnlimitedInventory(), "Death Chest", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "dungeon_chest").createSpriteLink());
 		this.sprite = normalSprite;
 
-		/// Set the expiration time based on the world difficulty.
-		if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.easy")) {
-			time = 450 * Updater.normSpeed;
-		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.normal")) {
-			time = 300 * Updater.normSpeed;
-		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
-			time = 150 * Updater.normSpeed;
-		}
+// 		/// Set the expiration time based on the world difficulty.
+// 		if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.easy")) {
+// 			time = 450 * Updater.normSpeed;
+// 		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.normal")) {
+// 			time = 300 * Updater.normSpeed;
+// 		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
+// 			time = 150 * Updater.normSpeed;
+// 		}
 	}
 
 	public DeathChest(Player player) {

@@ -32,11 +32,11 @@ public class LavaBrickTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			level.setTile(x, y, Tiles.get("Lava"));
-			Sound.play("monsterhurt");
-			return true;
-		}
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			level.setTile(x, y, Tiles.get("Lava"));
+// 			Sound.play("monsterhurt");
+// 			return true;
+// 		}
 
 		if (item instanceof ToolItem && source instanceof Player) {
 			ToolItem tool = (ToolItem) item;

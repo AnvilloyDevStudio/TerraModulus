@@ -403,8 +403,8 @@ public class WorldSelectDisplay extends Display {
 			if (file.isDirectory()) {
 				String[] files = file.list();
 				if (files != null && files.length > 0 && Arrays.stream(files).anyMatch(f -> f.equalsIgnoreCase("Game" + Save.extension))) {
-					WorldInfo world = loadWorldInfo(file);
-					if (world != null) worlds.add(world);
+// 					WorldInfo world = loadWorldInfo(file);
+// 					if (world != null) worlds.add(world);
 				}
 			}
 		}
@@ -412,45 +412,45 @@ public class WorldSelectDisplay extends Display {
 		worlds.sort(Comparator.<WorldInfo, LocalDateTime>comparing(a -> a.lastPlayed).reversed());
 	}
 
-	@Nullable
-	private static WorldInfo loadWorldInfo(File folder) {
-		try {
-			String name = folder.getName();
-			List<String> data = Arrays.asList(Load.loadFromFile(
-				new File(folder, "Game" + Save.extension).toString(), true).split(","));
-			Version version = new Version(data.get(0));
-
-			String modeData;
-			if (version.compareTo(new Version("2.2.0-dev1")) >= 0)
-				modeData = data.get(2);
-			else if (version.compareTo(new Version("2.0.4-dev8")) >= 0)
-				modeData = data.get(1);
-			else {
-				List<String> playerData = Arrays.asList(Load.loadFromFile(
-					new File(folder, "Player" + Save.extension).toString(), true).split(","));
-				if (version.compareTo(new Version("2.0.4-dev7")) >= 0)
-					modeData = playerData.get(Integer.parseInt(playerData.get(6)) > 0 ? 11 : 9);
-				else
-					modeData = playerData.get(9);
-			}
-
-			int mode = modeData.contains(";") ? Integer.parseInt(modeData.split(";")[0]) : Integer.parseInt(modeData);
-			if (version.compareTo(new Version("2.0.3")) <= 0)
-				mode--; // We changed the min mode idx from 1 to 0.
-
-			long lastModified = folder.lastModified();
-			boolean cleared = Boolean.parseBoolean(data.get(
-				version.compareTo(new Version("2.2.0-dev1")) >= 0 ? 6 :
-					version.compareTo(new Version("2.0.4-dev8")) >= 0 ? 5 : 4));
-			//noinspection unchecked
-			return new WorldInfo(name, version, ((ArrayEntry<String>) Settings.getEntry("mode")).getValue(mode), name,
-				LocalDateTime.ofEpochSecond(lastModified / 1000,
-					(int) (lastModified % 1000) * 1000000, ZoneOffset.UTC), cleared);
-		} catch (IOException | IndexOutOfBoundsException e) {
-			Logging.WORLD.warn(e, "Unable to load world \"{}\"", folder.getName());
-			return null;
-		}
-	}
+// 	@Nullable
+// 	private static WorldInfo loadWorldInfo(File folder) {
+// 		try {
+// 			String name = folder.getName();
+// 			List<String> data = Arrays.asList(Load.loadFromFile(
+// 				new File(folder, "Game" + Save.extension).toString(), true).split(","));
+// 			Version version = new Version(data.get(0));
+//
+// 			String modeData;
+// 			if (version.compareTo(new Version("2.2.0-dev1")) >= 0)
+// 				modeData = data.get(2);
+// 			else if (version.compareTo(new Version("2.0.4-dev8")) >= 0)
+// 				modeData = data.get(1);
+// 			else {
+// 				List<String> playerData = Arrays.asList(Load.loadFromFile(
+// 					new File(folder, "Player" + Save.extension).toString(), true).split(","));
+// 				if (version.compareTo(new Version("2.0.4-dev7")) >= 0)
+// 					modeData = playerData.get(Integer.parseInt(playerData.get(6)) > 0 ? 11 : 9);
+// 				else
+// 					modeData = playerData.get(9);
+// 			}
+//
+// 			int mode = modeData.contains(";") ? Integer.parseInt(modeData.split(";")[0]) : Integer.parseInt(modeData);
+// 			if (version.compareTo(new Version("2.0.3")) <= 0)
+// 				mode--; // We changed the min mode idx from 1 to 0.
+//
+// 			long lastModified = folder.lastModified();
+// 			boolean cleared = Boolean.parseBoolean(data.get(
+// 				version.compareTo(new Version("2.2.0-dev1")) >= 0 ? 6 :
+// 					version.compareTo(new Version("2.0.4-dev8")) >= 0 ? 5 : 4));
+// 			//noinspection unchecked
+// 			return new WorldInfo(name, version, ((ArrayEntry<String>) Settings.getEntry("mode")).getValue(mode), name,
+// 				LocalDateTime.ofEpochSecond(lastModified / 1000,
+// 					(int) (lastModified % 1000) * 1000000, ZoneOffset.UTC), cleared);
+// 		} catch (IOException | IndexOutOfBoundsException e) {
+// 			Logging.WORLD.warn(e, "Unable to load world \"{}\"", folder.getName());
+// 			return null;
+// 		}
+// 	}
 
 	public static String getWorldName() {
 		return worldName;

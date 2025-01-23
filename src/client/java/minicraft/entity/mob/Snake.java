@@ -18,18 +18,18 @@ public class Snake extends EnemyMob {
 		super(lvl, sprites, lvl > 1 ? 8 : 7, 100);
 	}
 
-	@Override
-	public boolean attack(Entity entity) {
-		return hurt(new DamageSource( DamageSource.DamageType.GENERIC,this, null), dir,
-			lvl + Settings.getIdx("diff"));
-	}
+// 	@Override
+// 	public boolean attack(Entity entity) {
+// 		return hurt(new DamageSource( DamageSource.DamageType.GENERIC,this, null), dir,
+// 			lvl + Settings.getIdx("diff"));
+// 	}
 
 	public void die() {
-		int num = Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard") ? 1 : 0;
-		dropItem(num, num + 1, Items.get("scale"));
+// 		int num = Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard") ? 1 : 0;
+// 		dropItem(num, num + 1, Items.get("scale"));
 
-		if (random.nextInt(24 / lvl / (Settings.getIdx("diff") + 1)) == 0)
-			dropItem(1, 1, Items.get("key"));
+// 		if (random.nextInt(24 / lvl / (Settings.getIdx("diff") + 1)) == 0)
+// 			dropItem(1, 1, Items.get("key"));
 
 		super.die();
 	}

@@ -138,7 +138,7 @@ public class Level {
 	}
 
 	private void updateMobCap() {
-		maxMobCount = 150 + 150 * Settings.getIdx("diff");
+// 		maxMobCount = 150 + 150 * Settings.getIdx("diff");
 		if (depth == 1) maxMobCount /= 2;
 		if (depth == 0 || depth == -5) maxMobCount = maxMobCount * 2 / 3;
 	}
@@ -660,7 +660,7 @@ public class Level {
 	public void removeAllEnemies() {
 		for (Entity e : getEntityArray()) {
 			if (e instanceof EnemyMob)
-				if (!(e instanceof AirWizard) || Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) // Don't remove the airwizard bosses! Unless in creative, since you can spawn more.
+				if (!(e instanceof AirWizard))// || Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) // Don't remove the airwizard bosses! Unless in creative, since you can spawn more.
 					e.remove();
 		}
 	}

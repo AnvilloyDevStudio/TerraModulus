@@ -107,13 +107,13 @@ public class TutorialDisplayHandler {
 	 */
 	public static void updateCompletedElement(TutorialElement element) {
 		if (!element.isCompleted()) return;
-		if (!(boolean) Settings.get("tutorials")) return;
+// 		if (!(boolean) Settings.get("tutorials")) return;
 		refreshAll();
 	}
 
 	private static void refreshAll() {
 		if (currentOngoingElement == null) {
-			Settings.set("tutorials", false);
+// 			Settings.set("tutorials", false);
 		} else {
 			ArrayList<TutorialElement> revertedElements = new ArrayList<>(tutorialElements);
 			Collections.reverse(revertedElements);
@@ -149,23 +149,23 @@ public class TutorialDisplayHandler {
 		return currentOngoingElement != null;
 	}
 
-	public static boolean inQuests() {
-		return (boolean) Settings.get("quests") && currentGuide == null && currentOngoingElement == null;
-	}
+// 	public static boolean inQuests() {
+// 		return (boolean) Settings.get("quests") && currentGuide == null && currentOngoingElement == null;
+// 	}
 
 	public static void turnOffTutorials() {
 		currentOngoingElement = null;
-		Settings.set("tutorials", false);
+// 		Settings.set("tutorials", false);
 		Logging.TUTORIAL.debug("Tutorial completed.");
 		Game.inGameNotifications.add(Localization.getStaticDisplay("minicraft.notification.tutorials_completed"));
 	}
 
 	private static void turnOffGuides() {
 		currentGuide = null; // Completed guide.
-		if ((boolean) Settings.get("tutorials")) {
-			currentOngoingElement = tutorialElements.get(0);
-			currentOngoingElement.update();
-		}
+// 		if ((boolean) Settings.get("tutorials")) {
+// 			currentOngoingElement = tutorialElements.get(0);
+// 			currentOngoingElement.update();
+// 		}
 	}
 
 	public static void tick(InputHandler input) {

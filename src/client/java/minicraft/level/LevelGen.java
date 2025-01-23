@@ -233,291 +233,291 @@ public class LevelGen {
 	}
 
 	private static short[][] createTopMap(int w, int h) { // Create surface map
-		// Irregular: larger the map, larger the features.
-		// creates a bunch of value maps, some with small size...
-		LevelGen mnoise1 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
-		LevelGen mnoise2 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
-		LevelGen mnoise3 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
-
-		// ...and some with larger size.
-		LevelGen noise1 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 4 : 32);
-		LevelGen noise2 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 4 : 32);
+// 		// Irregular: larger the map, larger the features.
+// 		// creates a bunch of value maps, some with small size...
+// 		LevelGen mnoise1 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
+// 		LevelGen mnoise2 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
+// 		LevelGen mnoise3 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 8 : 16);
+//
+// 		// ...and some with larger size.
+// 		LevelGen noise1 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 4 : 32);
+// 		LevelGen noise2 = new LevelGen(w, h, Settings.get("Type").equals("minicraft.settings.type.irregular") ? w / 4 : 32);
 
 		short[] map = new short[w * h];
 		short[] data = new short[w * h];
 
-		for (int y = 0; y < h; y++) {
-			for (int x = 0; x < w; x++) {
-				int i = x + y * w;
-
-				double val = Math.abs(noise1.values[i] - noise2.values[i]) * 3 - 2;
-				double mval = Math.abs(mnoise1.values[i] - mnoise2.values[i]);
-				mval = Math.abs(mval - mnoise3.values[i]) * 3 - 2;
-
-				// This calculates a sort of distance based on the current coordinate.
-				int xd = Math.min(w - 1 - x, x); // Distance from x edges to the current position.
-				int yd = Math.min(h - 1 - y, y); // Distance from y edges to the current position.
-				// Range: 0 to size/2
-				int dist = Math.min(xd, yd); // The closest distance from edges to the current position.
-				val += 1 - 4 * Math.pow((w - dist * 2.0) / w, 4);
-
-				switch ((String) Settings.get("Type")) {
-					case "minicraft.displays.world_create.options.terrain_type.island":
-
-						if (val < -1) {
-							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell"))
-								map[i] = Tiles.get("lava").id;
-							else
-								map[i] = Tiles.get("water").id;
-						} else if (val > 0 && mval < -1.5) {
-							map[i] = Tiles.get("rock").id;
-						} else {
-							map[i] = Tiles.get("grass").id;
-						}
-
-						break;
-					case "minicraft.displays.world_create.options.terrain_type.box":
-
-						if (val < -1 || dist < 10 && mval > -2) {
-							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
-								map[i] = Tiles.get("lava").id;
-							} else {
-								map[i] = Tiles.get("water").id;
-							}
-						} else if (val > 0 && mval < -0.5) {
-							map[i] = Tiles.get("rock").id;
-						} else {
-							map[i] = Tiles.get("grass").id;
-						}
-
-						break;
-					case "minicraft.displays.world_create.options.terrain_type.mountain":
-
-						if (val < -0.6 && mval > -2) {
-							map[i] = Tiles.get("grass").id;
-						} else if (val > 0.6 && mval < -1.5) {
-							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
-								map[i] = Tiles.get("lava").id;
-							} else {
-								map[i] = Tiles.get("water").id;
-							}
-						} else {
-							map[i] = Tiles.get("rock").id;
-						}
-						break;
-
-					case "minicraft.displays.world_create.options.terrain_type.irregular":
-						if (val < -0.5 && mval < -0.5) {
-							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
-								map[i] = Tiles.get("lava").id;
-							}
-							if (!Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
-								map[i] = Tiles.get("water").id;
-							}
-						} else if (val > 0.5 && mval < -1) {
-							map[i] = Tiles.get("rock").id;
-						} else {
-							map[i] = Tiles.get("grass").id;
-						}
-						break;
-				}
-			}
-		}
-
-		// Sand
-		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.desert")) {
-			// Mainly sand
-			for (int i = 0; i < w * h / 200; i++) {
-				int xs = random.nextInt(w);
-				int ys = random.nextInt(h);
-				for (int k = 0; k < 10; k++) {
-					int x = xs + random.nextInt(21) - 10;
-					int y = ys + random.nextInt(21) - 10;
-					for (int j = 0; j < 100; j++) {
-						int xo = x + random.nextInt(5) - random.nextInt(5);
-						int yo = y + random.nextInt(5) - random.nextInt(5);
-						for (int yy = yo - 1; yy <= yo + 1; yy++)
-							for (int xx = xo - 1; xx <= xo + 1; xx++)
-								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-									if (map[xx + yy * w] == Tiles.get("grass").id) {
-										map[xx + yy * w] = Tiles.get("sand").id;
-									}
-								}
-					}
-				}
-			}
-		} else {
-			// Normal sand
-			for (int i = 0; i < w * h / 3800; i++) {
-				int xs = random.nextInt(w);
-				int ys = random.nextInt(h);
-				for (int k = 0; k < 10; k++) {
-					int x = xs + random.nextInt(21) - 10;
-					int y = ys + random.nextInt(21) - 10;
-					for (int j = 0; j < 100; j++) {
-						int xo = x + random.nextInt(5) - random.nextInt(5);
-						int yo = y + random.nextInt(5) - random.nextInt(5);
-						for (int yy = yo - 1; yy <= yo + 1; yy++)
-							for (int xx = xo - 1; xx <= xo + 1; xx++)
-								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-									if (map[xx + yy * w] == Tiles.get("grass").id) {
-										map[xx + yy * w] = Tiles.get("sand").id;
-									}
-								}
-					}
-				}
-			}
-
-			// Beaches
-			for (int i = 0; i < w * h / 1800; i++) {
-				int xs = random.nextInt(w);
-				int ys = random.nextInt(h);
-				for (int k = 0; k < 5; k++) {
-					int x = xs + random.nextInt(21) - 10;
-					int y = ys + random.nextInt(21) - 10;
-					for (int j = 0; j < 5; j++) {
-						int xo = x + random.nextInt(5) - random.nextInt(5);
-						int yo = y + random.nextInt(5) - random.nextInt(5);
-						boolean foundWater = false;
-						for (int yy = yo - 3; yy <= yo + 3; yy++)
-							for (int xx = xo - 3; xx <= xo + 3; xx++)
-								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-									if (map[xx + yy * w] == Tiles.get("water").id) {
-										foundWater = true;
-									}
-								}
-						if (!foundWater) continue;
-						for (int yy = yo - 1; yy <= yo + 1; yy++)
-							for (int xx = xo - 1; xx <= xo + 1; xx++)
-								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-									if (map[xx + yy * w] == Tiles.get("grass").id) {
-										map[xx + yy * w] = Tiles.get("sand").id;
-									}
-								}
-					}
-				}
-			}
-		}
-
-		// Trees
-		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.plain")) {
-			// Raw trees
-			for (int i = 0; i < w * h / 2800; i++) {
-				int x = random.nextInt(w);
-				int y = random.nextInt(h);
-				for (int j = 0; j < 200; j++) {
-					int xx = x + random.nextInt(15) - random.nextInt(15);
-					int yy = y + random.nextInt(15) - random.nextInt(15);
-					if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-						if (map[xx + yy * w] == Tiles.get("grass").id) {
-							map[xx + yy * w] = Tiles.get("tree").id;
-						}
-					}
-				}
-			}
-		} else {
-			if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.forest")) {
-				// Concentrated trees
-				for (int i = 0; i < w * h / 200; i++) {
-					int x = random.nextInt(w);
-					int y = random.nextInt(h);
-					for (int j = 0; j < 200; j++) {
-						int xx = x + random.nextInt(15) - random.nextInt(15);
-						int yy = y + random.nextInt(15) - random.nextInt(15);
-						if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-							if (map[xx + yy * w] == Tiles.get("grass").id) {
-								map[xx + yy * w] = Tiles.get("tree").id;
-							}
-						}
-					}
-				}
-			} else {
-				// Normal trees
-				for (int i = 0; i < w * h / 1200; i++) {
-					int x = random.nextInt(w);
-					int y = random.nextInt(h);
-					for (int j = 0; j < 200; j++) {
-						int xx = x + random.nextInt(15) - random.nextInt(15);
-						int yy = y + random.nextInt(15) - random.nextInt(15);
-						if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-							if (map[xx + yy * w] == Tiles.get("grass").id) {
-								map[xx + yy * w] = Tiles.get("tree").id;
-							}
-						}
-					}
-				}
-			}
-
-			// Common trees
-			for (int i = 0; i < w * h / 400; i++) {
-				int x = random.nextInt(w);
-				int y = random.nextInt(h);
-				for (int j = 0; j < 200; j++) {
-					int xx = x + random.nextInt(15) - random.nextInt(15);
-					int yy = y + random.nextInt(15) - random.nextInt(15);
-					if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-						if (map[xx + yy * w] == Tiles.get("grass").id) {
-							map[xx + yy * w] = Tiles.get("tree").id;
-						}
-					}
-				}
-			}
-		}
-
-		// Flowers
-		for (int i = 0; i < w * h / 600; i++) {
-			int x = random.nextInt(w);
-			int y = random.nextInt(h);
-			int col = random.nextInt(4) * random.nextInt(4);
-			for (int j = 0; j < 20; j++) {
-				int xx = x + random.nextInt(5) - random.nextInt(5);
-				int yy = y + random.nextInt(5) - random.nextInt(5);
-				if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
-					if (map[xx + yy * w] == Tiles.get("grass").id) {
-						map[xx + yy * w] = Tiles.get("flower").id;
-						data[xx + yy * w] = (short) (col + random.nextInt(3)); // Data determines what the flower is
-					}
-				}
-			}
-		}
-
-		// Cactuses
-		for (int i = 0; i < w * h / 100; i++) {
-			int xx = random.nextInt(w);
-			int yy = random.nextInt(h);
-			if (xx < w && yy < h) {
-				if (map[xx + yy * w] == Tiles.get("sand").id) {
-					map[xx + yy * w] = Tiles.get("cactus").id;
-				}
-			}
-		}
-
-		int count = 0;
-
-		Logging.WORLD.trace("Generating stairs for surface level...");
-
-		stairsLoop:
-		for (int i = 0; i < w * h / 10; i++) { // Loops a certain number of times, more for bigger world sizes.
-			int x = random.nextInt(w - 2) + 1;
-			int y = random.nextInt(h - 2) + 1;
-
-			// The first loop, which checks to make sure that a new stairs tile will be completely surrounded by rock.
-			for (int yy = y - 1; yy <= y + 1; yy++)
-				for (int xx = x - 1; xx <= x + 1; xx++)
-					if (map[xx + yy * w] != Tiles.get("rock").id)
-						continue stairsLoop;
-
-			// This should prevent any stairsDown tile from being within 30 tiles of any other stairsDown tile.
-			for (int yy = Math.max(0, y - stairRadius); yy <= Math.min(h - 1, y + stairRadius); yy++)
-				for (int xx = Math.max(0, x - stairRadius); xx <= Math.min(w - 1, x + stairRadius); xx++)
-					if (map[xx + yy * w] == Tiles.get("Stairs Down").id)
-						continue stairsLoop;
-
-			map[x + y * w] = Tiles.get("Stairs Down").id;
-
-			count++;
-			if (count >= w / 21) break;
-		}
+// 		for (int y = 0; y < h; y++) {
+// 			for (int x = 0; x < w; x++) {
+// 				int i = x + y * w;
+//
+// 				double val = Math.abs(noise1.values[i] - noise2.values[i]) * 3 - 2;
+// 				double mval = Math.abs(mnoise1.values[i] - mnoise2.values[i]);
+// 				mval = Math.abs(mval - mnoise3.values[i]) * 3 - 2;
+//
+// 				// This calculates a sort of distance based on the current coordinate.
+// 				int xd = Math.min(w - 1 - x, x); // Distance from x edges to the current position.
+// 				int yd = Math.min(h - 1 - y, y); // Distance from y edges to the current position.
+// 				// Range: 0 to size/2
+// 				int dist = Math.min(xd, yd); // The closest distance from edges to the current position.
+// 				val += 1 - 4 * Math.pow((w - dist * 2.0) / w, 4);
+//
+// 				switch ((String) Settings.get("Type")) {
+// 					case "minicraft.displays.world_create.options.terrain_type.island":
+//
+// 						if (val < -1) {
+// 							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell"))
+// 								map[i] = Tiles.get("lava").id;
+// 							else
+// 								map[i] = Tiles.get("water").id;
+// 						} else if (val > 0 && mval < -1.5) {
+// 							map[i] = Tiles.get("rock").id;
+// 						} else {
+// 							map[i] = Tiles.get("grass").id;
+// 						}
+//
+// 						break;
+// 					case "minicraft.displays.world_create.options.terrain_type.box":
+//
+// 						if (val < -1 || dist < 10 && mval > -2) {
+// 							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
+// 								map[i] = Tiles.get("lava").id;
+// 							} else {
+// 								map[i] = Tiles.get("water").id;
+// 							}
+// 						} else if (val > 0 && mval < -0.5) {
+// 							map[i] = Tiles.get("rock").id;
+// 						} else {
+// 							map[i] = Tiles.get("grass").id;
+// 						}
+//
+// 						break;
+// 					case "minicraft.displays.world_create.options.terrain_type.mountain":
+//
+// 						if (val < -0.6 && mval > -2) {
+// 							map[i] = Tiles.get("grass").id;
+// 						} else if (val > 0.6 && mval < -1.5) {
+// 							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
+// 								map[i] = Tiles.get("lava").id;
+// 							} else {
+// 								map[i] = Tiles.get("water").id;
+// 							}
+// 						} else {
+// 							map[i] = Tiles.get("rock").id;
+// 						}
+// 						break;
+//
+// 					case "minicraft.displays.world_create.options.terrain_type.irregular":
+// 						if (val < -0.5 && mval < -0.5) {
+// 							if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
+// 								map[i] = Tiles.get("lava").id;
+// 							}
+// 							if (!Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.hell")) {
+// 								map[i] = Tiles.get("water").id;
+// 							}
+// 						} else if (val > 0.5 && mval < -1) {
+// 							map[i] = Tiles.get("rock").id;
+// 						} else {
+// 							map[i] = Tiles.get("grass").id;
+// 						}
+// 						break;
+// 				}
+// 			}
+// 		}
+//
+// 		// Sand
+// 		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.desert")) {
+// 			// Mainly sand
+// 			for (int i = 0; i < w * h / 200; i++) {
+// 				int xs = random.nextInt(w);
+// 				int ys = random.nextInt(h);
+// 				for (int k = 0; k < 10; k++) {
+// 					int x = xs + random.nextInt(21) - 10;
+// 					int y = ys + random.nextInt(21) - 10;
+// 					for (int j = 0; j < 100; j++) {
+// 						int xo = x + random.nextInt(5) - random.nextInt(5);
+// 						int yo = y + random.nextInt(5) - random.nextInt(5);
+// 						for (int yy = yo - 1; yy <= yo + 1; yy++)
+// 							for (int xx = xo - 1; xx <= xo + 1; xx++)
+// 								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 									if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 										map[xx + yy * w] = Tiles.get("sand").id;
+// 									}
+// 								}
+// 					}
+// 				}
+// 			}
+// 		} else {
+// 			// Normal sand
+// 			for (int i = 0; i < w * h / 3800; i++) {
+// 				int xs = random.nextInt(w);
+// 				int ys = random.nextInt(h);
+// 				for (int k = 0; k < 10; k++) {
+// 					int x = xs + random.nextInt(21) - 10;
+// 					int y = ys + random.nextInt(21) - 10;
+// 					for (int j = 0; j < 100; j++) {
+// 						int xo = x + random.nextInt(5) - random.nextInt(5);
+// 						int yo = y + random.nextInt(5) - random.nextInt(5);
+// 						for (int yy = yo - 1; yy <= yo + 1; yy++)
+// 							for (int xx = xo - 1; xx <= xo + 1; xx++)
+// 								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 									if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 										map[xx + yy * w] = Tiles.get("sand").id;
+// 									}
+// 								}
+// 					}
+// 				}
+// 			}
+//
+// 			// Beaches
+// 			for (int i = 0; i < w * h / 1800; i++) {
+// 				int xs = random.nextInt(w);
+// 				int ys = random.nextInt(h);
+// 				for (int k = 0; k < 5; k++) {
+// 					int x = xs + random.nextInt(21) - 10;
+// 					int y = ys + random.nextInt(21) - 10;
+// 					for (int j = 0; j < 5; j++) {
+// 						int xo = x + random.nextInt(5) - random.nextInt(5);
+// 						int yo = y + random.nextInt(5) - random.nextInt(5);
+// 						boolean foundWater = false;
+// 						for (int yy = yo - 3; yy <= yo + 3; yy++)
+// 							for (int xx = xo - 3; xx <= xo + 3; xx++)
+// 								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 									if (map[xx + yy * w] == Tiles.get("water").id) {
+// 										foundWater = true;
+// 									}
+// 								}
+// 						if (!foundWater) continue;
+// 						for (int yy = yo - 1; yy <= yo + 1; yy++)
+// 							for (int xx = xo - 1; xx <= xo + 1; xx++)
+// 								if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 									if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 										map[xx + yy * w] = Tiles.get("sand").id;
+// 									}
+// 								}
+// 					}
+// 				}
+// 			}
+// 		}
+//
+// 		// Trees
+// 		if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.plain")) {
+// 			// Raw trees
+// 			for (int i = 0; i < w * h / 2800; i++) {
+// 				int x = random.nextInt(w);
+// 				int y = random.nextInt(h);
+// 				for (int j = 0; j < 200; j++) {
+// 					int xx = x + random.nextInt(15) - random.nextInt(15);
+// 					int yy = y + random.nextInt(15) - random.nextInt(15);
+// 					if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 						if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 							map[xx + yy * w] = Tiles.get("tree").id;
+// 						}
+// 					}
+// 				}
+// 			}
+// 		} else {
+// 			if (Settings.get("Theme").equals("minicraft.displays.world_create.options.theme.forest")) {
+// 				// Concentrated trees
+// 				for (int i = 0; i < w * h / 200; i++) {
+// 					int x = random.nextInt(w);
+// 					int y = random.nextInt(h);
+// 					for (int j = 0; j < 200; j++) {
+// 						int xx = x + random.nextInt(15) - random.nextInt(15);
+// 						int yy = y + random.nextInt(15) - random.nextInt(15);
+// 						if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 							if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 								map[xx + yy * w] = Tiles.get("tree").id;
+// 							}
+// 						}
+// 					}
+// 				}
+// 			} else {
+// 				// Normal trees
+// 				for (int i = 0; i < w * h / 1200; i++) {
+// 					int x = random.nextInt(w);
+// 					int y = random.nextInt(h);
+// 					for (int j = 0; j < 200; j++) {
+// 						int xx = x + random.nextInt(15) - random.nextInt(15);
+// 						int yy = y + random.nextInt(15) - random.nextInt(15);
+// 						if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 							if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 								map[xx + yy * w] = Tiles.get("tree").id;
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
+//
+// 			// Common trees
+// 			for (int i = 0; i < w * h / 400; i++) {
+// 				int x = random.nextInt(w);
+// 				int y = random.nextInt(h);
+// 				for (int j = 0; j < 200; j++) {
+// 					int xx = x + random.nextInt(15) - random.nextInt(15);
+// 					int yy = y + random.nextInt(15) - random.nextInt(15);
+// 					if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 						if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 							map[xx + yy * w] = Tiles.get("tree").id;
+// 						}
+// 					}
+// 				}
+// 			}
+// 		}
+//
+// 		// Flowers
+// 		for (int i = 0; i < w * h / 600; i++) {
+// 			int x = random.nextInt(w);
+// 			int y = random.nextInt(h);
+// 			int col = random.nextInt(4) * random.nextInt(4);
+// 			for (int j = 0; j < 20; j++) {
+// 				int xx = x + random.nextInt(5) - random.nextInt(5);
+// 				int yy = y + random.nextInt(5) - random.nextInt(5);
+// 				if (xx >= 0 && yy >= 0 && xx < w && yy < h) {
+// 					if (map[xx + yy * w] == Tiles.get("grass").id) {
+// 						map[xx + yy * w] = Tiles.get("flower").id;
+// 						data[xx + yy * w] = (short) (col + random.nextInt(3)); // Data determines what the flower is
+// 					}
+// 				}
+// 			}
+// 		}
+//
+// 		// Cactuses
+// 		for (int i = 0; i < w * h / 100; i++) {
+// 			int xx = random.nextInt(w);
+// 			int yy = random.nextInt(h);
+// 			if (xx < w && yy < h) {
+// 				if (map[xx + yy * w] == Tiles.get("sand").id) {
+// 					map[xx + yy * w] = Tiles.get("cactus").id;
+// 				}
+// 			}
+// 		}
+//
+// 		int count = 0;
+//
+// 		Logging.WORLD.trace("Generating stairs for surface level...");
+//
+// 		stairsLoop:
+// 		for (int i = 0; i < w * h / 10; i++) { // Loops a certain number of times, more for bigger world sizes.
+// 			int x = random.nextInt(w - 2) + 1;
+// 			int y = random.nextInt(h - 2) + 1;
+//
+// 			// The first loop, which checks to make sure that a new stairs tile will be completely surrounded by rock.
+// 			for (int yy = y - 1; yy <= y + 1; yy++)
+// 				for (int xx = x - 1; xx <= x + 1; xx++)
+// 					if (map[xx + yy * w] != Tiles.get("rock").id)
+// 						continue stairsLoop;
+//
+// 			// This should prevent any stairsDown tile from being within 30 tiles of any other stairsDown tile.
+// 			for (int yy = Math.max(0, y - stairRadius); yy <= Math.min(h - 1, y + stairRadius); yy++)
+// 				for (int xx = Math.max(0, x - stairRadius); xx <= Math.min(w - 1, x + stairRadius); xx++)
+// 					if (map[xx + yy * w] == Tiles.get("Stairs Down").id)
+// 						continue stairsLoop;
+//
+// 			map[x + y * w] = Tiles.get("Stairs Down").id;
+//
+// 			count++;
+// 			if (count >= w / 21) break;
+// 		}
 
 		return new short[][] { map, data };
 	}
@@ -892,8 +892,8 @@ public class LevelGen {
 			frame.setVisible(true);
 		};
 
-		Settings.set("type", "minicraft.settings.type.island");
-		Settings.set("theme", "minicraft.settings.theme.normal");
+// 		Settings.set("type", "minicraft.settings.type.island");
+// 		Settings.set("theme", "minicraft.settings.theme.normal");
 
 		if (typeChoiceValue == null) {
 			System.exit(0); // No choice.

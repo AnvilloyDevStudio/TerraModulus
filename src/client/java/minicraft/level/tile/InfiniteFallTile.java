@@ -28,7 +28,7 @@ public class InfiniteFallTile extends Tile {
 
 	@Override
 	public boolean mayPass(Level level, int x, int y, Entity e) {
-		return e instanceof AirWizard || e instanceof Arrow || e instanceof Player && Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
+		return e instanceof AirWizard || e instanceof Arrow || e instanceof Player;// && Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
 	}
 
 	@Override

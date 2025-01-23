@@ -198,7 +198,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		stamina = maxStamina;
 		hunger = maxHunger;
 
-		hungerStamCnt = maxHungerStams[Settings.getIdx("diff")];
+// 		hungerStamCnt = maxHungerStams[Settings.getIdx("diff")];
 		stamHungerTicks = maxHungerTicks;
 
 		if (previousInstance != null) {
@@ -301,7 +301,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		} else if (onStairDelay > 0)
 			onStairDelay--; // Decrements stairDelay if it's > 0, but not on stair tile... does the player get removed from the tile beforehand, or something?
 
-		if (onTile == Tiles.get("Infinite Fall") && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+		if (onTile == Tiles.get("Infinite Fall")){// && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			if (onFallDelay <= 0) {
 				World.scheduleLevelChange(-1);
 				onFallDelay = 40;
@@ -309,11 +309,11 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		} else if (onFallDelay > 0) onFallDelay--;
 
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			// Prevent stamina/hunger decay in creative mode.
-			stamina = maxStamina;
-			hunger = maxHunger;
-		}
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 			// Prevent stamina/hunger decay in creative mode.
+// 			stamina = maxStamina;
+// 			hunger = maxHunger;
+// 		}
 
 		// Remember: staminaRechargeDelay is a penalty delay for when the player uses up all their stamina.
 		// staminaRecharge is the rate of stamina recharge, in some sort of unknown units.
@@ -336,61 +336,61 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		}
 
-		int diffIdx = Settings.getIdx("diff");
+// 		int diffIdx = Settings.getIdx("diff");
 
 		if (hunger < 0) hunger = 0; // Error correction
 
 		if (stamina < maxStamina) {
-			stamHungerTicks -= diffIdx; // Affect hunger if not at full stamina; this is 2 levels away from a hunger "burger".
-			if (stamina == 0) stamHungerTicks -= diffIdx; // Double effect if no stamina at all.
+// 			stamHungerTicks -= diffIdx; // Affect hunger if not at full stamina; this is 2 levels away from a hunger "burger".
+// 			if (stamina == 0) stamHungerTicks -= diffIdx; // Double effect if no stamina at all.
 		}
 
 		// This if statement encapsulates the hunger system
-		if (!Bed.inBed(this)) {
-			if (hungerChargeDelay > 0) { // If the hunger is recharging health...
-				stamHungerTicks -= 2 + diffIdx; // Penalize the hunger
-				if (hunger == 0) stamHungerTicks -= diffIdx; // Further penalty if at full hunger
-			}
-
-			if (Updater.tickCount % Player.hungerTickCount[diffIdx] == 0)
-				stamHungerTicks--; // hunger due to time.
-
-			if (stepCount >= Player.hungerStepCount[diffIdx]) {
-				stamHungerTicks--; // hunger due to exercise.
-				stepCount = 0; // reset.
-			}
-
-			if (stamHungerTicks <= 0) {
-				stamHungerTicks += maxHungerTicks; // Reset stamHungerTicks
-				hungerStamCnt--; // Enter 1 level away from burger.
-			}
-
-			while (hungerStamCnt <= 0) {
-				hunger--; // Reached burger level.
-				hungerStamCnt += maxHungerStams[diffIdx];
-			}
-
-			/// System that heals you depending on your hunger
-			if (health < (baseHealth + extraHealth) && hunger > maxHunger / 2) {
-				hungerChargeDelay++;
-				if (hungerChargeDelay > 20 * Math.pow(maxHunger - hunger + 2, 2)) {
-					health++;
-					hungerChargeDelay = 0;
-				}
-			} else hungerChargeDelay = 0;
-
-			if (hungerStarveDelay == 0) {
-				hungerStarveDelay = 120;
-			}
-
-			if (hunger == 0 && health > minStarveHealth[diffIdx]) {
-				if (hungerStarveDelay > 0) hungerStarveDelay--;
-				if (hungerStarveDelay == 0) {
-					hurt(new DamageSource(DamageSource.DamageType.STARVE),
-						Direction.NONE, 1); // Do 1 damage to the player
-				}
-			}
-		}
+// 		if (!Bed.inBed(this)) {
+// 			if (hungerChargeDelay > 0) { // If the hunger is recharging health...
+// 				stamHungerTicks -= 2 + diffIdx; // Penalize the hunger
+// 				if (hunger == 0) stamHungerTicks -= diffIdx; // Further penalty if at full hunger
+// 			}
+//
+// 			if (Updater.tickCount % Player.hungerTickCount[diffIdx] == 0)
+// 				stamHungerTicks--; // hunger due to time.
+//
+// 			if (stepCount >= Player.hungerStepCount[diffIdx]) {
+// 				stamHungerTicks--; // hunger due to exercise.
+// 				stepCount = 0; // reset.
+// 			}
+//
+// 			if (stamHungerTicks <= 0) {
+// 				stamHungerTicks += maxHungerTicks; // Reset stamHungerTicks
+// 				hungerStamCnt--; // Enter 1 level away from burger.
+// 			}
+//
+// 			while (hungerStamCnt <= 0) {
+// 				hunger--; // Reached burger level.
+// 				hungerStamCnt += maxHungerStams[diffIdx];
+// 			}
+//
+// 			/// System that heals you depending on your hunger
+// 			if (health < (baseHealth + extraHealth) && hunger > maxHunger / 2) {
+// 				hungerChargeDelay++;
+// 				if (hungerChargeDelay > 20 * Math.pow(maxHunger - hunger + 2, 2)) {
+// 					health++;
+// 					hungerChargeDelay = 0;
+// 				}
+// 			} else hungerChargeDelay = 0;
+//
+// 			if (hungerStarveDelay == 0) {
+// 				hungerStarveDelay = 120;
+// 			}
+//
+// 			if (hunger == 0 && health > minStarveHealth[diffIdx]) {
+// 				if (hungerStarveDelay > 0) hungerStarveDelay--;
+// 				if (hungerStarveDelay == 0) {
+// 					hurt(new DamageSource(DamageSource.DamageType.STARVE),
+// 						Direction.NONE, 1); // Do 1 damage to the player
+// 				}
+// 			}
+// 		}
 
 		// regen health
 // 		if (potioneffects.containsKey(PotionType.Regen)) {
@@ -1086,8 +1086,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 	@Override
 	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") || hurtTime > 0 || Bed.inBed(this))
-			return false; // Can't get hurt in creative, hurt cooldown, or while someone is in bed
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") || hurtTime > 0 || Bed.inBed(this))
+// 			return false; // Can't get hurt in creative, hurt cooldown, or while someone is in bed
 
 		int healthDam = 0, armorDam = 0, suffered = 0;
 		if (this == Game.player) {

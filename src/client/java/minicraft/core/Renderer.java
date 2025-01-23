@@ -479,7 +479,7 @@ public class Renderer extends Game {
 		level.renderSprites(screen, xScroll, yScroll); // Renders level sprites on screen
 
 		// This creates the darkness in the caves
-		if ((currentLevel != 3 || Updater.tickCount < Updater.dayLength / 4 || Updater.tickCount > Updater.dayLength / 2) && !isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+		if ((currentLevel != 3 || Updater.tickCount < Updater.dayLength / 4 || Updater.tickCount > Updater.dayLength / 2)) {// && !isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			int brightnessMultiplier = 8;//player.potioneffects.containsKey(PotionType.Light) ? 12 : 8; // Brightens all light sources by a factor of 1.5 when the player has the Light potion effect. (8 above is normal)
 			level.renderLight(screen, xScroll, yScroll, brightnessMultiplier); // Finds (and renders) all the light from objects (like the player, lanterns, and lava).
 			screen.overlay(currentLevel, xScroll, yScroll); // Overlays the light screen over the main screen.
@@ -706,25 +706,25 @@ public class Renderer extends Game {
 					// Renders arrow counter
 					if (type == ToolType.Bow) {
 						int ac = player.getInventory().count(Items.arrowItem);
-						String s = isMode("minicraft.displays.world_create.options.game_mode.creative") || ac >= 10000 ?
-							"^" : String.valueOf(ac); // "^" is an infinite symbol. TODO Use of "^" -> "∞"
-						for (int xx = 0; xx < 3; ++xx)
-							for (int yy = 0; yy < 2; ++yy)
-								screen.render(null, 88 + xx * 8, Screen.h - 3 * 8 + yy * 8,
-									9 + xx, 14 + yy, 0, getHudSheet());
-						for (int i = 0; i < s.length() - 1; ++i)
-							for (int yy = 0; yy < 2; ++yy)
-								screen.render(null, 112 + i * 8, Screen.h - 3 * 8 + yy * 8,
-									12, 14 + yy, 0, getHudSheet());
-						for (int yy = 0; yy < 2; ++yy)
-							screen.render(null, 112 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								13, 14 + yy, 0, getHudSheet());
-						for (int yy = 0; yy < 2; ++yy)
-							screen.render(null, 120 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								14, 14 + yy, 0, getHudSheet());
-						// Displays the arrow icon
-						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, getHudSheet());
-						Font.draw(s, screen, 109, Screen.h - 3 * 8 + 4);
+// 						String s = isMode("minicraft.displays.world_create.options.game_mode.creative") || ac >= 10000 ?
+// 							"^" : String.valueOf(ac); // "^" is an infinite symbol. TODO Use of "^" -> "∞"
+// 						for (int xx = 0; xx < 3; ++xx)
+// 							for (int yy = 0; yy < 2; ++yy)
+// 								screen.render(null, 88 + xx * 8, Screen.h - 3 * 8 + yy * 8,
+// 									9 + xx, 14 + yy, 0, getHudSheet());
+// 						for (int i = 0; i < s.length() - 1; ++i)
+// 							for (int yy = 0; yy < 2; ++yy)
+// 								screen.render(null, 112 + i * 8, Screen.h - 3 * 8 + yy * 8,
+// 									12, 14 + yy, 0, getHudSheet());
+// 						for (int yy = 0; yy < 2; ++yy)
+// 							screen.render(null, 112 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
+// 								13, 14 + yy, 0, getHudSheet());
+// 						for (int yy = 0; yy < 2; ++yy)
+// 							screen.render(null, 120 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
+// 								14, 14 + yy, 0, getHudSheet());
+// 						// Displays the arrow icon
+// 						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, getHudSheet());
+// 						Font.draw(s, screen, 109, Screen.h - 3 * 8 + 4);
 					}
 				}
 
@@ -989,7 +989,7 @@ public class Renderer extends Game {
 // 		}
 
 		// This is the status icons, like health hearts, stamina bolts, and hunger "burgers".
-		if (!isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 		if (!isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			for (int i = 1; i <= 30; i++) {
 				// Renders your current red default hearts, golden hearts for 20 HP, obsidian hearts for 30 HP, or black hearts for damaged health.
 				if (i < 11) {
@@ -1036,7 +1036,7 @@ public class Renderer extends Game {
 					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 1, 0, hudSheet);
 				}
 			}
-		}
+// 		}
 
 		// Renders the bossbar
 		if (!player.isRemoved()) {
@@ -1095,8 +1095,8 @@ public class Renderer extends Game {
 	}
 
 	private static void renderQuestsDisplay() {
-		if (!TutorialDisplayHandler.inQuests()) return;
-		if (!(boolean) Settings.get("showquests")) return;
+// 		if (!TutorialDisplayHandler.inQuests()) return;
+// 		if (!(boolean) Settings.get("showquests")) return;
 
 		boolean expanding = Game.player.questExpanding > 0;
 		int length = expanding ? 5 : 2;

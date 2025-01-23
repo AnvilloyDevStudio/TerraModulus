@@ -48,8 +48,8 @@ public class Creeper extends EnemyMob {
 	public void tick() {
 		super.tick();
 
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
-			return; // Creeper should not explode if player is in creative mode
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
+// 			return; // Creeper should not explode if player is in creative mode
 
 		if (fuseTime > 0) {
 			fuseTime--; // Fuse getting shorter...
@@ -98,9 +98,9 @@ public class Creeper extends EnemyMob {
 						int distx = Math.abs(mob.x - x);
 						int disty = Math.abs(mob.y - y);
 						float distDiag = (float) Math.sqrt(distx * distx + disty * disty);
-						entity.hurt(new DamageSource(DamageSource.DamageType.EXPLOSION, this, null),
-							getInteractionDir(this, mob),
-							(int) (lvlDamage * (1 / (distDiag + 1)) + Settings.getIdx("diff")));
+// 						entity.hurt(new DamageSource(DamageSource.DamageType.EXPLOSION, this, null),
+// 							getInteractionDir(this, mob),
+// 							(int) (lvlDamage * (1 / (distDiag + 1)) + Settings.getIdx("diff")));
 					} else if (entity instanceof Spawner) {
 						spawners.add(entity);
 					}
@@ -150,7 +150,7 @@ public class Creeper extends EnemyMob {
 
 	@Override
 	protected void touchedBy(Entity entity) {
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return;
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return;
 
 		if (entity instanceof Player) {
 			if (fuseTime == 0 && !fuseLit) {
@@ -168,7 +168,7 @@ public class Creeper extends EnemyMob {
 
 	public void die() {
 		// Only drop items if the creeper has not exploded
-		if (!fuseLit) dropItem(1, 4 - Settings.getIdx("diff"), Items.get("Gunpowder"));
+// 		if (!fuseLit) dropItem(1, 4 - Settings.getIdx("diff"), Items.get("Gunpowder"));
 		super.die();
 	}
 }

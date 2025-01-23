@@ -190,7 +190,7 @@ public abstract class Entity implements Tickable {
 
 	public boolean isInvulnerableTo(DamageSource source) {
 		return isRemoved() ||
-			source.getCausingEntity() instanceof Player && Game.isMode("minicraft.settings.mode.creative") ||
+// 			source.getCausingEntity() instanceof Player && Game.isMode("minicraft.settings.mode.creative") ||
 			source.getDamageType().isFireRelated() && isFireImmune();
 	}
 

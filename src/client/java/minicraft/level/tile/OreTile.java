@@ -64,10 +64,10 @@ public class OreTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			handleDamage(level, x, y, source, item, 100);
-			return true;
-		}
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			handleDamage(level, x, y, source, item, 100);
+// 			return true;
+// 		}
 
 		if (item instanceof ToolItem && source instanceof Player) {
 			ToolItem tool = (ToolItem) item;
@@ -95,7 +95,7 @@ public class OreTile extends Tile {
 	protected void handleDamage(Level level, int x, int y, Entity source, @Nullable Item item, int dmg) {
 		int damage = level.getData(x, y) + dmg;
 		int oreH = random.nextInt(10) * 4 + 20;
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) dmg = damage = oreH;
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) dmg = damage = oreH;
 
 		level.add(new SmashParticle(x << 4, y << 4));
 		Sound.play("monsterhurt");

@@ -38,9 +38,9 @@ public class CactusTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			handleDamage(level, x, y, source, item, MAX_HEALTH);
-		} else
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			handleDamage(level, x, y, source, item, MAX_HEALTH);
+// 		} else
 			handleDamage(level, x, y, source, item, damage);
 		return true;
 	}
@@ -70,16 +70,16 @@ public class CactusTile extends Tile {
 	public void bumpedInto(Level level, int x, int y, Entity entity) {
 		if (!(entity instanceof Mob)) return;
 		Mob m = (Mob) entity;
-		if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.easy")) {
-			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
-				m.dir.getOpposite(), 1);
-		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.normal")) {
-			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
-				m.dir.getOpposite(), 1);
-		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
-			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
-				m.dir.getOpposite(), 2);
-		}
+// 		if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.easy")) {
+// 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
+// 				m.dir.getOpposite(), 1);
+// 		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.normal")) {
+// 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
+// 				m.dir.getOpposite(), 1);
+// 		} else if (Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
+// 			m.hurt(new DamageSource(DamageSource.DamageType.CACTUS, level, (x << 4) + 8, (y << 4) + 8, this),
+// 				m.dir.getOpposite(), 2);
+// 		}
 	}
 
 	public boolean tick(Level level, int xt, int yt) {

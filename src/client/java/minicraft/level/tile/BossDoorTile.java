@@ -24,7 +24,7 @@ public class BossDoorTile extends DoorTile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if ((!ObsidianKnight.beaten || ObsidianKnight.active) && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && source instanceof Player) {
+		if ((!ObsidianKnight.beaten || ObsidianKnight.active)){// && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && source instanceof Player) {
 			if (item instanceof ToolItem) {
 				ToolItem tool = (ToolItem) item;
 				if (tool.type == type.getRequiredTool()) {
@@ -44,10 +44,10 @@ public class BossDoorTile extends DoorTile {
 
 	@Override
 	public boolean use(Level level, int xt, int yt, Player player, @Nullable Item item, Direction attackDir) {
-		if (ObsidianKnight.active && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			Game.inGameNotifications.add(doorMsg);
-			return true;
-		}
+// 		if (ObsidianKnight.active && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 			Game.inGameNotifications.add(doorMsg);
+// 			return true;
+// 		}
 
 		return super.use(level, xt, yt, player, item, attackDir);
 	}

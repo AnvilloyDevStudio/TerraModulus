@@ -61,10 +61,10 @@ public class WallTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			handleDamage(level, x, y, source, item, MAX_HEALTH);
-			return true;
-		}
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 			handleDamage(level, x, y, source, item, MAX_HEALTH);
+// 			return true;
+// 		}
 
 		if (item instanceof ToolItem && source instanceof Player) {
 			ToolItem tool = (ToolItem) item;

@@ -182,8 +182,8 @@ public class Spawner extends Furniture {
 			Item item = source.getItem();
 			Sound.play("monsterhurt");
 			int dmg = item instanceof ToolItem ? ((ToolItem) item).getAttackDamageBonus(this) : 1;
-			if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
-				dmg = health;
+// 			if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
+// 				dmg = health;
 
 			health -= dmg;
 			level.add(new TextParticle(String.valueOf(dmg), x, y, Color.get(-1, 200, 300, 400)));
@@ -210,17 +210,17 @@ public class Spawner extends Furniture {
 
 	@Override
 	public boolean use(Player player, @Nullable Item item, Direction attackDir) {
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && mob instanceof EnemyMob) {
-			lvl++;
-			if (lvl > maxMobLevel) lvl = 1;
-			try {
-				EnemyMob newmob = (EnemyMob) mob.getClass().getConstructor(int.class).newInstance(lvl);
-				initMob(newmob);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-			return true;
-		}
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") && mob instanceof EnemyMob) {
+// 			lvl++;
+// 			if (lvl > maxMobLevel) lvl = 1;
+// 			try {
+// 				EnemyMob newmob = (EnemyMob) mob.getClass().getConstructor(int.class).newInstance(lvl);
+// 				initMob(newmob);
+// 			} catch (Exception ex) {
+// 				ex.printStackTrace();
+// 			}
+// 			return true;
+// 		}
 
 		return false;
 	}

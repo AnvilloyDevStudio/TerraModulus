@@ -27,13 +27,13 @@ public class PlayerDeathDisplay extends Display {
 			new BlankEntry()
 		));
 
-		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.hardcore")) {
-			entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.respawn"),
-				() -> {
-				World.resetGame();
-				Game.setDisplay(null);
-			}));
-		}
+// 		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.hardcore")) {
+// 			entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.respawn"),
+// 				() -> {
+// 				World.resetGame();
+// 				Game.setDisplay(null);
+// 			}));
+// 		}
 
 		entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.save_quit"),
 			() -> {

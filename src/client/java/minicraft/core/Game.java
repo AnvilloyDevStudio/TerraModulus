@@ -82,10 +82,10 @@ public class Game {
 		return displayQuery.isEmpty() ? null : displayQuery.peekLast();
 	}
 
-	// GAMEMODE
-	public static boolean isMode(String mode) {
-		return ((String) Settings.get("mode")).equalsIgnoreCase(mode);
-	}
+// 	// GAMEMODE
+// 	public static boolean isMode(String mode) {
+// 		return ((String) Settings.get("mode")).equalsIgnoreCase(mode);
+// 	}
 
 	// LEVEL
 	public static Level[] levels = new Level[6]; // This array stores the different levels.
@@ -112,8 +112,8 @@ public class Game {
 
 // 		new Load(true, true); // This loads basic saved preferences.
 		// Reference: https://stackoverflow.com/a/13832805
-		if ((boolean) Settings.get("hwa")) System.setProperty("sun.java2d.opengl", "true");
-		MAX_FPS = (int) Settings.get("fps"); // DO NOT put this above.
+// 		if ((boolean) Settings.get("hwa")) System.setProperty("sun.java2d.opengl", "true");
+// 		MAX_FPS = (int) Settings.get("fps"); // DO NOT put this above.
 
 		updateHandler = new GameUpdateHandler();
 

@@ -352,21 +352,21 @@ public class HistoricLoad {
 					throw new Load.MalformedSaveDataValueException("Secondary version, Index 3 (Arrow count)", e);
 				}
 
-				try {
-					Settings.set("autosave", Load.parseBoolean(data.get(4)));
-				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
-					throw new Load.MalformedSaveDataValueException("Secondary version, Index 4 (Auto-save toggle)", e);
-				}
+// 				try {
+// 					Settings.set("autosave", Load.parseBoolean(data.get(4)));
+// 				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
+// 					throw new Load.MalformedSaveDataValueException("Secondary version, Index 4 (Auto-save toggle)", e);
+// 				}
 
 				// Index 5 (Sound toggle) -> Settings->sound is now saved in preferences instead of world-wide,
 				// data validation only.
 				validateBooleanSaveData(data.get(5), "Seconadry version, Index 5 (Sound toggle)");
 			} else if (data.size() == 5) { // Since Apr 2, 2017 until Apr 12, 2017 (1.9.1)
-				try {
-					Settings.set("autosave", Load.parseBoolean(data.get(3)));
-				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
-					throw new Load.MalformedSaveDataValueException("Tertiary version, Index 3 (Auto-save toggle)", e);
-				}
+// 				try {
+// 					Settings.set("autosave", Load.parseBoolean(data.get(3)));
+// 				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
+// 					throw new Load.MalformedSaveDataValueException("Tertiary version, Index 3 (Auto-save toggle)", e);
+// 				}
 
 				// Index 4 (Sound toggle) -> Settings->sound is now saved in preferences instead of world-wide,
 				// data validation only.
@@ -546,7 +546,7 @@ public class HistoricLoad {
 				throw new Load.MalformedSaveDataFormatException(
 					String.format("Corrupted .miniplussave (Level data data count: %d)", dataA.size()));
 
-			Settings.set("size", w);
+// 			Settings.set("size", w);
 			short[] tiles = new short[w * h];
 			short[] data = new short[w * h];
 			for (int x = 0; x < w; ++x) {
@@ -623,7 +623,7 @@ public class HistoricLoad {
 			if (mode == 4) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode - 1); // Value is shifted in newer versions.
+// 		Settings.setIdx("mode", mode - 1); // Value is shifted in newer versions.
 	}
 
 	private static final Pattern CLOTHING_COLOR_REGEX = Pattern.compile("\\[(\\d+);(\\d+);(\\d+)]");

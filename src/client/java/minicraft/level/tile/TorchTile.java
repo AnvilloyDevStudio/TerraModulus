@@ -61,13 +61,13 @@ public class TorchTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			int data = level.getData(x, y);
-			level.setTile(x, y, Tiles.get((short) data));
-			Sound.play("monsterhurt");
-			level.dropItem((x << 4) + 8, (y << 4) + 8, Items.get("Torch"));
-			return true;
-		}
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			int data = level.getData(x, y);
+// 			level.setTile(x, y, Tiles.get((short) data));
+// 			Sound.play("monsterhurt");
+// 			level.dropItem((x << 4) + 8, (y << 4) + 8, Items.get("Torch"));
+// 			return true;
+// 		}
 
 		// Hard torch?
 		handleDamage(level, x, y, source, item, 0);

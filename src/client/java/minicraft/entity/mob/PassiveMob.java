@@ -32,7 +32,7 @@ public class PassiveMob extends MobAi {
 	 * 	and then added with 5.
 	 */
 	public PassiveMob(SpriteLink[][] sprites, int healthFactor) {
-		super(sprites, 5 + healthFactor * Settings.getIdx("diff"), 5 * 60 * Updater.normSpeed, 45, 40);
+		super(sprites, 5 + healthFactor /* * Settings.getIdx("diff")*/, 5 * 60 * Updater.normSpeed, 45, 40);
 	}
 
 	@Override

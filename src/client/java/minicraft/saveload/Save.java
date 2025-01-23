@@ -208,37 +208,37 @@ public class Save {
 	}
 
 	private void writeGame(String filename) {
-		data.add(String.valueOf(Game.VERSION));
-		data.add(String.valueOf(World.getWorldSeed()));
-		data.add(String.valueOf(Settings.getIdx("mode")));
-		data.add(String.valueOf(Updater.tickCount));
-		data.add(String.valueOf(Updater.gameTime));
-		data.add(String.valueOf(Settings.getIdx("diff")));
-		data.add(String.valueOf(AirWizard.beaten));
-		data.add(String.valueOf(Settings.get("quests")));
-		data.add(String.valueOf(Settings.get("tutorials")));
-		data.add(String.valueOf(ObsidianKnight.beaten));
-		writeToFile(location + filename + extension, data);
+// 		data.add(String.valueOf(Game.VERSION));
+// 		data.add(String.valueOf(World.getWorldSeed()));
+// 		data.add(String.valueOf(Settings.getIdx("mode")));
+// 		data.add(String.valueOf(Updater.tickCount));
+// 		data.add(String.valueOf(Updater.gameTime));
+// 		data.add(String.valueOf(Settings.getIdx("diff")));
+// 		data.add(String.valueOf(AirWizard.beaten));
+// 		data.add(String.valueOf(Settings.get("quests")));
+// 		data.add(String.valueOf(Settings.get("tutorials")));
+// 		data.add(String.valueOf(ObsidianKnight.beaten));
+// 		writeToFile(location + filename + extension, data);
 	}
 
 	private void writePrefs() {
 		JSONObject json = new JSONObject();
 
-		json.put("version", String.valueOf(Game.VERSION));
-		json.put("sound", String.valueOf(Settings.get("sound")));
-		json.put("autosave", String.valueOf(Settings.get("autosave")));
-		json.put("fps", String.valueOf(Settings.get("fps")));
-		json.put("lang", Localization.getSelectedLocale().toLanguageTag());
-		json.put("skin", String.valueOf(SkinDisplay.getSelectedSkin()));
-		json.put("savedIP", MultiplayerDisplay.savedIP);
-		json.put("savedUUID", MultiplayerDisplay.savedUUID);
-		json.put("savedUsername", MultiplayerDisplay.savedUsername);
-		json.put("keymap", new JSONArray(Game.input.getKeyPrefs()));
-		json.put("resourcePacks", new JSONArray(ResourcePackDisplay.getLoadedPacks()));
-		json.put("showquests", String.valueOf(Settings.get("showquests")));
-		json.put("hwa", String.valueOf(Settings.get("hwa")));
-		json.put("updateChecking", String.valueOf(Settings.get("updatecheck")));
-		json.put("controllerEnabled", String.valueOf(Game.input.isControllerEnabled()));
+// 		json.put("version", String.valueOf(Game.VERSION));
+// 		json.put("sound", String.valueOf(Settings.get("sound")));
+// 		json.put("autosave", String.valueOf(Settings.get("autosave")));
+// 		json.put("fps", String.valueOf(Settings.get("fps")));
+// 		json.put("lang", Localization.getSelectedLocale().toLanguageTag());
+// 		json.put("skin", String.valueOf(SkinDisplay.getSelectedSkin()));
+// 		json.put("savedIP", MultiplayerDisplay.savedIP);
+// 		json.put("savedUUID", MultiplayerDisplay.savedUUID);
+// 		json.put("savedUsername", MultiplayerDisplay.savedUsername);
+// 		json.put("keymap", new JSONArray(Game.input.getKeyPrefs()));
+// 		json.put("resourcePacks", new JSONArray(ResourcePackDisplay.getLoadedPacks()));
+// 		json.put("showquests", String.valueOf(Settings.get("showquests")));
+// 		json.put("hwa", String.valueOf(Settings.get("hwa")));
+// 		json.put("updateChecking", String.valueOf(Settings.get("updatecheck")));
+// 		json.put("controllerEnabled", String.valueOf(Game.input.isControllerEnabled()));
 
 		// Save json
 		try {
@@ -251,12 +251,12 @@ public class Save {
 	private void writeUnlocks() {
 		JSONObject json = new JSONObject();
 
-		JSONArray scoretimes = new JSONArray();
-		if (Settings.getEntry("scoretime").getValueVisibility(10))
-			scoretimes.put(10);
-		if (Settings.getEntry("scoretime").getValueVisibility(120))
-			scoretimes.put(120);
-		json.put("visibleScoreTimes", scoretimes);
+// 		JSONArray scoretimes = new JSONArray();
+// 		if (Settings.getEntry("scoretime").getValueVisibility(10))
+// 			scoretimes.put(10);
+// 		if (Settings.getEntry("scoretime").getValueVisibility(120))
+// 			scoretimes.put(120);
+// 		json.put("visibleScoreTimes", scoretimes);
 
 		json.put("unlockedAchievements", new JSONArray(AchievementsDisplay.getUnlockedAchievements()));
 
@@ -270,9 +270,9 @@ public class Save {
 	private void writeWorld(String filename) {
 		LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.levels"));
 		for (int l = 0; l < World.levels.length; l++) {
-			String worldSize = String.valueOf(Settings.get("size"));
-			data.add(worldSize);
-			data.add(worldSize);
+// 			String worldSize = String.valueOf(Settings.get("size"));
+// 			data.add(worldSize);
+// 			data.add(worldSize);
 			data.add(Long.toString(World.levels[l].getSeed()));
 			data.add(String.valueOf(World.levels[l].depth));
 
