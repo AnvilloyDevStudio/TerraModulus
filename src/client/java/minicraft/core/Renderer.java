@@ -127,9 +127,6 @@ public class Renderer extends Game {
 			toast.render(screen);
 		}
 
-		if (!canvas.hasFocus())
-			renderFocusNagger(); // Calls the renderFocusNagger() method, which creates the "Click to Focus" message.
-
 
 		BufferStrategy bs = canvas.getBufferStrategy(); // Creates a buffer strategy to determine how the graphics should be buffered.
 		Graphics2D g = (Graphics2D) bs.getDrawGraphics(); // Gets the graphics in which java draws the picture
@@ -1148,49 +1145,6 @@ public class Renderer extends Game {
 			Font.drawParagraph(info, screen, style, 2);
 		}
 	}
-
-	/**
-	 * Renders the "Click to focus" box when you click off the screen.
-	 */
-	private static void renderFocusNagger() {
-
-		String msg = "Click to focus!"; // The message when you click off the screen.
-
-		Updater.paused = true; // Perhaps paused is only used for this.
-		int xx = (Screen.w - Font.textWidth(msg)) / 2; // The width of the box
-		int yy = (HEIGHT - 8) / 2; // The height of the box
-		int w = msg.length(); // Length of message in characters.
-		int h = 1;
-		MinicraftImage hudSheet = getHudSheet();
-
-		// Renders the four corners of the box
-		screen.render(null, xx - 8, yy - 8, 0, 6, 0, hudSheet);
-		screen.render(null, xx + w * 8, yy - 8, 0, 6, 1, hudSheet);
-		screen.render(null, xx - 8, yy + 8, 0, 6, 2, hudSheet);
-		screen.render(null, xx + w * 8, yy + 8, 0, 6, 3, hudSheet);
-
-		// Renders each part of the box...
-		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy - 8, 1, 6, 0, hudSheet); // ...Top part
-			screen.render(null, xx + x * 8, yy + 8, 1, 6, 2, hudSheet); // ...Bottom part
-		}
-		for (int y = 0; y < h; y++) {
-			screen.render(null, xx - 8, yy + y * 8, 2, 6, 0, hudSheet); // ...Left part
-			screen.render(null, xx + w * 8, yy + y * 8, 2, 6, 1, hudSheet); // ...Right part
-		}
-
-		// The middle
-		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy, 3, 6, 0, hudSheet);
-		}
-
-		// Renders the focus nagger text with a flash effect...
-		if ((Updater.tickCount / 20) % 2 == 0) // ...Medium yellow color
-			Font.draw(msg, screen, xx, yy, Color.get(1, 153));
-		else // ...Bright yellow color
-			Font.draw(msg, screen, xx, yy, Color.get(5, 255));
-	}
-
 
 	static java.awt.Dimension getWindowSize() {
 		return new java.awt.Dimension((int) (WIDTH * SCALE), (int) (HEIGHT * SCALE));
