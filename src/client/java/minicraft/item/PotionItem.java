@@ -12,28 +12,28 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class PotionItem extends StackableItem {
+public class PotionItem {//extends StackableItem {
 
 	protected static ArrayList<Item> getAllInstances() {
 		ArrayList<Item> items = new ArrayList<>();
 
-		for (PotionType type : PotionType.values())
-			items.add(new PotionItem(type));
+// 		for (PotionType type : PotionType.values())
+// 			items.add(new PotionItem(type));
 
 		return items;
 	}
 
 	public PotionType type;
 
-	private PotionItem(PotionType type) {
-		this(type, 1);
-	}
-
-	private PotionItem(PotionType type, int count) {
-		super(type.name, new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "potion")
-			.setColor(type.dispColor).createSpriteLink(), count);
-		this.type = type;
-	}
+// 	private PotionItem(PotionType type) {
+// 		this(type, 1);
+// 	}
+//
+// 	private PotionItem(PotionType type, int count) {
+// 		super(type.name, new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "potion")
+// 			.setColor(type.dispColor).createSpriteLink(), count);
+// 		this.type = type;
+// 	}
 
 // 	// The return value is used to determine if the potion was used, which means being discarded.
 // 	public boolean useOn(Tile tile, Level level, int xt, int yt, Player player, Direction attackDir) {
@@ -69,17 +69,17 @@ public class PotionItem extends StackableItem {
 // 		return true;
 // 	}
 
-	@Override
-	public boolean equals(Item other) {
-		return super.equals(other) && ((PotionItem) other).type == type;
-	}
+// 	@Override
+// 	public boolean equals(Item other) {
+// 		return super.equals(other) && ((PotionItem) other).type == type;
+// 	}
 
-	@Override
-	public int hashCode() {
-		return super.hashCode() + type.name.hashCode();
-	}
-
-	public @NotNull PotionItem copy() {
-		return new PotionItem(type, count);
-	}
+// 	@Override
+// 	public int hashCode() {
+// 		return super.hashCode() + type.name.hashCode();
+// 	}
+//
+// 	public @NotNull PotionItem copy() {
+// 		return new PotionItem(type, count);
+// 	}
 }
