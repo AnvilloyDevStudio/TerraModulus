@@ -35,7 +35,7 @@ public class PauseDisplay extends Display {
 
 		entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.pause.save"), () -> {
 			Game.setDisplay(null);
-			new Save(WorldSelectDisplay.getWorldName());
+// 			new Save(WorldSelectDisplay.getWorldName());
 		}));
 
 		entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.pause.menu"), () -> {
@@ -53,7 +53,7 @@ public class PauseDisplay extends Display {
 			}));
 			items.add(new SelectEntry(Localization.getStaticDisplay(
 				"minicraft.displays.pause.display.exit_popup.save"), () -> {
-				new Save(WorldSelectDisplay.getWorldName());
+// 				new Save(WorldSelectDisplay.getWorldName());
 				Game.setDisplay(new TitleDisplay());
 				World.onWorldExits();
 			}));

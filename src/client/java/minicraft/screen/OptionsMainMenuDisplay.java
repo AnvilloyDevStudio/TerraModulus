@@ -58,7 +58,7 @@ public class OptionsMainMenuDisplay extends Display {
 
 	@Override
     public void onExit() {
-        new Save();
+//         new Save();
         Game.MAX_FPS = (int) Settings.get("fps");
 	    Game.input.setControllerEnabled(controllersEntry.getValue());
 		if (!origUpdateCheckVal.equals(Settings.get("updatecheck"))) {

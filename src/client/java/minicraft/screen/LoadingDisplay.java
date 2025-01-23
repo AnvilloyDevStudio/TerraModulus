@@ -137,7 +137,7 @@ public class LoadingDisplay extends Display {
 		if (!WorldSelectDisplay.hasLoadedWorld()) {
 			msg = Localization.getStaticDisplay("minicraft.displays.loading.message.session.saving");
 			progressType = Localization.getStaticDisplay("minicraft.displays.loading.message.type.world");
-			new Save(WorldSelectDisplay.getWorldName());
+// 			new Save(WorldSelectDisplay.getWorldName());
 			Game.inGameNotifications.clear();
 		}
 	}

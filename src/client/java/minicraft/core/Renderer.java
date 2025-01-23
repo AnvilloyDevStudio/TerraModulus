@@ -925,8 +925,8 @@ public class Renderer extends Game {
 
 
 		ArrayList<String> permStatus = new ArrayList<>();
-		if (Updater.saving)
-			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.saving", Math.round(LoadingDisplay.getPercentage())));
+// 		if (Updater.saving)
+// 			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.saving", Math.round(LoadingDisplay.getPercentage())));
 		if (Bed.sleeping()) permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.sleeping"));
 		if (Bed.inBed(Game.player)) {
 			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.sleep_cancel", input.getMapping("exit")));

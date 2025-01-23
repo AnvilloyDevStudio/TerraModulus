@@ -403,8 +403,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		}
 
-		if (Updater.savecooldown > 0 && !Updater.saving)
-			Updater.savecooldown--;
+// 		if (Updater.savecooldown > 0 && !Updater.saving)
+// 			Updater.savecooldown--;
 
 
 		// Handle player input. Input is handled by the menu if we are in one.
@@ -424,7 +424,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 
 			// Executes if not saving; and... essentially halves speed if out of stamina.
-			if ((vec.x != 0 || vec.y != 0) && (staminaRechargeDelay % 2 == 0 || isSwimming()) && !Updater.saving) {
+			if ((vec.x != 0 || vec.y != 0) && (staminaRechargeDelay % 2 == 0 || isSwimming())) {
 				double spd = moveSpeed * (potioneffects.containsKey(PotionType.Speed) ? 1.5D : 1);
 				int xd = (int) (vec.x * spd);
 				int yd = (int) (vec.y * spd);
@@ -504,11 +504,11 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 					return;
 				}
 
-				if (input.inputDown("QUICK-SAVE") && !Updater.saving) {
-					Updater.saving = true;
-					LoadingDisplay.setPercentage(0);
-					new Save(WorldSelectDisplay.getWorldName());
-				}
+// 				if (input.inputDown("QUICK-SAVE") && !Updater.saving) {
+// 					Updater.saving = true;
+// 					LoadingDisplay.setPercentage(0);
+// // 					new Save(WorldSelectDisplay.getWorldName());
+// 				}
 			}
 
 			if (attackTime > 0) {

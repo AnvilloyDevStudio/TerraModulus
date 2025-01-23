@@ -52,10 +52,10 @@ public class Updater extends Game {
 	public static boolean updateNoteTick = false;
 	public static int notetick = 0; // "note"= notifications.
 
-	private static final int astime = 7200; // tands for Auto-Save Time (interval)
-	public static int asTick = 0; // The time interval between autosaves.
-	public static boolean saving = false; // If the game is performing a save.
-	public static int savecooldown; // Prevents saving many times too fast, I think.
+// 	private static final int astime = 7200; // tands for Auto-Save Time (interval)
+// 	public static int asTick = 0; // The time interval between autosaves.
+// 	public static boolean saving = false; // If the game is performing a save.
+// 	public static int savecooldown; // Prevents saving many times too fast, I think.
 	public static int screenshot = 0; // Counter for screenshot queries.
 
 	public enum Time {
@@ -144,17 +144,17 @@ public class Updater extends Game {
 			}
 		}
 
-		// Auto-save tick; marks when to do autosave.
-		if (!paused)
-			asTick++;
-		if (asTick > astime) {
-			if ((boolean) Settings.get("autosave") && !gameOver && player.health > 0) {
-
-				new Save(WorldSelectDisplay.getWorldName());
-			}
-
-			asTick = 0;
-		}
+// 		// Auto-save tick; marks when to do autosave.
+// 		if (!paused)
+// 			asTick++;
+// 		if (asTick > astime) {
+// 			if ((boolean) Settings.get("autosave") && !gameOver && player.health > 0) {
+//
+// // 				new Save(WorldSelectDisplay.getWorldName());
+// 			}
+//
+// 			asTick = 0;
+// 		}
 
 		// Increment tickCount if the game is not paused
 		if (!paused && timeFlow) setTime(tickCount + 1);

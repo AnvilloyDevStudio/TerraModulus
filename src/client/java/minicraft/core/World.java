@@ -79,7 +79,7 @@ public class World extends Game {
 		Logging.WORLD.debug("Resetting...");
 		playerDeadTime = 0;
 		currentLevel = 3;
-		Updater.asTick = 0;
+// 		Updater.asTick = 0;
 		Updater.inGameNotifications.clear();
 
 		// Adds a new player
@@ -131,7 +131,7 @@ public class World extends Game {
 		Logging.WORLDNAMED = Logger.tag("World/" + WorldSelectDisplay.getWorldName().toUpperCase());
 
 		if (WorldSelectDisplay.hasLoadedWorld()) {
-			new Load(WorldSelectDisplay.getWorldName());
+// 			new Load(WorldSelectDisplay.getWorldName());
 		} else {
 			Analytics.WorldCreation.ping();
 

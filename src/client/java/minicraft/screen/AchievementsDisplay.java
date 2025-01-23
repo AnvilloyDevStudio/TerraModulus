@@ -124,7 +124,7 @@ public class AchievementsDisplay extends Display {
 	public void onExit() {
 		// Play confirm sound.
 		Sound.play("confirm");
-		new Save();
+// 		new Save();
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class AchievementsDisplay extends Display {
 			achievementScore -= a.score; // Logical?
 
 		// Save the new list of achievements stored in memory.
-		if (save) new Save();
+// 		if (save) new Save();
 
 		return true;
 	}

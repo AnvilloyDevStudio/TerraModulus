@@ -328,7 +328,7 @@ public class ResourcePackDisplay extends Display {
 	public void onExit() {
 		resourcePacks.clear(); // Releases unloaded packs.
 		fileWatcher.close(); // Removes watcher.
-		new Save();
+// 		new Save();
 		if (changed) reloadResources();
 	}
 

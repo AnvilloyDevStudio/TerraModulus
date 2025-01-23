@@ -248,7 +248,7 @@ public abstract class Entity implements Tickable {
 	 */
 	public boolean move(int xd, int yd) {
 		// TODO Validate existence of `Updater.saving` here, may potentially cause issue
-		if (Updater.saving || (xd == 0 && yd == 0)) return true; // Pretend that it kept moving
+		if ((xd == 0 && yd == 0)) return true; // Pretend that it kept moving
 
 		boolean stopped = true; // Used to check if the entity has BEEN stopped, COMPLETELY; below checks for a lack of collision.
 		// Either xd or yd must be non-zero, so at least either one of them is invoked.

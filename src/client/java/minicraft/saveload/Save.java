@@ -66,102 +66,102 @@ public class Save {
 
 	List<String> data;
 
-	/**
-	 * This is the main save method. Called by all Save() methods.
-	 * @param worldFolder The folder of where to save
-	 */
-	private Save(File worldFolder) {
-		data = new ArrayList<>();
+// 	/**
+// 	 * This is the main save method. Called by all Save() methods.
+// 	 * @param worldFolder The folder of where to save
+// 	 */
+// 	private Save(File worldFolder) {
+// 		data = new ArrayList<>();
+//
+//
+// 		if (worldFolder.getParent().equals("saves")) {
+// 			String worldName = worldFolder.getName();
+// 			if (!worldName.toLowerCase().equals(worldName)) {
+// 				Logging.SAVELOAD.debug("Renaming world in \"{}\" to lowercase", worldFolder);
+// 				String path = worldFolder.toString();
+// 				path = path.substring(0, path.lastIndexOf(worldName));
+// 				File newFolder = new File(path + worldName.toLowerCase());
+// 				if (worldFolder.renameTo(newFolder))
+// 					worldFolder = newFolder;
+// 				else
+// 					Logging.SAVELOAD.error("Failed to rename world folder \"{}\" to \"{}\"", worldFolder, newFolder);
+// 			}
+// 		}
+//
+// 		folder = worldFolder;
+// 		location = worldFolder.getPath() + "/";
+//
+// 		folder.mkdirs();
+// 	}
 
+// 	/**
+// 	 * This will save world options
+// 	 * @param worldname The name of the world.
+// 	 */
+// 	public Save(String worldname) {
+// 		this(new File(Game.gameDir + "/saves/" + worldname + "/"));
+//
+// 		writeGame("Game");
+// 		writeWorld("Level");
+// 		writePlayer("Player", Game.player);
+// 		writeInventory("Inventory", Game.player);
+// 		writeEntities("Entities");
+//
+// 		WorldSelectDisplay.updateWorlds();
+//
+// 		Updater.notifyAll(Localization.getStaticDisplay("minicraft.notification.world_saved"));
+// 		Updater.asTick = 0;
+// 		Updater.saving = false;
+// 	}
 
-		if (worldFolder.getParent().equals("saves")) {
-			String worldName = worldFolder.getName();
-			if (!worldName.toLowerCase().equals(worldName)) {
-				Logging.SAVELOAD.debug("Renaming world in \"{}\" to lowercase", worldFolder);
-				String path = worldFolder.toString();
-				path = path.substring(0, path.lastIndexOf(worldName));
-				File newFolder = new File(path + worldName.toLowerCase());
-				if (worldFolder.renameTo(newFolder))
-					worldFolder = newFolder;
-				else
-					Logging.SAVELOAD.error("Failed to rename world folder \"{}\" to \"{}\"", worldFolder, newFolder);
-			}
-		}
+// 	/**
+// 	 * This will save the settings in the settings menu.
+// 	 */
+// 	public Save() {
+// 		this(new File(Game.gameDir + "/"));
+//
+// 		if (Game.VERSION.isDev()) { // Is dev build
+// 			Logging.SAVELOAD.debug("In dev build: Searching for old preferences...");
+// 			Version prefVer;
+// 			File prefFile = new File(location, "Preferences.json"); // Only this is checked when checking existence.
+// 			File unlocFile = new File(location, "Unlocks.json");
+// 			try {
+// 				JSONObject json = new JSONObject(Load.loadFromFile(location + "Preferences.json", false));
+// 				prefVer = new Version(json.getString("version"));
+// 			} catch (FileNotFoundException e) {
+// 				Logging.SAVELOAD.debug("Preferences.json is not found, ignoring...");
+// 				prefVer = null;
+// 			} catch (IOException e) {
+// 				Logging.SAVELOAD.error(e, "Unable to load Preferences.json, saving aborted");
+// 				return;
+// 			}
+//
+// 			if (prefVer != null && prefVer.compareTo(Game.VERSION) < 0) {
+// 				Logging.SAVELOAD.info("Old preferences detected, backup performing...");
+// 				File prefBackupFile = new File(location + "Preferences.json.bak");
+// 				if (prefBackupFile.exists()) Logging.SAVELOAD.info("Overwriting old Preferences.json backup...");
+// 				if (prefBackupFile.delete()) Logging.SAVELOAD.trace("Preferences.json.bak is deleted.");
+// 				if (prefFile.renameTo(prefBackupFile)) Logging.SAVELOAD.trace("Preferences.json is renamed to Preferences.json.bak");
+// 				File unlocBackupFile = new File(location + "Unlocks.json.bak");
+// 				if (unlocBackupFile.exists()) Logging.SAVELOAD.info("Overwriting old Unlocks.json backup...");
+// 				if (unlocBackupFile.delete()) Logging.SAVELOAD.trace("Unlocks.json.bak is deleted.");
+// 				if (unlocFile.renameTo(unlocBackupFile)) Logging.SAVELOAD.trace("Unlocks.json is renamed to Unlocks.json.bak");
+// 			}
+// 		}
+//
+// 		Logging.SAVELOAD.debug("Writing preferences and unlocks...");
+// 		writePrefs();
+// 		writeUnlocks();
+// 	}
 
-		folder = worldFolder;
-		location = worldFolder.getPath() + "/";
-
-		folder.mkdirs();
-	}
-
-	/**
-	 * This will save world options
-	 * @param worldname The name of the world.
-	 */
-	public Save(String worldname) {
-		this(new File(Game.gameDir + "/saves/" + worldname + "/"));
-
-		writeGame("Game");
-		writeWorld("Level");
-		writePlayer("Player", Game.player);
-		writeInventory("Inventory", Game.player);
-		writeEntities("Entities");
-
-		WorldSelectDisplay.updateWorlds();
-
-		Updater.notifyAll(Localization.getStaticDisplay("minicraft.notification.world_saved"));
-		Updater.asTick = 0;
-		Updater.saving = false;
-	}
-
-	/**
-	 * This will save the settings in the settings menu.
-	 */
-	public Save() {
-		this(new File(Game.gameDir + "/"));
-
-		if (Game.VERSION.isDev()) { // Is dev build
-			Logging.SAVELOAD.debug("In dev build: Searching for old preferences...");
-			Version prefVer;
-			File prefFile = new File(location, "Preferences.json"); // Only this is checked when checking existence.
-			File unlocFile = new File(location, "Unlocks.json");
-			try {
-				JSONObject json = new JSONObject(Load.loadFromFile(location + "Preferences.json", false));
-				prefVer = new Version(json.getString("version"));
-			} catch (FileNotFoundException e) {
-				Logging.SAVELOAD.debug("Preferences.json is not found, ignoring...");
-				prefVer = null;
-			} catch (IOException e) {
-				Logging.SAVELOAD.error(e, "Unable to load Preferences.json, saving aborted");
-				return;
-			}
-
-			if (prefVer != null && prefVer.compareTo(Game.VERSION) < 0) {
-				Logging.SAVELOAD.info("Old preferences detected, backup performing...");
-				File prefBackupFile = new File(location + "Preferences.json.bak");
-				if (prefBackupFile.exists()) Logging.SAVELOAD.info("Overwriting old Preferences.json backup...");
-				if (prefBackupFile.delete()) Logging.SAVELOAD.trace("Preferences.json.bak is deleted.");
-				if (prefFile.renameTo(prefBackupFile)) Logging.SAVELOAD.trace("Preferences.json is renamed to Preferences.json.bak");
-				File unlocBackupFile = new File(location + "Unlocks.json.bak");
-				if (unlocBackupFile.exists()) Logging.SAVELOAD.info("Overwriting old Unlocks.json backup...");
-				if (unlocBackupFile.delete()) Logging.SAVELOAD.trace("Unlocks.json.bak is deleted.");
-				if (unlocFile.renameTo(unlocBackupFile)) Logging.SAVELOAD.trace("Unlocks.json is renamed to Unlocks.json.bak");
-			}
-		}
-
-		Logging.SAVELOAD.debug("Writing preferences and unlocks...");
-		writePrefs();
-		writeUnlocks();
-	}
-
-	public Save(Player player, boolean writePlayer) {
-		// This is simply for access to writeToFile.
-		this(new File(Game.gameDir + "/saves/" + WorldSelectDisplay.getWorldName() + "/"));
-		if (writePlayer) {
-			writePlayer("Player", player);
-			writeInventory("Inventory", player);
-		}
-	}
+// 	public Save(Player player, boolean writePlayer) {
+// 		// This is simply for access to writeToFile.
+// 		this(new File(Game.gameDir + "/saves/" + WorldSelectDisplay.getWorldName() + "/"));
+// 		if (writePlayer) {
+// 			writePlayer("Player", player);
+// 			writeInventory("Inventory", player);
+// 		}
+// 	}
 
 	public static void writeFile(String filename, String[] lines) throws IOException {
 		try (BufferedWriter br = new BufferedWriter(new FileWriter(filename))) {
