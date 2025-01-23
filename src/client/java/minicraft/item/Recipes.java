@@ -1,7 +1,6 @@
 package minicraft.item;
 
 import minicraft.entity.furniture.Bed;
-import minicraft.level.tile.FlowerTile;
 import minicraft.saveload.Save;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -283,7 +282,7 @@ public class Recipes {
 				item instanceof ToolItem ? name.replaceAll("(?i)wood", "wooden").replaceAll("(?i)rock", "stone") : name)
 				.toLowerCase().replace(' ', '_');
 		};
-		String[] flowerNames = Arrays.stream(FlowerTile.FlowerVariant.values()).map(FlowerTile.FlowerVariant::getName).toArray(String[]::new);
+// 		String[] flowerNames = Arrays.stream(FlowerTile.FlowerVariant.values()).map(FlowerTile.FlowerVariant::getName).toArray(String[]::new);
 		HashMap<Recipe, String> resolvedRecipes = new HashMap<>(); // Directly hardcoded
 		resolvedRecipes.put(new Recipe("light gray dye_2", "white dye_1", "gray dye_1"), "light_gray_dye_from_gray_white_dye");
 		resolvedRecipes.put(new Recipe("light gray dye_2", "white dye_1", "black dye_1"), "light_gray_dye_from_black_white_dye");
@@ -302,9 +301,9 @@ public class Recipes {
 					return name + "_from_white_dye";
 				if (costs.size() == 1) {
 					String cost = costs.keySet().iterator().next();
-					if (Arrays.stream(flowerNames).anyMatch(n -> n.equalsIgnoreCase(cost))) {
-						return name + "_from_" + cost.toLowerCase().replace(' ', '_');
-					}
+// 					if (Arrays.stream(flowerNames).anyMatch(n -> n.equalsIgnoreCase(cost))) {
+// 						return name + "_from_" + cost.toLowerCase().replace(' ', '_');
+// 					}
 				}
 			} else if (item instanceof FurnitureItem && ((FurnitureItem) item).furniture instanceof Bed) {
 				if (recipe.getCosts().containsKey("WHITE BED"))

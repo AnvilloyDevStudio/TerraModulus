@@ -37,7 +37,6 @@ public final class Tiles {
 
 		tiles.put((short) 0, new GrassTile("Grass"));
 		tiles.put((short) 1, new DirtTile("Dirt"));
-		tiles.put((short) 2, new FlowerTile("Flower"));
 		tiles.put((short) 3, new HoleTile("Hole"));
 		tiles.put((short) 4, new StairsTile("Stairs Up", true));
 		tiles.put((short) 5, new StairsTile("Stairs Down", false));

@@ -2,7 +2,6 @@ package minicraft.level;
 
 import minicraft.core.io.Settings;
 import minicraft.gfx.Rectangle;
-import minicraft.level.tile.FlowerTile;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.RelPos;
 import minicraft.util.Logging;
