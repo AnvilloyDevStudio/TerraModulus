@@ -53,7 +53,7 @@ import java.util.function.ToIntFunction;
 public class Level {
 	private final Random random;
 
-	private static final String[] levelNames = { "Sky", "Surface", "Iron", "Gold", "Lava", "Dungeon" };
+	private static final String[] levelNames = { "Sky", "Surface", "Iron", "Gold", "Lava" };
 
 	public static String getLevelName(int depth) {
 		return levelNames[-1 * depth + 1];
@@ -144,7 +144,7 @@ public class Level {
 	private void updateMobCap() {
 		maxMobCount = 150 + 150 * Settings.getIdx("diff");
 		if (depth == 1) maxMobCount /= 2;
-		if (depth == 0 || depth == -4 || depth == -5) maxMobCount = maxMobCount * 2 / 3;
+		if (depth == 0 || depth == -5) maxMobCount = maxMobCount * 2 / 3;
 	}
 
 	public Level(int w, int h, long seed, int level, Level parentLevel, boolean makeWorld) {
@@ -216,17 +216,11 @@ public class Level {
 		if (level == 0)
 			generateVillages();
 
-		if (level == -4)
-			generateDungeonStructures();
-
 		if (parentLevel != null) { // If the level above this one is not null (aka, if this isn't a sky level)
 			for (int y = 0; y < h; y++) { // Loop through height
 				for (int x = 0; x < w; x++) { // Loop through width
 					if (parentLevel.getTile(x, y) == Tiles.get("Stairs Down")) { // If the tile in the level above the current one is a stairs down then...
-						if (level == -4) { /// Make the obsidian wall formation around the stair in the dungeon level
-							Structure.dungeonGate.draw(this, x, y); // Te gate should not intersect with the boss room.
-							Structure.dungeonBossRoom.draw(this, w / 2, h / 2); // Generating the boss room at the center.
-						} else if (level == 0) { // Surface
+						if (level == 0) { // Surface
 							Logging.WORLD.trace("Setting tiles around ({},{}) to hard rock", x, y);
 							setAreaTiles(x, y, 1, Tiles.get("Hard Rock"), 0); // surround the sky stairs with hard rock
 						} else // Any other level, the up-stairs should have dirt on all sides.
@@ -662,19 +656,10 @@ public class Level {
 				if ((Updater.getTime() == Updater.Time.Night && Updater.pastDay1 || depth != 0) && EnemyMob.checkStartPos(this, nx, ny)
 					&& !isLight(nx, ny)) { // if night or underground, with a valid tile and dim place, spawn an enemy mob.
 
-					if (depth != -4) { // Normal mobs
-						if (rnd <= 40) add((new Slime(lvl)), nx, ny);
-						else if (rnd <= 75) add((new Zombie(lvl)), nx, ny);
-						else if (rnd >= 85) add((new Skeleton(lvl)), nx, ny);
-						else add((new Creeper(lvl)), nx, ny);
-
-					} else { // Special dungeon mobs
-						if (rnd <= 40) add((new Snake(lvl)), nx, ny);
-						else if (rnd <= 75) add((new Knight(lvl)), nx, ny);
-						else if (rnd >= 85) add((new Snake(lvl)), nx, ny);
-						else add((new Knight(lvl)), nx, ny);
-
-					}
+					if (rnd <= 40) add((new Slime(lvl)), nx, ny);
+					else if (rnd <= 75) add((new Zombie(lvl)), nx, ny);
+					else if (rnd >= 85) add((new Skeleton(lvl)), nx, ny);
+					else add((new Creeper(lvl)), nx, ny);
 
 					spawned = true;
 					continue; // Only 1 mob is spawned at the same time.
@@ -1171,38 +1156,6 @@ public class Level {
 					}
 
 					break;
-				}
-			}
-		}
-	}
-
-	private void generateDungeonStructures() {
-		for (int i = 0; i < Math.sqrt(w); i++) {
-			int x = random.nextInt(w - 2) + 1;
-			int y = random.nextInt(h - 2) + 1;
-
-			if (x > 8 && y > 8 && x < w - 8 && y < w - 8) {
-				if (random.nextBoolean()) {
-					Structure.dungeonGarden.draw(this, x, y);
-				} else {
-					Structure.dungeonChest.draw(this, x, y, furniture -> {
-							if (furniture instanceof DungeonChest)
-								((DungeonChest) furniture).populateInv(random);
-						});
-				}
-			}
-		}
-	}
-
-	/**
-	 * Regenerating/repairing the boss room in the dungeon.
-	 */
-	public void regenerateBossRoom() {
-		if (depth == -4) {
-			Structure.dungeonBossRoom.draw(tiles, w / 2, h / 2, w); // Generating the boss room at the center.
-			for (int x = w / 2 - 4; x < w / 2 + 5; x++) { // Resetting tile data.
-				for (int y = h / 2 - 4; y < h / 2 + 5; y++) {
-					setData(x, y, 0);
 				}
 			}
 		}
