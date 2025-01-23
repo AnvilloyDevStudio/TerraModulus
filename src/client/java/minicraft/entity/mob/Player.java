@@ -78,7 +78,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	public static final int MAX_MULTIPLIER = 50; // Maximum score multiplier.
 
 	public double moveSpeed = 1; // The number of coordinate squares to move; each tile is 16x16.
-	private int score; // The player's score
 
 	private int multipliertime = mtm; // Time left on the current multiplier.
 	private int multiplier = 1; // Score multiplier
@@ -212,40 +211,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		updateSprites();
 	}
 
-	public int getMultiplier() {
-		return Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? multiplier : 1;
-	}
-
-	void resetMultiplier() {
-		multiplier = 1;
-		multipliertime = mtm;
-	}
-
-	public void addMultiplier(int value) {
-		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.score")) return;
-		multiplier = Math.min(MAX_MULTIPLIER, multiplier + value);
-		multipliertime = Math.max(multipliertime, mtm - 5);
-	}
-
-	public void tickMultiplier() {
-		if ((!Updater.paused) && multiplier > 1) {
-			if (multipliertime != 0) multipliertime--;
-			if (multipliertime <= 0) resetMultiplier();
-		}
-	}
-
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
-	}
-
-	public void addScore(int points) {
-		score += points * getMultiplier();
-	}
-
 	/**
 	 * Adds a new potion effect to the player.
 	 * @param type Type of potion.
@@ -277,8 +242,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		if (Game.getDisplay() != null) return; // Don't tick player when menu is open
 
 		super.tick(); // Ticks Mob.java
-
-		tickMultiplier();
 
 		if ((baseHealth + extraHealth) > maxHealth) {
 			extraHealth = maxHealth - 10;
@@ -968,7 +931,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		if (remove) itemEntity.remove();
 		if (successful) {
 			Sound.play("pickup");
-			addScore(1);
 		}
 	}
 
@@ -1096,9 +1058,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	@Override
 	public void die() {
 		Analytics.SinglePlayerDeath.ping();
-
-		score -= score / 3; // Subtracts score penalty (minus 1/3 of the original score)
-		resetMultiplier();
 
 		// Make death chest
 		DeathChest dc = new DeathChest(this);

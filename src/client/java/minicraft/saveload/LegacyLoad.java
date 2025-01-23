@@ -250,7 +250,6 @@ public class LegacyLoad {
 		Game.currentLevel = Integer.parseInt(data.get(8));
 		modedata = data.get(9);
 
-		player.setScore(Integer.parseInt(data.get(6)));
 		World.levels[Game.currentLevel].add(player);
 
 		int mode;

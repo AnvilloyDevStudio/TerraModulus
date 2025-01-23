@@ -18,11 +18,7 @@ public final class Settings {
 		options.put("fps", new RangeEntry(new Localization.HookedLocalizedBufArgString("minicraft.settings.fps"), 10, 300, getDefaultRefreshRate())); // Has to check if the game is running in a headless mode. If it doesn't set the fps to 60
 		options.put("diff", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.displays.world_create.options.difficulty"), "minicraft.displays.world_create.options.difficulty.easy", "minicraft.displays.world_create.options.difficulty.normal", "minicraft.displays.world_create.options.difficulty.hard"));
 		options.get("diff").setSelection(1);
-		options.put("mode", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.displays.world_create.options.game_mode"), "minicraft.displays.world_create.options.game_mode.survival", "minicraft.displays.world_create.options.game_mode.creative", "minicraft.displays.world_create.options.game_mode.hardcore", "minicraft.displays.world_create.options.game_mode.score"));
-
-		options.put("scoretime", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.displays.world_create.options.score_time"), 10, 20, 40, 60, 120));
-		options.get("scoretime").setValueVisibility(10, false);
-		options.get("scoretime").setValueVisibility(120, false);
+		options.put("mode", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.displays.world_create.options.game_mode"), "minicraft.displays.world_create.options.game_mode.survival", "minicraft.displays.world_create.options.game_mode.creative", "minicraft.displays.world_create.options.game_mode.hardcore"));
 
 		options.put("sound", new BooleanEntry(new Localization.HookedLocalizedBufArgString("minicraft.settings.sound"), true));
 		options.put("autosave", new BooleanEntry(new Localization.HookedLocalizedBufArgString("minicraft.settings.autosave"), true));
@@ -38,10 +34,6 @@ public final class Settings {
 		options.put("showquests", new BooleanEntry(new Localization.HookedLocalizedBufArgString("minicraft.displays.world_create.options.quests_panel"), true));
 
 		options.put("updatecheck", new ArrayEntry<>(new Localization.HookedLocalizedBufArgString("minicraft.settings.update_check"), "minicraft.settings.update_check.all", "minicraft.settings.update_check.full_only", "minicraft.settings.update_check.disabled"));
-
-		options.get("mode").setChangeListener(value ->
-			options.get("scoretime").setVisible("minicraft.displays.world_create.options.game_mode.score".equals(value))
-		);
 	}
 
 	/**

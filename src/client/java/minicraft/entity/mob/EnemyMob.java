@@ -139,10 +139,6 @@ public class EnemyMob extends MobAi {
 		return false;
 	}
 
-	public void die() {
-		super.die(50 * lvl, 1);
-	}
-
 	/**
 	 * Determines if the mob can spawn at the giving position in the given map.
 	 * @param level The level which the mob wants to spawn in.
@@ -151,7 +147,7 @@ public class EnemyMob extends MobAi {
 	 * @return true if the mob can spawn here, false if not.
 	 */
 	public static boolean checkStartPos(Level level, int x, int y) { // Find a place to spawn the mob
-		int r = (level.depth == -4 ? (Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? 22 : 15) : 13);
+		int r = (level.depth == -4 ? 15 : 13);
 
 		if (!MobAi.checkStartPos(level, x, y, 60, r))
 			return false;

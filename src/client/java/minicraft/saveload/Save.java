@@ -214,9 +214,7 @@ public class Save {
 	private void writeGame(String filename) {
 		data.add(String.valueOf(Game.VERSION));
 		data.add(String.valueOf(World.getWorldSeed()));
-		data.add(String.format("%d%s", Settings.getIdx("mode"),
-			Game.isMode("minicraft.displays.world_create.options.game_mode.score") ?
-				String.format(";%d;%s", Updater.scoreTime, Settings.get("scoretime")) : ""));
+		data.add(String.valueOf(Settings.getIdx("mode")));
 		data.add(String.valueOf(Updater.tickCount));
 		data.add(String.valueOf(Updater.gameTime));
 		data.add(String.valueOf(Settings.getIdx("diff")));
@@ -352,7 +350,6 @@ public class Save {
 		data.add(String.valueOf(player.armor));
 		data.add(String.valueOf(player.armorDamageBuffer));
 		data.add(String.valueOf(player.curArmor == null ? "NULL" : player.curArmor.getName()));
-		data.add(String.valueOf(player.getScore()));
 		data.add(String.valueOf(Game.currentLevel));
 
 		StringBuilder subdata = new StringBuilder("PotionEffects[");

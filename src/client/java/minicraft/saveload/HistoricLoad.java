@@ -761,7 +761,7 @@ public class HistoricLoad {
 			}
 
 			try {
-				Game.player.setScore(Integer.parseInt(data.get(6)));
+				Integer.parseInt(data.get(6));
 			} catch (NumberFormatException e) {
 				throw new Load.MalformedSaveDataValueException("Index 6 (Player score)", e);
 			}

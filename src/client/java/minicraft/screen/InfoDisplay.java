@@ -16,7 +16,6 @@ public class InfoDisplay extends Display {
 		super(new Menu.Builder(true, 4, RelPos.LEFT, StringEntry.useLines(Color.WHITE, false,
 				"----------------------------",
 				Localization.getLocalized("minicraft.displays.info.display.time_played", getTimeString()),
-				Localization.getLocalized("minicraft.displays.info.display.score", Game.player.getScore()),
 				"----------------------------",
 				Localization.getLocalized("minicraft.displays.info.display.exit_help", Game.input.getMapping("select"), Game.input.getMapping("exit"))
 			))

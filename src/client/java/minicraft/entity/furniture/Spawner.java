@@ -190,7 +190,6 @@ public class Spawner extends Furniture {
 			if (health <= 0) {
 				level.remove(this);
 				Sound.play("death");
-				((Player) source.getCausingEntity()).addScore(500);
 			}
 
 			return true;

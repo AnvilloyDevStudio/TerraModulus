@@ -971,36 +971,6 @@ public class Renderer extends Game {
 			Font.drawParagraph(print, screen, style, 0);
 		}
 
-
-		// SCORE MODE ONLY:
-		if (isMode("minicraft.displays.world_create.options.game_mode.score")) {
-			int seconds = (int) Math.ceil(Updater.scoreTime / (double) Updater.normSpeed);
-			int minutes = seconds / 60;
-			int hours = minutes / 60;
-			minutes %= 60;
-			seconds %= 60;
-
-			int timeCol;
-			if (Updater.scoreTime >= 18000) timeCol = Color.get(0, 555);
-			else if (Updater.scoreTime >= 3600) timeCol = Color.get(330, 555);
-			else timeCol = Color.get(400, 555);
-
-			Font.draw(Localization.getLocalized("minicraft.display.gui.score.time_left",
-				Localization.getLocalized(hours > 0 ? "minicraft.display.gui.score.time_left.time_hms" :
-					minutes > 0 ? "minicraft.display.gui.score.time_left.time_ms" :
-					"minicraft.display.gui.score.time_left.time_s", hours, minutes, seconds)),
-				screen, Screen.w / 2 - 9 * 8, 2, timeCol);
-
-			String scoreString = Localization.getLocalized("minicraft.display.gui.score.current_score", player.getScore());
-			Font.draw(scoreString, screen, Screen.w - Font.textWidth(scoreString) - 2, 3 + 8, Color.WHITE);
-
-			if (player.getMultiplier() > 1) {
-				int multColor = player.getMultiplier() < Player.MAX_MULTIPLIER ? Color.get(-1, 540) : Color.RED;
-				String mult = Localization.getLocalized("minicraft.display.gui.score_multiplier", player.getMultiplier());
-				Font.draw(mult, screen, Screen.w - Font.textWidth(mult) - 2, 4 + 2 * 8, multColor);
-			}
-		}
-
 		// This renders the potions overlay
 		if (player.showPotionEffects && player.potioneffects.size() > 0) {
 
@@ -1185,8 +1155,6 @@ public class Renderer extends Game {
 			info.add(String.format("Y: %d-%d", player.y >> 4, player.y << 4));
 			if (levels[currentLevel] != null)
 				info.add(String.format("Tile: %s", levels[currentLevel].getTile(player.x >> 4, player.y >> 4).name));
-			if (isMode("minicraft.displays.world_create.options.game_mode.score"))
-				info.add(String.format("Score: %d", player.getScore()));
 
 			if (levels[currentLevel] != null) {
 				info.add(String.format("Mob Cnt: %d/%d", levels[currentLevel].mobCount, levels[currentLevel].maxMobCount));

@@ -211,18 +211,4 @@ public abstract class MobAi extends Mob {
 	 * @return max level of the mob.
 	 */
 	public abstract int getMaxLevel();
-
-	protected void die(int points) {
-		die(points, 0);
-	}
-
-	protected void die(int points, int multAdd) {
-		for (Player p : level.getPlayers()) {
-			p.addScore(points); // Add score for mob death
-			if (multAdd != 0)
-				p.addMultiplier(multAdd);
-		}
-
-		super.die();
-	}
 }

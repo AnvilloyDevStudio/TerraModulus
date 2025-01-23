@@ -24,8 +24,6 @@ public class PlayerDeathDisplay extends Display {
 		ArrayList<ListEntry> entries = new ArrayList<>(Arrays.asList(
 			new StringEntry(Localization.getStaticDisplay("minicraft.displays.player_death.display.time",
 				InfoDisplay.getTimeString())),
-			new StringEntry(Localization.getStaticDisplay("minicraft.displays.player_death.display.score",
-				Game.player.getScore())),
 			new BlankEntry()
 		));
 

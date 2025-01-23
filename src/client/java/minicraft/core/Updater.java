@@ -1,17 +1,13 @@
 package minicraft.core;
 
-import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.furniture.Bed;
-import minicraft.entity.mob.Player;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
-import minicraft.level.tile.Tiles;
 import minicraft.saveload.Save;
 import minicraft.screen.DebugPanelDisplay;
 import minicraft.screen.Display;
-import minicraft.screen.EndGameDisplay;
 import minicraft.screen.LevelTransitionDisplay;
 import minicraft.screen.AppToast;
 import minicraft.screen.PlayerDeathDisplay;
@@ -162,17 +158,6 @@ public class Updater extends Game {
 
 		// Increment tickCount if the game is not paused
 		if (!paused && timeFlow) setTime(tickCount + 1);
-
-		// SCORE MODE ONLY
-
-		if (isMode("minicraft.displays.world_create.options.game_mode.score") && (!paused && !gameOver)) {
-			if (scoreTime <= 0) { // GAME OVER
-				gameOver = true;
-				setDisplay(new EndGameDisplay());
-			}
-
-			scoreTime--;
-		}
 
 		Renderer.appStatusBar.tick();
 		if (input.getMappedKey("BACK_QUOTE").isDown())
