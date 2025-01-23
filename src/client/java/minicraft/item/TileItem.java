@@ -12,7 +12,6 @@ import minicraft.level.Level;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.AchievementsDisplay;
-import minicraft.screen.SignDisplay;
 import minicraft.util.AdvancementElement;
 import minicraft.util.DisplayString;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +21,6 @@ import org.tinylog.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 public class TileItem extends StackableItem {
 
@@ -73,10 +71,6 @@ public class TileItem extends StackableItem {
 		items.add(new TileItem("Grass Seeds", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "seed").createSpriteLink(), new TileModel("grass"), "dirt"));
 
 		items.add(new TileItem("Torch", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "torch").createSpriteLink(), new TileModel("Torch", placeOverWithID), solidTiles));
-		items.add(new TileItem("Sign", new SpriteLink.SpriteLinkBuilder(SpriteType.Item, "sign").createSpriteLink(), new TileModel("Sign", (model1, target, level, xt, yt, player, attackDir) -> {
-			Game.setDisplay(new SignDisplay(level, xt, yt));
-			return placeOverWithID.getTileData(model1, target, level, xt, yt, player, attackDir);
-		}), solidTiles));
 
 		// Creative mode available tiles:
 		items.add(new TileItem("Farmland", SpriteManager.missingTexture(SpriteType.Item), new TileModel("farmland"), "dirt", "grass", "hole"));

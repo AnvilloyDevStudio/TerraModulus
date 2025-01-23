@@ -35,7 +35,6 @@ import minicraft.screen.AppToast;
 import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.Toast;
-import minicraft.screen.SignDisplayMenu;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectableStringEntry;
@@ -52,11 +51,8 @@ import javax.imageio.ImageIO;
 
 import java.awt.Canvas;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -67,7 +63,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class Renderer extends Game {
@@ -87,8 +82,6 @@ public class Renderer extends Game {
 
 	public static boolean readyToRenderGameplay = false;
 	public static boolean showDebugInfo = false;
-
-	public static SignDisplayMenu signDisplayMenu = null;
 
 	private static Ellipsis ellipsis = new SmoothEllipsis(new TickUpdater());
 
@@ -1060,7 +1053,6 @@ public class Renderer extends Game {
 
 		TutorialDisplayHandler.render(screen);
 		renderQuestsDisplay();
-		if (signDisplayMenu != null) signDisplayMenu.render(screen);
 		renderDebugInfo();
 
 		Toast toast;

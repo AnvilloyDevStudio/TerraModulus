@@ -69,7 +69,6 @@ import minicraft.screen.PopupDisplay;
 import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.ResourcePackDisplay;
-import minicraft.screen.SignDisplay;
 import minicraft.screen.SkinDisplay;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldCreateDisplay;
@@ -78,7 +77,6 @@ import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.StringEntry;
 import minicraft.util.AdvancementElement;
 import minicraft.util.Logging;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -891,35 +889,6 @@ public class Load {
 			TutorialDisplayHandler.reset(false);
 			AdvancementElement.resetRecipeUnlockingElements();
 			QuestsDisplay.resetGameQuests();
-		}
-
-		boolean signsLoadSucceeded = false;
-		if (new File(location + "signs.json").exists()) {
-			try {
-				JSONObject fileObj = new JSONObject(loadFromFile(location + "signs.json", true));
-				@SuppressWarnings("unused")
-				Version dataVersion = new Version(fileObj.getString("Version"));
-				JSONArray dataObj = fileObj.getJSONArray("signs");
-				HashMap<Map.Entry<Integer, Point>, List<String>> signTexts = new HashMap<>();
-				for (int i = 0; i < dataObj.length(); i++) {
-					JSONObject signObj = dataObj.getJSONObject(i);
-					signTexts.put(
-						new AbstractMap.SimpleImmutableEntry<>(signObj.getInt("level"), new Point(signObj.getInt("x"), signObj.getInt("y"))),
-						signObj.getJSONArray("lines").toList().stream().map(e -> (String) e).collect(Collectors.toList())
-					);
-				}
-
-				SignDisplay.loadSignTexts(signTexts);
-				signsLoadSucceeded = true;
-			} catch (IOException e) {
-				Logging.SAVELOAD.error(e, "Unable to load signs.json, reset sign data instead.");
-			}
-		} else {
-			Logging.SAVELOAD.debug("signs.json not found, reset sign data instead.");
-		}
-
-		if (!signsLoadSucceeded) {
-			SignDisplay.resetSignTexts();
 		}
 
 		LoadingDisplay.progress(5);
