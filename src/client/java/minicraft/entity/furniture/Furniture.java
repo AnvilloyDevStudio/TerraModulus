@@ -112,16 +112,16 @@ public class Furniture extends Entity {
 		return false;
 	}
 
-	/**
-	 * Lets the user pick up furniture.
-	 * @param player The player picking up the furniture.
-	 */
-	@Override
-	public @Nullable Item take(Player player) {
-		Sound.play("monsterhurt");
-		remove();
-		return new FurnitureItem(this);
-	}
+// 	/**
+// 	 * Lets the user pick up furniture.
+// 	 * @param player The player picking up the furniture.
+// 	 */
+// 	@Override
+// 	public @Nullable Item take(Player player) {
+// 		Sound.play("monsterhurt");
+// 		remove();
+// 		return new FurnitureItem(this);
+// 	}
 
 	/**
 	 * Tries to let the player push this furniture.

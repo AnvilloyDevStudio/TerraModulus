@@ -234,14 +234,14 @@ public abstract class Entity implements Tickable {
 		return false;
 	}
 
-	/**
-	 * Picks up this entity
-	 * @param player The player interacting
-	 * @return the item picked up; {@code null} if picking up failed
-	 */
-	public @Nullable Item take(Player player) {
-		return null;
-	}
+// 	/**
+// 	 * Picks up this entity
+// 	 * @param player The player interacting
+// 	 * @return the item picked up; {@code null} if picking up failed
+// 	 */
+// 	public @Nullable Item take(Player player) {
+// 		return null;
+// 	}
 
 	/**
 	 * Moves an entity horizontally and vertically. Returns whether entity was unimpeded in it's movement.

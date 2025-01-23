@@ -481,7 +481,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 // 				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
 				staminaRecharge = 0;
 
-				pickup();
+// 				pickup();
 			}
 
 			if ((input.inputPressed("INVENTORY") || input.inputPressed("craft")) && activeItem != null) {
@@ -620,8 +620,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		for (Entity e : entities)
 			if (e != this) {
 				blocked |= !(e instanceof ItemEntity || e instanceof Particle);
-				if ((activeItem = e.take(this)) != null)
-					return;
+// 				if ((activeItem = e.take(this)) != null)
+// 					return;
 			}
 
 		if (!blocked) {
