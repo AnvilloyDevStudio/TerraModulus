@@ -480,7 +480,7 @@ public class Renderer extends Game {
 
 		// This creates the darkness in the caves
 		if ((currentLevel != 3 || Updater.tickCount < Updater.dayLength / 4 || Updater.tickCount > Updater.dayLength / 2) && !isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			int brightnessMultiplier = player.potioneffects.containsKey(PotionType.Light) ? 12 : 8; // Brightens all light sources by a factor of 1.5 when the player has the Light potion effect. (8 above is normal)
+			int brightnessMultiplier = 8;//player.potioneffects.containsKey(PotionType.Light) ? 12 : 8; // Brightens all light sources by a factor of 1.5 when the player has the Light potion effect. (8 above is normal)
 			level.renderLight(screen, xScroll, yScroll, brightnessMultiplier); // Finds (and renders) all the light from objects (like the player, lanterns, and lava).
 			screen.overlay(currentLevel, xScroll, yScroll); // Overlays the light screen over the main screen.
 		}
@@ -965,28 +965,28 @@ public class Renderer extends Game {
 		}
 
 		// This renders the potions overlay
-		if (player.showPotionEffects && player.potioneffects.size() > 0) {
-
-			@SuppressWarnings("unchecked")
-			Map.Entry<PotionType, Integer>[] effects = player.potioneffects.entrySet().toArray(new Map.Entry[0]);
-
-			// The key is potion type, value is remaining potion duration.
-			if (!player.simplifyPotionEffects) {
-				for (int i = 0; i < effects.length; i++) {
-					PotionType pType = effects[i].getKey();
-					int pTime = effects[i].getValue() / Updater.normSpeed;
-					int minutes = pTime / 60;
-					int seconds = pTime % 60;
-					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("POTION-EFFECTS")), screen, 180, 9);
-					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.potion_dur", pType, minutes, seconds), screen, 180, 17 + i * Font.textHeight() + potionRenderOffset, pType.dispColor);
-				}
-			} else {
-				for (int i = 0; i < effects.length; i++) {
-					PotionType pType = effects[i].getKey();
-					Font.drawBackground(pType.toString().substring(0, 1), screen, Screen.w - 17 - (effects.length - 1 - i) * 8, 9, pType.dispColor);
-				}
-			}
-		}
+// 		if (player.showPotionEffects && player.potioneffects.size() > 0) {
+//
+// 			@SuppressWarnings("unchecked")
+// 			Map.Entry<PotionType, Integer>[] effects = player.potioneffects.entrySet().toArray(new Map.Entry[0]);
+//
+// 			// The key is potion type, value is remaining potion duration.
+// 			if (!player.simplifyPotionEffects) {
+// 				for (int i = 0; i < effects.length; i++) {
+// 					PotionType pType = effects[i].getKey();
+// 					int pTime = effects[i].getValue() / Updater.normSpeed;
+// 					int minutes = pTime / 60;
+// 					int seconds = pTime % 60;
+// 					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("POTION-EFFECTS")), screen, 180, 9);
+// 					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.potion_dur", pType, minutes, seconds), screen, 180, 17 + i * Font.textHeight() + potionRenderOffset, pType.dispColor);
+// 				}
+// 			} else {
+// 				for (int i = 0; i < effects.length; i++) {
+// 					PotionType pType = effects[i].getKey();
+// 					Font.drawBackground(pType.toString().substring(0, 1), screen, Screen.w - 17 - (effects.length - 1 - i) * 8, 9, pType.dispColor);
+// 				}
+// 			}
+// 		}
 
 		// This is the status icons, like health hearts, stamina bolts, and hunger "burgers".
 		if (!isMode("minicraft.displays.world_create.options.game_mode.creative")) {

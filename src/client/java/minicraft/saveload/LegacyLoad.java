@@ -267,14 +267,14 @@ public class LegacyLoad {
 		boolean hasEffects;
 		hasEffects = !data.get(10).equals("PotionEffects[]"); // Newer save
 
-		if (hasEffects) {
-			String[] effects = data.get(10).replace("PotionEffects[", "").replace("]", "").split(":");
-			for (String s : effects) {
-				String[] effect = s.split(";");
-				String pName = effect[0];
-				PotionItem.applyPotion(player, Enum.valueOf(PotionType.class, pName), Integer.parseInt(effect[1]));
-			}
-		}
+// 		if (hasEffects) {
+// 			String[] effects = data.get(10).replace("PotionEffects[", "").replace("]", "").split(":");
+// 			for (String s : effects) {
+// 				String[] effect = s.split(";");
+// 				String pName = effect[0];
+// 				PotionItem.applyPotion(player, Enum.valueOf(PotionType.class, pName), Integer.parseInt(effect[1]));
+// 			}
+// 		}
 
 		String colors = data.get(11).replace("[", "").replace("]", "");
 		String[] color = colors.split(";");

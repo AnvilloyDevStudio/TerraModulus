@@ -332,11 +332,11 @@ public class Save {
 
 		StringBuilder subdata = new StringBuilder("PotionEffects[");
 
-		for (java.util.Map.Entry<PotionType, Integer> potion : player.potioneffects.entrySet())
-			subdata.append(potion.getKey()).append(";").append(potion.getValue()).append(":");
-
-		if (player.potioneffects.size() > 0)
-			subdata.setLength(subdata.length() - 1); // Cuts off extra ":"; info: https://stackoverflow.com/a/3395329
+// 		for (java.util.Map.Entry<PotionType, Integer> potion : player.potioneffects.entrySet())
+// 			subdata.append(potion.getKey()).append(";").append(potion.getValue()).append(":");
+//
+// 		if (player.potioneffects.size() > 0)
+// 			subdata.setLength(subdata.length() - 1); // Cuts off extra ":"; info: https://stackoverflow.com/a/3395329
 		subdata.append("]");
 		data.add(subdata.toString());
 

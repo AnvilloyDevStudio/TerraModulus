@@ -964,16 +964,16 @@ public class Load {
 				loadMode(modedata); // Only load if you're loading the main player
 		}
 
-		String potioneffects = data.remove(0);
-		if (!potioneffects.equals("PotionEffects[]")) {
-			String[] effects = potioneffects.replace("PotionEffects[", "").replace("]", "").split(":");
-
-			for (String s : effects) {
-				String[] effect = s.split(";");
-				PotionType pName = Enum.valueOf(PotionType.class, effect[0]);
-				PotionItem.applyPotion(player, pName, Integer.parseInt(effect[1]));
-			}
-		}
+// 		String potioneffects = data.remove(0);
+// 		if (!potioneffects.equals("PotionEffects[]")) {
+// 			String[] effects = potioneffects.replace("PotionEffects[", "").replace("]", "").split(":");
+//
+// 			for (String s : effects) {
+// 				String[] effect = s.split(";");
+// 				PotionType pName = Enum.valueOf(PotionType.class, effect[0]);
+// 				PotionItem.applyPotion(player, pName, Integer.parseInt(effect[1]));
+// 			}
+// 		}
 
 		if (worldVer.compareTo(new Version("1.9.4-dev4")) < 0) {
 			String colors = data.remove(0).replace("[", "").replace("]", "");

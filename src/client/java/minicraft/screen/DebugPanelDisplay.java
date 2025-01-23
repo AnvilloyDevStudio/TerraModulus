@@ -308,9 +308,9 @@ public class DebugPanelDisplay extends Display {
 			CommandOptionEntry optionEntry1 = new CommandOptionEntry(effectEntry);
 			CommandOptionEntry optionEntry2 = new CommandOptionEntry(durEntry);
 			Game.setDisplay(new CommandPopupDisplay(null, () -> {
-				if (actionEntry.getValue()) for (PotionType potionType : Game.player.potioneffects.keySet()) {
-					PotionItem.applyPotion(Game.player, potionType, false);
-				}
+// 				if (actionEntry.getValue()) for (PotionType potionType : Game.player.potioneffects.keySet()) {
+// 					PotionItem.applyPotion(Game.player, potionType, false);
+// 				}
 
 				PotionType effect = effectEntry.getValue();
 				String durString = durEntry.getUserInput();
@@ -319,18 +319,18 @@ public class DebugPanelDisplay extends Display {
 						int value = Integer.parseInt(durString);
 						if (value < 0)
 							throw new IllegalArgumentException("duration negative");
-						if (PotionItem.applyPotion(Game.player, effect, value))
-							Logging.WORLDNAMED.info("Effect {} applied with specified duration {}.", effect, value);
-						else
-							Logging.WORLDNAMED.info("Effect {} failed applying with specified duration: {}.", effect, value);
+// 						if (PotionItem.applyPotion(Game.player, effect, value))
+// 							Logging.WORLDNAMED.info("Effect {} applied with specified duration {}.", effect, value);
+// 						else
+// 							Logging.WORLDNAMED.info("Effect {} failed applying with specified duration: {}.", effect, value);
 					} catch (IllegalArgumentException e) {
 						Logging.WORLDNAMED.error(e, "Effect {} failed applying with specified duration: {}", effect, durString);
 					}
 				} else {
-					if (PotionItem.applyPotion(Game.player, effect, true))
-						Logging.WORLDNAMED.info("Effect {} applied with default duration.", effect);
-					else
-						Logging.WORLDNAMED.info("Effect {} failed applying with default duration.", effect);
+// 					if (PotionItem.applyPotion(Game.player, effect, true))
+// 						Logging.WORLDNAMED.info("Effect {} applied with default duration.", effect);
+// 					else
+// 						Logging.WORLDNAMED.info("Effect {} failed applying with default duration.", effect);
 				}
 				return true;
 			}, display -> durEntry.isValid(), Arrays.asList(optionEntry, optionEntry1, optionEntry2)));

@@ -682,25 +682,25 @@ public class HistoricLoad {
 							throw new Load.MalformedSaveDataValueException("Potion effect time", e);
 						}
 
-						switch (split[0]) { // In fact, "P." should not be saved as an effect name.
-							case "Potion": break;// "Potion" takes no effect but saved in some versions.
-							case "Speed": PotionItem.applyPotion(Game.player, PotionType.Speed, time); break;
-							case "Light": PotionItem.applyPotion(Game.player, PotionType.Light, time); break;
-							case "Swim": PotionItem.applyPotion(Game.player, PotionType.Swim, time); break;
-							case "Energy": PotionItem.applyPotion(Game.player, PotionType.Energy, time); break;
-							case "Regen": PotionItem.applyPotion(Game.player, PotionType.Regen, time); break;
-							case "Time": PotionItem.applyPotion(Game.player, PotionType.Time, time); break;
-							case "Lava": PotionItem.applyPotion(Game.player, PotionType.Lava, time); break;
-							case "Shield": PotionItem.applyPotion(Game.player, PotionType.Shield, time); break;
-							case "Haste": PotionItem.applyPotion(Game.player, PotionType.Haste, time); break;
-							default:
+// 						switch (split[0]) { // In fact, "P." should not be saved as an effect name.
+// 							case "Potion": break;// "Potion" takes no effect but saved in some versions.
+// 							case "Speed": PotionItem.applyPotion(Game.player, PotionType.Speed, time); break;
+// 							case "Light": PotionItem.applyPotion(Game.player, PotionType.Light, time); break;
+// 							case "Swim": PotionItem.applyPotion(Game.player, PotionType.Swim, time); break;
+// 							case "Energy": PotionItem.applyPotion(Game.player, PotionType.Energy, time); break;
+// 							case "Regen": PotionItem.applyPotion(Game.player, PotionType.Regen, time); break;
+// 							case "Time": PotionItem.applyPotion(Game.player, PotionType.Time, time); break;
+// 							case "Lava": PotionItem.applyPotion(Game.player, PotionType.Lava, time); break;
+// 							case "Shield": PotionItem.applyPotion(Game.player, PotionType.Shield, time); break;
+// 							case "Haste": PotionItem.applyPotion(Game.player, PotionType.Haste, time); break;
+// 							default:
 								throw new Load.IllegalSaveDataValueException(String.format("Invalid potion type: %s", split[0]));
-						}
+// 						}
 					} catch (Load.IllegalSaveDataValueException | Load.MalformedSaveDataValueException e) {
 						throw new Load.MalformedSaveDataValueException(String.format("Potion effect (index: %d)", count), e);
 					}
 
-					count++;
+// 					count++;
 				}
 			} catch (Load.MalformedSaveDataValueException e) {
 				throw new Load.MalformedSaveDataValueException("Active potion effects", e);

@@ -102,17 +102,17 @@ public abstract class MobAi extends Mob {
 			}
 		}
 
-		if (getLevel() != null) {
-			boolean foundPlayer = false;
-			for (Player p : level.getPlayers()) {
-				if (p.isWithin(8, this) && p.potioneffects.containsKey(PotionType.Time)) {
-					foundPlayer = true;
-					break;
-				}
-			}
-
-			slowtick = foundPlayer;
-		}
+// 		if (getLevel() != null) {
+// 			boolean foundPlayer = false;
+// 			for (Player p : level.getPlayers()) {
+// 				if (p.isWithin(8, this) && p.potioneffects.containsKey(PotionType.Time)) {
+// 					foundPlayer = true;
+// 					break;
+// 				}
+// 			}
+//
+// 			slowtick = foundPlayer;
+// 		}
 
 		if (skipTick()) return;
 
