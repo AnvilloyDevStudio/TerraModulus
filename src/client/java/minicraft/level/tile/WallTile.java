@@ -5,8 +5,6 @@ import minicraft.core.io.Localization;
 import minicraft.core.io.Sound;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
-import minicraft.entity.mob.AirWizard;
-import minicraft.entity.mob.Mob;
 import minicraft.entity.mob.Player;
 import minicraft.entity.particle.SmashParticle;
 import minicraft.entity.particle.TextParticle;
@@ -69,7 +67,7 @@ public class WallTile extends Tile {
 		if (item instanceof ToolItem && source instanceof Player) {
 			ToolItem tool = (ToolItem) item;
 			if (tool.type == type.getRequiredTool()) {
-				if (level.depth != -3 || type != Material.Obsidian || AirWizard.beaten) {
+				if (level.depth != -3 || type != Material.Obsidian) {
 					if (((Player) source).payStamina(4 - tool.level) && tool.payDurability()) {
 						int data = level.getData(x, y);
 						hurt(level, x, y, source, item, attackDir, tool.getDamage());

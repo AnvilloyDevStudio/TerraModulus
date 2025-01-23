@@ -4,17 +4,14 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.Knight;
@@ -35,8 +32,6 @@ import minicraft.item.ArmorItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
 import minicraft.item.StackableItem;
 import minicraft.item.UnknownItem;
 import minicraft.level.Level;
@@ -1199,9 +1194,6 @@ public class HistoricLoad {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) throw new Load.IllegalDataValueException("Mob level: " + mobLevel);
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
 // 			case "Workbench":

@@ -2,45 +2,28 @@ package minicraft.saveload;
 
 import minicraft.core.Game;
 import minicraft.core.Renderer;
-import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Arrow;
 import minicraft.entity.Entity;
-import minicraft.entity.FireSpark;
 import minicraft.entity.ItemEntity;
-import minicraft.entity.Spark;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
-import minicraft.entity.furniture.KnightStatue;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.Spawner;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.EnemyMob;
 import minicraft.entity.mob.Mob;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Player;
 import minicraft.entity.mob.Sheep;
 import minicraft.entity.particle.Particle;
 import minicraft.entity.particle.TextParticle;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
-import minicraft.item.PotionType;
-import minicraft.item.Recipe;
-import minicraft.item.StackableItem;
 import minicraft.screen.AchievementsDisplay;
-import minicraft.screen.CraftingDisplay;
 import minicraft.screen.LoadingDisplay;
-import minicraft.screen.MultiplayerDisplay;
 import minicraft.screen.QuestsDisplay;
-import minicraft.screen.ResourcePackDisplay;
-import minicraft.screen.SkinDisplay;
-import minicraft.screen.TutorialDisplayHandler;
-import minicraft.screen.WorldSelectDisplay;
 import minicraft.util.AdvancementElement;
 import minicraft.util.Logging;
 import org.json.JSONArray;
@@ -48,10 +31,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Save {
@@ -390,7 +371,7 @@ public class Save {
 
 		// Don't even write ItemEntities or particle effects; Spark... will probably is saved, eventually; it presents an unfair cheat to remove the sparks by reloading the Game.
 
-		if (isLocalSave && (e instanceof ItemEntity || e instanceof Arrow || e instanceof Spark || e instanceof FireSpark || e instanceof Particle)) // Write these only when sending a world, not writing it. (RemotePlayers are saved separately, when their info is received.)
+		if (isLocalSave && (e instanceof ItemEntity || e instanceof Arrow || e instanceof Particle)) // Write these only when sending a world, not writing it. (RemotePlayers are saved separately, when their info is received.)
 			return "";
 
 		if (!isLocalSave)
@@ -422,8 +403,6 @@ public class Save {
 			extradata.append(":").append(((Lantern) e).type.ordinal());
 // 		} else if (e instanceof Crafter) {
 // 			name = ((Crafter) e).type.name();
-		} else if (e instanceof KnightStatue) {
-			extradata.append(":").append(((KnightStatue) e).getBossHealth());
 		} else if (e instanceof Bed) {
 			name = ((Bed) e).name;
 		}
@@ -431,7 +410,6 @@ public class Save {
 		if (!isLocalSave) {
 			if (e instanceof ItemEntity) extradata.append(":").append(((ItemEntity) e).getData());
 			if (e instanceof Arrow) extradata.append(":").append(((Arrow) e).getData());
-			if (e instanceof Spark) extradata.append(":").append(((Spark) e).getData());
 			if (e instanceof TextParticle) extradata.append(":").append(((TextParticle) e).getData());
 		}
 		//else // is a local save

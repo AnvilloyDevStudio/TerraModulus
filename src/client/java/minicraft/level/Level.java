@@ -3,14 +3,12 @@ package minicraft.level;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.ItemEntity;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.Spawner;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
@@ -214,8 +212,6 @@ public class Level {
 
 		checkChestCount(false);
 
-		checkAirWizard();
-
 		if (Logging.logLevel) printTileLocs(Tiles.get("Stairs Down"));
 	}
 
@@ -232,34 +228,6 @@ public class Level {
 
 	public long getSeed() {
 		return seed;
-	}
-
-	public void checkAirWizard() {
-		checkAirWizard(true);
-	}
-
-	private void checkAirWizard(boolean check) {
-		if (depth == 1 && !AirWizard.beaten) { // Add the airwizard to the surface
-
-			boolean found = false;
-			if (check) {
-				for (Entity e : entitiesToAdd)
-					if (e instanceof AirWizard) {
-						found = true;
-						break;
-					}
-				for (Entity e : entities)
-					if (e instanceof AirWizard) {
-						found = true;
-						break;
-					}
-			}
-
-			if (!found) {
-				AirWizard aw = new AirWizard();
-				add(aw, w / 2, h / 2, true);
-			}
-		}
 	}
 
 	public void checkChestCount() {
@@ -660,8 +628,7 @@ public class Level {
 	public void removeAllEnemies() {
 		for (Entity e : getEntityArray()) {
 			if (e instanceof EnemyMob)
-				if (!(e instanceof AirWizard))// || Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) // Don't remove the airwizard bosses! Unless in creative, since you can spawn more.
-					e.remove();
+				e.remove();
 		}
 	}
 

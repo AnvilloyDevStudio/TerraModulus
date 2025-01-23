@@ -4,18 +4,15 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.RewardChest;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.Knight;
@@ -32,8 +29,6 @@ import minicraft.item.ArmorItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.LoadingDisplay;
@@ -182,16 +177,6 @@ public class LegacyLoad {
 		worldVer = new Version(data.get(0)); // Gets the world version
 		Updater.setTime(Integer.parseInt(data.get(1)));
 		Updater.gameTime = 65000; // Prevents time cheating.
-
-		if (worldVer.compareTo(new Version("1.9.2")) < 0) {
-// 			Settings.set("autosave", Boolean.parseBoolean(data.get(3)));
-// 			Settings.set("sound", Boolean.parseBoolean(data.get(4)));
-			if (worldVer.compareTo(new Version("1.9.2-dev2")) >= 0)
-				AirWizard.beaten = Boolean.parseBoolean(data.get(5));
-		} else { // This is 1.9.2 official or after
-// 			Settings.setIdx("diff", Integer.parseInt(data.get(3)));
-			AirWizard.beaten = Boolean.parseBoolean(data.get(4));
-		}
 
 		LoadingDisplay.progress(10);
 	}
@@ -415,9 +400,6 @@ public class LegacyLoad {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) return null;
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
 // 			case "Workbench":

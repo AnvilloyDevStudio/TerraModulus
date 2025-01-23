@@ -3,10 +3,7 @@ package minicraft.core;
 import minicraft.core.CrashHandler.ErrorInfo;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.furniture.Bed;
-import minicraft.entity.mob.AirWizard;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Ellipsis;
@@ -15,7 +12,6 @@ import minicraft.gfx.Ellipsis.SmoothEllipsis;
 import minicraft.gfx.Font;
 import minicraft.gfx.FontStyle;
 import minicraft.gfx.MinicraftImage;
-import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.gfx.Sprite;
@@ -23,26 +19,17 @@ import minicraft.gfx.SpriteManager;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionType;
 import minicraft.item.StackableItem;
 import minicraft.item.ToolItem;
 import minicraft.item.ToolType;
 import minicraft.item.WateringCanItem;
 import minicraft.level.Level;
-import minicraft.screen.LoadingDisplay;
-import minicraft.screen.Menu;
 import minicraft.screen.AppToast;
-import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.Toast;
-import minicraft.screen.TutorialDisplayHandler;
-import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectableStringEntry;
-import minicraft.screen.entry.StringEntry;
 import minicraft.util.DisplayString;
 import minicraft.util.Logging;
-import minicraft.util.Quest;
-import minicraft.util.Quest.QuestSeries;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,9 +46,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
@@ -1037,19 +1022,6 @@ public class Renderer extends Game {
 				}
 			}
 // 		}
-
-		// Renders the bossbar
-		if (!player.isRemoved()) {
-			if (AirWizard.active && (player.getLevel().depth == 1)) {
-				AirWizard boss = AirWizard.entity;
-				renderBossbar((int) ((((float) boss.health) / boss.maxHealth) * 100),
-					Localization.getLocalized("minicraft.display.boss_bar.title.air_wizard"));
-			} else if (ObsidianKnight.active && (player.getLevel().depth == -4)) {
-				ObsidianKnight boss = ObsidianKnight.entity;
-				renderBossbar((int) ((((float) boss.health) / boss.maxHealth) * 100),
-					Localization.getLocalized("minicraft.display.boss_bar.title.obsidian_knight"));
-			}
-		}
 
 // 		TutorialDisplayHandler.render(screen);
 // 		renderQuestsDisplay();

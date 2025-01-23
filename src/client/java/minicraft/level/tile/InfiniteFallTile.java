@@ -1,9 +1,7 @@
 package minicraft.level.tile;
 
-import minicraft.core.Game;
 import minicraft.entity.Arrow;
 import minicraft.entity.Entity;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteAnimation;
@@ -28,7 +26,7 @@ public class InfiniteFallTile extends Tile {
 
 	@Override
 	public boolean mayPass(Level level, int x, int y, Entity e) {
-		return e instanceof AirWizard || e instanceof Arrow || e instanceof Player;// && Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
+		return e instanceof Arrow || e instanceof Player;// && Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
 	}
 
 	@Override

@@ -96,9 +96,6 @@ public final class Tiles {
 		tiles.put((short) 44, new MaterialTile(Tile.Material.Obsidian));
 		tiles.put((short) 45, new DecorTile(DecorTile.decorType.ORNATE_STONE));
 		tiles.put((short) 46, new DecorTile(DecorTile.decorType.ORNATE_OBSIDIAN));
-		tiles.put((short) 47, new BossWallTile());
-		tiles.put((short) 48, new BossFloorTile());
-		tiles.put((short) 49, new BossDoorTile());
 		tiles.put((short) 50, new TomatoTile("Tomato"));
 		tiles.put((short) 51, new CarrotTile("Carrot"));
 		tiles.put((short) 52, new HeavenlyBerriesTile("Heavenly Berries"));

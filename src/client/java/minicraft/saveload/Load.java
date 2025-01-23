@@ -3,35 +3,28 @@ package minicraft.saveload;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
-import minicraft.core.io.FileHandler;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Arrow;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
-import minicraft.entity.FireSpark;
 import minicraft.entity.ItemEntity;
-import minicraft.entity.Spark;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
-import minicraft.entity.furniture.KnightStatue;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.RepairBench;
 import minicraft.entity.furniture.RewardChest;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
 import minicraft.entity.mob.Knight;
 import minicraft.entity.mob.Mob;
 import minicraft.entity.mob.MobAi;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Pig;
 import minicraft.entity.mob.Player;
 import minicraft.entity.mob.Sheep;
@@ -46,35 +39,25 @@ import minicraft.gfx.Color;
 import minicraft.gfx.Ellipsis;
 import minicraft.gfx.Font;
 import minicraft.gfx.FontStyle;
-import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.item.ArmorItem;
 import minicraft.item.DyeItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
-import minicraft.item.Recipe;
 import minicraft.item.StackableItem;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.network.Network;
 import minicraft.screen.AchievementsDisplay;
-import minicraft.screen.CraftingDisplay;
 import minicraft.screen.Display;
 import minicraft.screen.LoadingDisplay;
 import minicraft.screen.MultiplayerDisplay;
-import minicraft.screen.PopupDisplay;
 import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.ResourcePackDisplay;
 import minicraft.screen.SkinDisplay;
-import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldCreateDisplay;
-import minicraft.screen.WorldSelectDisplay;
-import minicraft.screen.entry.ListEntry;
-import minicraft.screen.entry.StringEntry;
 import minicraft.util.AdvancementElement;
 import minicraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
@@ -94,19 +77,14 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Load {
 
@@ -535,16 +513,6 @@ public class Load {
 			diffIdx--; // Account for change in difficulty
 
 // 		Settings.setIdx("diff", diffIdx);
-
-		AirWizard.beaten = Boolean.parseBoolean(data.remove(0));
-
-		// Check if the AirWizard was beaten in versions prior to 2.1.0
-		if (worldVer.compareTo(new Version("2.1.0-dev2")) < 0) {
-			if (AirWizard.beaten) {
-				Logging.SAVELOAD.debug("AirWizard was beaten in an old version, giving achievement...");
-				AchievementsDisplay.setAchievement("minicraft.achievement.airwizard", true);
-			}
-		}
 
 		if (worldVer.compareTo(new Version("2.2.0-dev1")) >= 0) {
 // 			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
@@ -1143,7 +1111,6 @@ public class Load {
 
 		for (int i = 0; i < World.levels.length; i++) {
 			World.levels[i].checkChestCount();
-			World.levels[i].checkAirWizard();
 		}
 
 		LoadingDisplay.progress(10);
@@ -1179,16 +1146,7 @@ public class Load {
 
 		Entity newEntity;
 
-		if (entityName.equals("Spark") && !isLocalSave) {
-			int awID = Integer.parseInt(info.get(2));
-			Entity sparkOwner = Network.getEntity(awID);
-			if (sparkOwner instanceof AirWizard)
-				newEntity = new Spark((AirWizard) sparkOwner, x, y);
-			else {
-				Logging.SAVELOAD.error("Failed to load Spark; owner id doesn't point to a correct entity");
-				return null;
-			}
-		} else if (entityName.contains(" Bed")) { // with a space, meaning that the bed has a color name in the front
+		if (entityName.contains(" Bed")) { // with a space, meaning that the bed has a color name in the front
 			String colorName = entityName.substring(0, entityName.length() - 4).toUpperCase().replace(' ', '_');
 			try {
 				newEntity = new Bed(DyeItem.DyeColor.valueOf(colorName));
@@ -1216,16 +1174,9 @@ public class Load {
 		if (entityName.equals("FireSpark") && !isLocalSave) {
 			int obID = Integer.parseInt(info.get(2));
 			Entity sparkOwner = Network.getEntity(obID);
-			if (sparkOwner instanceof ObsidianKnight)
-				newEntity = new FireSpark((ObsidianKnight) sparkOwner, x, y);
-			else {
-				Logging.SAVELOAD.error("Failed to load FireSpark; owner id doesn't point to a correct entity");
-				return null;
-			}
-		}
-
-		if (newEntity == null)
+			Logging.SAVELOAD.error("Failed to load FireSpark; owner id doesn't point to a correct entity");
 			return null;
+		}
 
 		if (newEntity instanceof Mob) { // This is structured the same way as in Save.java.
 			Mob mob = (Mob) newEntity;
@@ -1300,9 +1251,6 @@ public class Load {
 				newEntity = new Spawner(mob);
 		} else if (newEntity instanceof Lantern && worldVer.compareTo(new Version("1.9.4")) >= 0 && info.size() > 3) {
 			newEntity = new Lantern(Lantern.Type.values()[Integer.parseInt(info.get(2))]);
-		} else if (newEntity instanceof KnightStatue) {
-			int health = Integer.parseInt(info.get(2));
-			newEntity = new KnightStatue(health);
 		}
 
 		if (!isLocalSave) {
@@ -1368,9 +1316,6 @@ public class Load {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) return null;
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
 // 			case "Workbench":
@@ -1409,10 +1354,6 @@ public class Load {
 				return new SmashParticle(0, 0);
 			case "TextParticle":
 				return new TextParticle("", 0, 0, 0);
-			case "KnightStatue":
-				return new KnightStatue(0);
-			case "ObsidianKnight":
-				return new ObsidianKnight(0);
 // 			case "DyeVat":
 // 				return new Crafter(Crafter.Type.DyeVat);
 			case "RepairBench": return new RepairBench();
