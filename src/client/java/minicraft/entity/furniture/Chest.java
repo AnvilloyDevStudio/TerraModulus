@@ -72,12 +72,12 @@ public class Chest extends Furniture implements ItemHolder {
 		}
 	}
 
-	@Override
-	public @Nullable Item take(Player player) {
-		if (inventory.invSize() == 0)
-			return super.take(player);
-		return null; // TODO a state that the item cannot be put into inventory
-	}
+// 	@Override
+// 	public @Nullable Item take(Player player) {
+// 		if (inventory.invSize() == 0)
+// 			return super.take(player);
+// 		return null; // TODO a state that the item cannot be put into inventory
+// 	}
 
 	@Override
 	public Inventory getInventory() {

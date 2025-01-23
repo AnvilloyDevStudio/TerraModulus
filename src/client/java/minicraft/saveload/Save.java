@@ -420,8 +420,8 @@ public class Save {
 			extradata.append(":").append(mobname).append(":").append(egg.mob instanceof EnemyMob ? ((EnemyMob) egg.mob).lvl : 1);
 		} else if (e instanceof Lantern) {
 			extradata.append(":").append(((Lantern) e).type.ordinal());
-		} else if (e instanceof Crafter) {
-			name = ((Crafter) e).type.name();
+// 		} else if (e instanceof Crafter) {
+// 			name = ((Crafter) e).type.name();
 		} else if (e instanceof KnightStatue) {
 			extradata.append(":").append(((KnightStatue) e).getBossHealth());
 		} else if (e instanceof Bed) {

@@ -490,9 +490,9 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 			if (Game.getDisplay() == null) {
 				if (input.inputPressed("craft")) { // obtain SHIFT modifier input with E
-					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, Localization.getStaticDisplay(
-						"minicraft.displays.crafting"), this, true));
-					return;
+// 					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, Localization.getStaticDisplay(
+// 						"minicraft.displays.crafting"), this, true));
+// 					return;
 				} else if (input.inputPressed("INVENTORY")) {
 					Game.setDisplay(new PlayerInvDisplay(this));
 					return;

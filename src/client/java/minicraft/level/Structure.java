@@ -273,7 +273,7 @@ public class Structure {
 				"WWWWWWW"
 		);
 		airWizardHouse.addFurniture(-2, 0, new Lantern(Lantern.Type.GOLD));
-		airWizardHouse.addFurniture(0, 0, new Crafter(Crafter.Type.Enchanter));
+// 		airWizardHouse.addFurniture(0, 0, new Crafter(Crafter.Type.Enchanter));
 
 		villageHouseNormal = new Structure();
 		villageHouseNormal.setData("F:Wood Planks,W:Wood Wall,D:Wood Door,G:Grass",

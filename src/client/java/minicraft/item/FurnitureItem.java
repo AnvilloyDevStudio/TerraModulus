@@ -49,9 +49,9 @@ public class FurnitureItem extends Item {
 		items.add(new FurnitureItem(new DungeonChest(null, true)));
 
 		// Add the various types of crafting furniture
-		for (Crafter.Type type : Crafter.Type.values()) {
-			items.add(new FurnitureItem(new Crafter(type)));
-		}
+// 		for (Crafter.Type type : Crafter.Type.values()) {
+// 			items.add(new FurnitureItem(new Crafter(type)));
+// 		}
 
 		// Add the various lanterns
 		for (Lantern.Type type : Lantern.Type.values()) {

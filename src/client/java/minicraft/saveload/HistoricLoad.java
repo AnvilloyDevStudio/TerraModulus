@@ -1204,24 +1204,24 @@ public class HistoricLoad {
 				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
-			case "Workbench":
-				return new Crafter(Crafter.Type.Workbench);
+// 			case "Workbench":
+// 				return new Crafter(Crafter.Type.Workbench);
 			case "Chest":
 				return new Chest();
 			case "DeathChest":
 				return new DeathChest();
 			case "DungeonChest":
 				return new DungeonChest(null);
-			case "Anvil":
-				return new Crafter(Crafter.Type.Anvil);
-			case "Enchanter":
-				return new Crafter(Crafter.Type.Enchanter);
-			case "Loom":
-				return new Crafter(Crafter.Type.Loom);
-			case "Furnace":
-				return new Crafter(Crafter.Type.Furnace);
-			case "Oven":
-				return new Crafter(Crafter.Type.Oven);
+// 			case "Anvil":
+// 				return new Crafter(Crafter.Type.Anvil);
+// 			case "Enchanter":
+// 				return new Crafter(Crafter.Type.Enchanter);
+// 			case "Loom":
+// 				return new Crafter(Crafter.Type.Loom);
+// 			case "Furnace":
+// 				return new Crafter(Crafter.Type.Furnace);
+// 			case "Oven":
+// 				return new Crafter(Crafter.Type.Oven);
 			case "Bed":
 				return new Bed();
 			case "Tnt":

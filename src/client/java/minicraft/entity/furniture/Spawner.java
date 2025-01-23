@@ -198,15 +198,15 @@ public class Spawner extends Furniture {
 		return false;
 	}
 
-	@Override
-	public @Nullable Item take(Player player) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			level.remove(this);
-			return new FurnitureItem(this);
-		}
-
-		return null;
-	}
+// 	@Override
+// 	public @Nullable Item take(Player player) {
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			level.remove(this);
+// 			return new FurnitureItem(this);
+// 		}
+//
+// 		return null;
+// 	}
 
 	@Override
 	public boolean use(Player player, @Nullable Item item, Direction attackDir) {

@@ -1373,8 +1373,8 @@ public class Load {
 				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
-			case "Workbench":
-				return new Crafter(Crafter.Type.Workbench);
+// 			case "Workbench":
+// 				return new Crafter(Crafter.Type.Workbench);
 			case "Chest":
 				return new Chest();
 			case "DeathChest":
@@ -1383,16 +1383,16 @@ public class Load {
 				return new DungeonChest(null);
 			case "RewardChest":
 				return new RewardChest(null);
-			case "Anvil":
-				return new Crafter(Crafter.Type.Anvil);
-			case "Enchanter":
-				return new Crafter(Crafter.Type.Enchanter);
-			case "Loom":
-				return new Crafter(Crafter.Type.Loom);
-			case "Furnace":
-				return new Crafter(Crafter.Type.Furnace);
-			case "Oven":
-				return new Crafter(Crafter.Type.Oven);
+// 			case "Anvil":
+// 				return new Crafter(Crafter.Type.Anvil);
+// 			case "Enchanter":
+// 				return new Crafter(Crafter.Type.Enchanter);
+// 			case "Loom":
+// 				return new Crafter(Crafter.Type.Loom);
+// 			case "Furnace":
+// 				return new Crafter(Crafter.Type.Furnace);
+// 			case "Oven":
+// 				return new Crafter(Crafter.Type.Oven);
 			case "Bed":
 				return new Bed();
 			case "Tnt":
@@ -1413,8 +1413,8 @@ public class Load {
 				return new KnightStatue(0);
 			case "ObsidianKnight":
 				return new ObsidianKnight(0);
-			case "DyeVat":
-				return new Crafter(Crafter.Type.DyeVat);
+// 			case "DyeVat":
+// 				return new Crafter(Crafter.Type.DyeVat);
 			case "RepairBench": return new RepairBench();
 			default:
 				Logging.SAVELOAD.error("LOAD ERROR: Unknown or outdated entity requested: {}", string);
