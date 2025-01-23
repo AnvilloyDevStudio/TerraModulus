@@ -2,11 +2,9 @@ package minicraft.screen;
 
 import minicraft.core.Game;
 import minicraft.core.Renderer;
-import minicraft.core.VersionInfo;
 import minicraft.core.World;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.gfx.Color;
 import minicraft.gfx.Font;
 import minicraft.gfx.MinicraftImage;
@@ -14,18 +12,12 @@ import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.level.Level;
-import minicraft.network.Network;
 import minicraft.screen.entry.BlankEntry;
-import minicraft.screen.entry.LinkEntry;
-import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectEntry;
-import minicraft.screen.entry.StringEntry;
 import minicraft.util.BookData;
-import minicraft.util.DisplayString;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
 import java.util.Random;
 
 public class TitleDisplay extends Display {
@@ -77,9 +69,6 @@ public class TitleDisplay extends Display {
 
 		Renderer.readyToRenderGameplay = false;
 
-		// Check version
-		Game.updateHandler.checkForUpdate();
-
 		LocalDateTime time = LocalDateTime.now();
 		if (time.getMonth() == Month.DECEMBER) {
 			if (time.getDayOfMonth() == 19) rand = 1;
@@ -99,27 +88,7 @@ public class TitleDisplay extends Display {
 	@Override
 	public void tick(InputHandler input) {
 		if (input.getMappedKey("F3-r").isClicked() && Game.debug) rand = random.nextInt(splashes.length - 3) + 3;
-
 		super.tick(input);
-
-		VersionInfo latestVersion = Game.updateHandler.getLatestVersion();
-		if (latestVersion != null && input.getMappedKey("U").isClicked()) {
-			ArrayList<ListEntry> entries = new ArrayList<>();
-			entries.add(new StringEntry(Localization.getStaticDisplay(latestVersion.version.isDev() ?
-				"minicraft.displays.title.update_checker.popup.display.new_pre_available" :
-				"minicraft.displays.title.update_checker.popup.display.new_available")));
-			entries.add(new StringEntry(new DisplayString.StaticString(latestVersion.version.toString())));
-			entries.add(new LinkEntry(Color.WHITE, Localization.getStaticDisplay(
-				"minicraft.displays.title.update_checker.popup.display.action"), latestVersion.releaseUrl) {
-				@Override
-				public void tick(InputHandler input) {
-					if (input.inputPressed("SELECT"))
-						Game.exitDisplay(); // Exits popup first.
-					super.tick(input);
-				}
-			});
-			Game.setDisplay(new PopupDisplay(null, entries.toArray(new ListEntry[0])));
-		}
 	}
 
 	@Override
