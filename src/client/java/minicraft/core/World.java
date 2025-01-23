@@ -160,7 +160,7 @@ public class World extends Game {
 			level.add(player);
 			QuestsDisplay.resetGameQuests();
 			CraftingDisplay.resetRecipeUnlocks();
-			TutorialDisplayHandler.reset(true);
+// 			TutorialDisplayHandler.reset(true);
 			AdvancementElement.resetRecipeUnlockingElements();
 		}
 

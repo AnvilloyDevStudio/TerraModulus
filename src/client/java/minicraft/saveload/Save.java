@@ -298,7 +298,7 @@ public class Save {
 		{ // Advancements
 			JSONObject fileObj = new JSONObject();
 			fileObj.put("Version", Game.VERSION.toString());
-			TutorialDisplayHandler.save(fileObj);
+// 			TutorialDisplayHandler.save(fileObj);
 			AdvancementElement.saveRecipeUnlockingElements(fileObj);
 			QuestsDisplay.save(fileObj);
 			try {

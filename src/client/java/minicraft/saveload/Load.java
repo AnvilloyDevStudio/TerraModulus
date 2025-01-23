@@ -874,7 +874,7 @@ public class Load {
 				JSONObject questsObj = new JSONObject(loadFromFile(location + "advancements.json", true));
 				@SuppressWarnings("unused")
 				Version dataVersion = new Version(questsObj.getString("Version"));
-				TutorialDisplayHandler.load(questsObj);
+// 				TutorialDisplayHandler.load(questsObj);
 				AdvancementElement.loadRecipeUnlockingElements(questsObj);
 				QuestsDisplay.load(questsObj);
 				advancementsLoadSucceeded = true;
@@ -886,7 +886,7 @@ public class Load {
 		}
 
 		if (!advancementsLoadSucceeded) {
-			TutorialDisplayHandler.reset(false);
+// 			TutorialDisplayHandler.reset(false);
 			AdvancementElement.resetRecipeUnlockingElements();
 			QuestsDisplay.resetGameQuests();
 		}

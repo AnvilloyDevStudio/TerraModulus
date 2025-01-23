@@ -1051,8 +1051,8 @@ public class Renderer extends Game {
 			}
 		}
 
-		TutorialDisplayHandler.render(screen);
-		renderQuestsDisplay();
+// 		TutorialDisplayHandler.render(screen);
+// 		renderQuestsDisplay();
 		renderDebugInfo();
 
 		Toast toast;
@@ -1094,40 +1094,40 @@ public class Renderer extends Game {
 		Font.drawCentered(title, screen, y + 8, Color.WHITE);
 	}
 
-	private static void renderQuestsDisplay() {
+// 	private static void renderQuestsDisplay() {
 // 		if (!TutorialDisplayHandler.inQuests()) return;
 // 		if (!(boolean) Settings.get("showquests")) return;
 
-		boolean expanding = Game.player.questExpanding > 0;
-		int length = expanding ? 5 : 2;
-		ArrayList<ListEntry> questsShown = new ArrayList<>();
-		HashSet<Quest> quests = QuestsDisplay.getDisplayableQuests();
-		for (Quest q : quests) {
-			QuestSeries series = q.getSeries();
-
-			questsShown.add(!expanding ?
-				new StringEntry(Localization.getStaticDisplay(q.key), Color.WHITE) :
-				new StringEntry(q.shouldAllCriteriaBeCompleted() && q.getTotalNumCriteria() > 1 ?
-					DisplayString.staticArgString("%s (%d/%d)",
-						Localization.getLocalized(series.key), q.getNumCriteriaCompleted(),
-						q.getTotalNumCriteria()) :
-					Localization.getStaticDisplay(series.key), Color.WHITE)
-			);
-
-			if (questsShown.size() >= length) break;
-		}
-
-		if (questsShown.size() > 0) {
-			potionRenderOffset = 9 + (Math.min(questsShown.size(), 3)) * 8 + 8 * 2;
-			new Menu.Builder(true, 0, RelPos.RIGHT, questsShown)
-				.setPositioning(new Point(Screen.w - 9, 9), RelPos.BOTTOM_LEFT)
-				.setTitle(Localization.getStaticDisplay("minicraft.displays.quests"))
-				.createMenu()
-				.render(screen);
-		} else {
-			potionRenderOffset = 0;
-		}
-	}
+// 		boolean expanding = Game.player.questExpanding > 0;
+// 		int length = expanding ? 5 : 2;
+// 		ArrayList<ListEntry> questsShown = new ArrayList<>();
+// 		HashSet<Quest> quests = QuestsDisplay.getDisplayableQuests();
+// 		for (Quest q : quests) {
+// 			QuestSeries series = q.getSeries();
+//
+// 			questsShown.add(!expanding ?
+// 				new StringEntry(Localization.getStaticDisplay(q.key), Color.WHITE) :
+// 				new StringEntry(q.shouldAllCriteriaBeCompleted() && q.getTotalNumCriteria() > 1 ?
+// 					DisplayString.staticArgString("%s (%d/%d)",
+// 						Localization.getLocalized(series.key), q.getNumCriteriaCompleted(),
+// 						q.getTotalNumCriteria()) :
+// 					Localization.getStaticDisplay(series.key), Color.WHITE)
+// 			);
+//
+// 			if (questsShown.size() >= length) break;
+// 		}
+//
+// 		if (questsShown.size() > 0) {
+// 			potionRenderOffset = 9 + (Math.min(questsShown.size(), 3)) * 8 + 8 * 2;
+// 			new Menu.Builder(true, 0, RelPos.RIGHT, questsShown)
+// 				.setPositioning(new Point(Screen.w - 9, 9), RelPos.BOTTOM_LEFT)
+// 				.setTitle(Localization.getStaticDisplay("minicraft.displays.quests"))
+// 				.createMenu()
+// 				.render(screen);
+// 		} else {
+// 			potionRenderOffset = 0;
+// 		}
+// 	}
 
 	private static void renderDebugInfo() {
 		// Should not localize debug info.

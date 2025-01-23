@@ -184,7 +184,7 @@ public class Updater extends Game {
 			gameTime++;
 
 			input.tick(); // INPUT TICK; no other class should call this, I think...especially the *Menu classes.
-			TutorialDisplayHandler.tick(input);
+// 			TutorialDisplayHandler.tick(input);
 			AdvancementElement.AdvancementTrigger.tick();
 			Renderer.tickHotBar();
 
