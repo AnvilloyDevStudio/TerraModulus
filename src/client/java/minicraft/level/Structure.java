@@ -1,9 +1,7 @@
 package minicraft.level;
 
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Furniture;
-import minicraft.entity.furniture.KnightStatue;
 import minicraft.entity.furniture.Lantern;
 import minicraft.gfx.Point;
 import minicraft.level.tile.Tile;
@@ -170,7 +168,6 @@ public class Structure {
 				"WOOOOOOOW\n" +
 				"WWWWDWWWW"
 		);
-		dungeonBossRoom.addFurniture(0, 0, new KnightStatue(5000));
 
 		dungeonSpawner = new Structure();
 		dungeonSpawner.setData("F:Grass,W:Obsidian Wall,O:Ornate Obsidian,D:Obsidian Door",
@@ -273,7 +270,7 @@ public class Structure {
 				"WWWWWWW"
 		);
 		airWizardHouse.addFurniture(-2, 0, new Lantern(Lantern.Type.GOLD));
-		airWizardHouse.addFurniture(0, 0, new Crafter(Crafter.Type.Enchanter));
+// 		airWizardHouse.addFurniture(0, 0, new Crafter(Crafter.Type.Enchanter));
 
 		villageHouseNormal = new Structure();
 		villageHouseNormal.setData("F:Wood Planks,W:Wood Wall,D:Wood Door,G:Grass",

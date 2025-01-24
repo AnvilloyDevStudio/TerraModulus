@@ -246,7 +246,7 @@ public class SkinDisplay extends Display {
 		}
 
 		// Save the selected skin.
-		new Save();
+// 		new Save();
 	}
 
 	@Override

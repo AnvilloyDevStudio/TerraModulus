@@ -49,10 +49,10 @@ public class RockTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			handleDamage(level, x, y, source, item, MAX_HEALTH);
-			return true;
-		}
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			handleDamage(level, x, y, source, item, MAX_HEALTH);
+// 			return true;
+// 		}
 
 		// Can only be reached when player hits w/o pickaxe, so remove ability to get coal
 		if (item instanceof ToolItem && source instanceof Player) {
@@ -86,9 +86,9 @@ public class RockTile extends Tile {
 				stone += random.nextInt(3) + 1;
 
 				int coal = 1;
-				if (!Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
-					coal += 1;
-				}
+// 				if (!Settings.get("diff").equals("minicraft.displays.world_create.options.difficulty.hard")) {
+// 					coal += 1;
+// 				}
 
 				level.dropItem((x << 4) + 8, (y << 4) + 8, 0, coal, Items.get("Coal"));
 // 			}

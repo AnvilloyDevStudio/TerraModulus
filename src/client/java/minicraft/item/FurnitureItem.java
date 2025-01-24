@@ -49,9 +49,9 @@ public class FurnitureItem extends Item {
 		items.add(new FurnitureItem(new DungeonChest(null, true)));
 
 		// Add the various types of crafting furniture
-		for (Crafter.Type type : Crafter.Type.values()) {
-			items.add(new FurnitureItem(new Crafter(type)));
-		}
+// 		for (Crafter.Type type : Crafter.Type.values()) {
+// 			items.add(new FurnitureItem(new Crafter(type)));
+// 		}
 
 		// Add the various lanterns
 		for (Lantern.Type type : Lantern.Type.values()) {
@@ -89,9 +89,9 @@ public class FurnitureItem extends Item {
 			furniture.y = (yt << 4) + 8;
 
 			level.add(furniture); // Adds the furniture to the world
-			if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
-				furniture = furniture.copy();
-			else
+// 			if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative"))
+// 				furniture = furniture.copy();
+// 			else
 				placed = true; // The value becomes true, which removes it from the player's active item
 
 			return true;

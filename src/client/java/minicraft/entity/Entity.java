@@ -190,7 +190,7 @@ public abstract class Entity implements Tickable {
 
 	public boolean isInvulnerableTo(DamageSource source) {
 		return isRemoved() ||
-			source.getCausingEntity() instanceof Player && Game.isMode("minicraft.settings.mode.creative") ||
+// 			source.getCausingEntity() instanceof Player && Game.isMode("minicraft.settings.mode.creative") ||
 			source.getDamageType().isFireRelated() && isFireImmune();
 	}
 
@@ -234,21 +234,21 @@ public abstract class Entity implements Tickable {
 		return false;
 	}
 
-	/**
-	 * Picks up this entity
-	 * @param player The player interacting
-	 * @return the item picked up; {@code null} if picking up failed
-	 */
-	public @Nullable Item take(Player player) {
-		return null;
-	}
+// 	/**
+// 	 * Picks up this entity
+// 	 * @param player The player interacting
+// 	 * @return the item picked up; {@code null} if picking up failed
+// 	 */
+// 	public @Nullable Item take(Player player) {
+// 		return null;
+// 	}
 
 	/**
 	 * Moves an entity horizontally and vertically. Returns whether entity was unimpeded in it's movement.
 	 */
 	public boolean move(int xd, int yd) {
 		// TODO Validate existence of `Updater.saving` here, may potentially cause issue
-		if (Updater.saving || (xd == 0 && yd == 0)) return true; // Pretend that it kept moving
+		if ((xd == 0 && yd == 0)) return true; // Pretend that it kept moving
 
 		boolean stopped = true; // Used to check if the entity has BEEN stopped, COMPLETELY; below checks for a lack of collision.
 		// Either xd or yd must be non-zero, so at least either one of them is invoked.

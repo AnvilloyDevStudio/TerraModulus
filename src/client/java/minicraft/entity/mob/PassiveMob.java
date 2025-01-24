@@ -32,7 +32,7 @@ public class PassiveMob extends MobAi {
 	 * 	and then added with 5.
 	 */
 	public PassiveMob(SpriteLink[][] sprites, int healthFactor) {
-		super(sprites, 5 + healthFactor * Settings.getIdx("diff"), 5 * 60 * Updater.normSpeed, 45, 40);
+		super(sprites, 5 + healthFactor /* * Settings.getIdx("diff")*/, 5 * 60 * Updater.normSpeed, 45, 40);
 	}
 
 	@Override
@@ -72,10 +72,6 @@ public class PassiveMob extends MobAi {
 		}
 	}
 
-	public void die() {
-		super.die(15);
-	}
-
 	/**
 	 * Checks a given position in a given level to see if the mob can spawn there.
 	 * Passive mobs can only spawn on grass or flower tiles.
@@ -86,7 +82,7 @@ public class PassiveMob extends MobAi {
 	 */
 	public static boolean checkStartPos(Level level, int x, int y) {
 
-		int r = (Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? 22 : 15) + (Updater.getTime() == Updater.Time.Night ? 0 : 5); // Get no-mob radius by
+		int r = 15 + (Updater.getTime() == Updater.Time.Night ? 0 : 5); // Get no-mob radius by
 
 		if (!MobAi.checkStartPos(level, x, y, 80, r))
 			return false;

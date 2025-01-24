@@ -3,10 +3,7 @@ package minicraft.core;
 import minicraft.core.CrashHandler.ErrorInfo;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.furniture.Bed;
-import minicraft.entity.mob.AirWizard;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Player;
 import minicraft.gfx.Color;
 import minicraft.gfx.Ellipsis;
@@ -15,7 +12,6 @@ import minicraft.gfx.Ellipsis.SmoothEllipsis;
 import minicraft.gfx.Font;
 import minicraft.gfx.FontStyle;
 import minicraft.gfx.MinicraftImage;
-import minicraft.gfx.Point;
 import minicraft.gfx.Rectangle;
 import minicraft.gfx.Screen;
 import minicraft.gfx.Sprite;
@@ -23,27 +19,17 @@ import minicraft.gfx.SpriteManager;
 import minicraft.gfx.SpriteManager.SpriteType;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionType;
 import minicraft.item.StackableItem;
 import minicraft.item.ToolItem;
 import minicraft.item.ToolType;
 import minicraft.item.WateringCanItem;
 import minicraft.level.Level;
-import minicraft.screen.LoadingDisplay;
-import minicraft.screen.Menu;
 import minicraft.screen.AppToast;
-import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.Toast;
-import minicraft.screen.SignDisplayMenu;
-import minicraft.screen.TutorialDisplayHandler;
-import minicraft.screen.entry.ListEntry;
 import minicraft.screen.entry.SelectableStringEntry;
-import minicraft.screen.entry.StringEntry;
 import minicraft.util.DisplayString;
 import minicraft.util.Logging;
-import minicraft.util.Quest;
-import minicraft.util.Quest.QuestSeries;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,22 +38,16 @@ import javax.imageio.ImageIO;
 
 import java.awt.Canvas;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 public class Renderer extends Game {
@@ -87,8 +67,6 @@ public class Renderer extends Game {
 
 	public static boolean readyToRenderGameplay = false;
 	public static boolean showDebugInfo = false;
-
-	public static SignDisplayMenu signDisplayMenu = null;
 
 	private static Ellipsis ellipsis = new SmoothEllipsis(new TickUpdater());
 
@@ -148,9 +126,6 @@ public class Renderer extends Game {
 		if ((toast = inAppToasts.peek()) != null) {
 			toast.render(screen);
 		}
-
-		if (!canvas.hasFocus())
-			renderFocusNagger(); // Calls the renderFocusNagger() method, which creates the "Click to Focus" message.
 
 
 		BufferStrategy bs = canvas.getBufferStrategy(); // Creates a buffer strategy to determine how the graphics should be buffered.
@@ -486,8 +461,8 @@ public class Renderer extends Game {
 		level.renderSprites(screen, xScroll, yScroll); // Renders level sprites on screen
 
 		// This creates the darkness in the caves
-		if ((currentLevel != 3 || Updater.tickCount < Updater.dayLength / 4 || Updater.tickCount > Updater.dayLength / 2) && !isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			int brightnessMultiplier = player.potioneffects.containsKey(PotionType.Light) ? 12 : 8; // Brightens all light sources by a factor of 1.5 when the player has the Light potion effect. (8 above is normal)
+		if ((currentLevel != 3 || Updater.tickCount < Updater.dayLength / 4 || Updater.tickCount > Updater.dayLength / 2)) {// && !isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+			int brightnessMultiplier = 8;//player.potioneffects.containsKey(PotionType.Light) ? 12 : 8; // Brightens all light sources by a factor of 1.5 when the player has the Light potion effect. (8 above is normal)
 			level.renderLight(screen, xScroll, yScroll, brightnessMultiplier); // Finds (and renders) all the light from objects (like the player, lanterns, and lava).
 			screen.overlay(currentLevel, xScroll, yScroll); // Overlays the light screen over the main screen.
 		}
@@ -713,25 +688,25 @@ public class Renderer extends Game {
 					// Renders arrow counter
 					if (type == ToolType.Bow) {
 						int ac = player.getInventory().count(Items.arrowItem);
-						String s = isMode("minicraft.displays.world_create.options.game_mode.creative") || ac >= 10000 ?
-							"^" : String.valueOf(ac); // "^" is an infinite symbol. TODO Use of "^" -> "∞"
-						for (int xx = 0; xx < 3; ++xx)
-							for (int yy = 0; yy < 2; ++yy)
-								screen.render(null, 88 + xx * 8, Screen.h - 3 * 8 + yy * 8,
-									9 + xx, 14 + yy, 0, getHudSheet());
-						for (int i = 0; i < s.length() - 1; ++i)
-							for (int yy = 0; yy < 2; ++yy)
-								screen.render(null, 112 + i * 8, Screen.h - 3 * 8 + yy * 8,
-									12, 14 + yy, 0, getHudSheet());
-						for (int yy = 0; yy < 2; ++yy)
-							screen.render(null, 112 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								13, 14 + yy, 0, getHudSheet());
-						for (int yy = 0; yy < 2; ++yy)
-							screen.render(null, 120 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
-								14, 14 + yy, 0, getHudSheet());
-						// Displays the arrow icon
-						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, getHudSheet());
-						Font.draw(s, screen, 109, Screen.h - 3 * 8 + 4);
+// 						String s = isMode("minicraft.displays.world_create.options.game_mode.creative") || ac >= 10000 ?
+// 							"^" : String.valueOf(ac); // "^" is an infinite symbol. TODO Use of "^" -> "∞"
+// 						for (int xx = 0; xx < 3; ++xx)
+// 							for (int yy = 0; yy < 2; ++yy)
+// 								screen.render(null, 88 + xx * 8, Screen.h - 3 * 8 + yy * 8,
+// 									9 + xx, 14 + yy, 0, getHudSheet());
+// 						for (int i = 0; i < s.length() - 1; ++i)
+// 							for (int yy = 0; yy < 2; ++yy)
+// 								screen.render(null, 112 + i * 8, Screen.h - 3 * 8 + yy * 8,
+// 									12, 14 + yy, 0, getHudSheet());
+// 						for (int yy = 0; yy < 2; ++yy)
+// 							screen.render(null, 112 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
+// 								13, 14 + yy, 0, getHudSheet());
+// 						for (int yy = 0; yy < 2; ++yy)
+// 							screen.render(null, 120 + (s.length() - 1) * 8, Screen.h - 3 * 8 + yy * 8,
+// 								14, 14 + yy, 0, getHudSheet());
+// 						// Displays the arrow icon
+// 						screen.render(null, 91, Screen.h - 3 * 8 + 4, 4, 1, 0, getHudSheet());
+// 						Font.draw(s, screen, 109, Screen.h - 3 * 8 + 4);
 					}
 				}
 
@@ -932,8 +907,8 @@ public class Renderer extends Game {
 
 
 		ArrayList<String> permStatus = new ArrayList<>();
-		if (Updater.saving)
-			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.saving", Math.round(LoadingDisplay.getPercentage())));
+// 		if (Updater.saving)
+// 			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.saving", Math.round(LoadingDisplay.getPercentage())));
 		if (Bed.sleeping()) permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.sleeping"));
 		if (Bed.inBed(Game.player)) {
 			permStatus.add(Localization.getLocalized("minicraft.display.gui.perm_status.sleep_cancel", input.getMapping("exit")));
@@ -971,62 +946,32 @@ public class Renderer extends Game {
 			Font.drawParagraph(print, screen, style, 0);
 		}
 
-
-		// SCORE MODE ONLY:
-		if (isMode("minicraft.displays.world_create.options.game_mode.score")) {
-			int seconds = (int) Math.ceil(Updater.scoreTime / (double) Updater.normSpeed);
-			int minutes = seconds / 60;
-			int hours = minutes / 60;
-			minutes %= 60;
-			seconds %= 60;
-
-			int timeCol;
-			if (Updater.scoreTime >= 18000) timeCol = Color.get(0, 555);
-			else if (Updater.scoreTime >= 3600) timeCol = Color.get(330, 555);
-			else timeCol = Color.get(400, 555);
-
-			Font.draw(Localization.getLocalized("minicraft.display.gui.score.time_left",
-				Localization.getLocalized(hours > 0 ? "minicraft.display.gui.score.time_left.time_hms" :
-					minutes > 0 ? "minicraft.display.gui.score.time_left.time_ms" :
-					"minicraft.display.gui.score.time_left.time_s", hours, minutes, seconds)),
-				screen, Screen.w / 2 - 9 * 8, 2, timeCol);
-
-			String scoreString = Localization.getLocalized("minicraft.display.gui.score.current_score", player.getScore());
-			Font.draw(scoreString, screen, Screen.w - Font.textWidth(scoreString) - 2, 3 + 8, Color.WHITE);
-
-			if (player.getMultiplier() > 1) {
-				int multColor = player.getMultiplier() < Player.MAX_MULTIPLIER ? Color.get(-1, 540) : Color.RED;
-				String mult = Localization.getLocalized("minicraft.display.gui.score_multiplier", player.getMultiplier());
-				Font.draw(mult, screen, Screen.w - Font.textWidth(mult) - 2, 4 + 2 * 8, multColor);
-			}
-		}
-
 		// This renders the potions overlay
-		if (player.showPotionEffects && player.potioneffects.size() > 0) {
-
-			@SuppressWarnings("unchecked")
-			Map.Entry<PotionType, Integer>[] effects = player.potioneffects.entrySet().toArray(new Map.Entry[0]);
-
-			// The key is potion type, value is remaining potion duration.
-			if (!player.simplifyPotionEffects) {
-				for (int i = 0; i < effects.length; i++) {
-					PotionType pType = effects[i].getKey();
-					int pTime = effects[i].getValue() / Updater.normSpeed;
-					int minutes = pTime / 60;
-					int seconds = pTime % 60;
-					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("POTION-EFFECTS")), screen, 180, 9);
-					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.potion_dur", pType, minutes, seconds), screen, 180, 17 + i * Font.textHeight() + potionRenderOffset, pType.dispColor);
-				}
-			} else {
-				for (int i = 0; i < effects.length; i++) {
-					PotionType pType = effects[i].getKey();
-					Font.drawBackground(pType.toString().substring(0, 1), screen, Screen.w - 17 - (effects.length - 1 - i) * 8, 9, pType.dispColor);
-				}
-			}
-		}
+// 		if (player.showPotionEffects && player.potioneffects.size() > 0) {
+//
+// 			@SuppressWarnings("unchecked")
+// 			Map.Entry<PotionType, Integer>[] effects = player.potioneffects.entrySet().toArray(new Map.Entry[0]);
+//
+// 			// The key is potion type, value is remaining potion duration.
+// 			if (!player.simplifyPotionEffects) {
+// 				for (int i = 0; i < effects.length; i++) {
+// 					PotionType pType = effects[i].getKey();
+// 					int pTime = effects[i].getValue() / Updater.normSpeed;
+// 					int minutes = pTime / 60;
+// 					int seconds = pTime % 60;
+// 					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.hide_hint", input.getMapping("POTION-EFFECTS")), screen, 180, 9);
+// 					Font.drawBackground(Localization.getLocalized("minicraft.display.gui.potion_effects.potion_dur", pType, minutes, seconds), screen, 180, 17 + i * Font.textHeight() + potionRenderOffset, pType.dispColor);
+// 				}
+// 			} else {
+// 				for (int i = 0; i < effects.length; i++) {
+// 					PotionType pType = effects[i].getKey();
+// 					Font.drawBackground(pType.toString().substring(0, 1), screen, Screen.w - 17 - (effects.length - 1 - i) * 8, 9, pType.dispColor);
+// 				}
+// 			}
+// 		}
 
 		// This is the status icons, like health hearts, stamina bolts, and hunger "burgers".
-		if (!isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 		if (!isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			for (int i = 1; i <= 30; i++) {
 				// Renders your current red default hearts, golden hearts for 20 HP, obsidian hearts for 30 HP, or black hearts for damaged health.
 				if (i < 11) {
@@ -1073,24 +1018,10 @@ public class Renderer extends Game {
 					screen.render(null, i * 8 + (Screen.w - 80), Screen.h - 16, 2, 1, 0, hudSheet);
 				}
 			}
-		}
+// 		}
 
-		// Renders the bossbar
-		if (!player.isRemoved()) {
-			if (AirWizard.active && (player.getLevel().depth == 1)) {
-				AirWizard boss = AirWizard.entity;
-				renderBossbar((int) ((((float) boss.health) / boss.maxHealth) * 100),
-					Localization.getLocalized("minicraft.display.boss_bar.title.air_wizard"));
-			} else if (ObsidianKnight.active && (player.getLevel().depth == -4)) {
-				ObsidianKnight boss = ObsidianKnight.entity;
-				renderBossbar((int) ((((float) boss.health) / boss.maxHealth) * 100),
-					Localization.getLocalized("minicraft.display.boss_bar.title.obsidian_knight"));
-			}
-		}
-
-		TutorialDisplayHandler.render(screen);
-		renderQuestsDisplay();
-		if (signDisplayMenu != null) signDisplayMenu.render(screen);
+// 		TutorialDisplayHandler.render(screen);
+// 		renderQuestsDisplay();
 		renderDebugInfo();
 
 		Toast toast;
@@ -1132,40 +1063,40 @@ public class Renderer extends Game {
 		Font.drawCentered(title, screen, y + 8, Color.WHITE);
 	}
 
-	private static void renderQuestsDisplay() {
-		if (!TutorialDisplayHandler.inQuests()) return;
-		if (!(boolean) Settings.get("showquests")) return;
+// 	private static void renderQuestsDisplay() {
+// 		if (!TutorialDisplayHandler.inQuests()) return;
+// 		if (!(boolean) Settings.get("showquests")) return;
 
-		boolean expanding = Game.player.questExpanding > 0;
-		int length = expanding ? 5 : 2;
-		ArrayList<ListEntry> questsShown = new ArrayList<>();
-		HashSet<Quest> quests = QuestsDisplay.getDisplayableQuests();
-		for (Quest q : quests) {
-			QuestSeries series = q.getSeries();
-
-			questsShown.add(!expanding ?
-				new StringEntry(Localization.getStaticDisplay(q.key), Color.WHITE) :
-				new StringEntry(q.shouldAllCriteriaBeCompleted() && q.getTotalNumCriteria() > 1 ?
-					DisplayString.staticArgString("%s (%d/%d)",
-						Localization.getLocalized(series.key), q.getNumCriteriaCompleted(),
-						q.getTotalNumCriteria()) :
-					Localization.getStaticDisplay(series.key), Color.WHITE)
-			);
-
-			if (questsShown.size() >= length) break;
-		}
-
-		if (questsShown.size() > 0) {
-			potionRenderOffset = 9 + (Math.min(questsShown.size(), 3)) * 8 + 8 * 2;
-			new Menu.Builder(true, 0, RelPos.RIGHT, questsShown)
-				.setPositioning(new Point(Screen.w - 9, 9), RelPos.BOTTOM_LEFT)
-				.setTitle(Localization.getStaticDisplay("minicraft.displays.quests"))
-				.createMenu()
-				.render(screen);
-		} else {
-			potionRenderOffset = 0;
-		}
-	}
+// 		boolean expanding = Game.player.questExpanding > 0;
+// 		int length = expanding ? 5 : 2;
+// 		ArrayList<ListEntry> questsShown = new ArrayList<>();
+// 		HashSet<Quest> quests = QuestsDisplay.getDisplayableQuests();
+// 		for (Quest q : quests) {
+// 			QuestSeries series = q.getSeries();
+//
+// 			questsShown.add(!expanding ?
+// 				new StringEntry(Localization.getStaticDisplay(q.key), Color.WHITE) :
+// 				new StringEntry(q.shouldAllCriteriaBeCompleted() && q.getTotalNumCriteria() > 1 ?
+// 					DisplayString.staticArgString("%s (%d/%d)",
+// 						Localization.getLocalized(series.key), q.getNumCriteriaCompleted(),
+// 						q.getTotalNumCriteria()) :
+// 					Localization.getStaticDisplay(series.key), Color.WHITE)
+// 			);
+//
+// 			if (questsShown.size() >= length) break;
+// 		}
+//
+// 		if (questsShown.size() > 0) {
+// 			potionRenderOffset = 9 + (Math.min(questsShown.size(), 3)) * 8 + 8 * 2;
+// 			new Menu.Builder(true, 0, RelPos.RIGHT, questsShown)
+// 				.setPositioning(new Point(Screen.w - 9, 9), RelPos.BOTTOM_LEFT)
+// 				.setTitle(Localization.getStaticDisplay("minicraft.displays.quests"))
+// 				.createMenu()
+// 				.render(screen);
+// 		} else {
+// 			potionRenderOffset = 0;
+// 		}
+// 	}
 
 	private static void renderDebugInfo() {
 		// Should not localize debug info.
@@ -1185,8 +1116,6 @@ public class Renderer extends Game {
 			info.add(String.format("Y: %d-%d", player.y >> 4, player.y << 4));
 			if (levels[currentLevel] != null)
 				info.add(String.format("Tile: %s", levels[currentLevel].getTile(player.x >> 4, player.y >> 4).name));
-			if (isMode("minicraft.displays.world_create.options.game_mode.score"))
-				info.add(String.format("Score: %d", player.getScore()));
 
 			if (levels[currentLevel] != null) {
 				info.add(String.format("Mob Cnt: %d/%d", levels[currentLevel].mobCount, levels[currentLevel].maxMobCount));
@@ -1216,49 +1145,6 @@ public class Renderer extends Game {
 			Font.drawParagraph(info, screen, style, 2);
 		}
 	}
-
-	/**
-	 * Renders the "Click to focus" box when you click off the screen.
-	 */
-	private static void renderFocusNagger() {
-
-		String msg = "Click to focus!"; // The message when you click off the screen.
-
-		Updater.paused = true; // Perhaps paused is only used for this.
-		int xx = (Screen.w - Font.textWidth(msg)) / 2; // The width of the box
-		int yy = (HEIGHT - 8) / 2; // The height of the box
-		int w = msg.length(); // Length of message in characters.
-		int h = 1;
-		MinicraftImage hudSheet = getHudSheet();
-
-		// Renders the four corners of the box
-		screen.render(null, xx - 8, yy - 8, 0, 6, 0, hudSheet);
-		screen.render(null, xx + w * 8, yy - 8, 0, 6, 1, hudSheet);
-		screen.render(null, xx - 8, yy + 8, 0, 6, 2, hudSheet);
-		screen.render(null, xx + w * 8, yy + 8, 0, 6, 3, hudSheet);
-
-		// Renders each part of the box...
-		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy - 8, 1, 6, 0, hudSheet); // ...Top part
-			screen.render(null, xx + x * 8, yy + 8, 1, 6, 2, hudSheet); // ...Bottom part
-		}
-		for (int y = 0; y < h; y++) {
-			screen.render(null, xx - 8, yy + y * 8, 2, 6, 0, hudSheet); // ...Left part
-			screen.render(null, xx + w * 8, yy + y * 8, 2, 6, 1, hudSheet); // ...Right part
-		}
-
-		// The middle
-		for (int x = 0; x < w; x++) {
-			screen.render(null, xx + x * 8, yy, 3, 6, 0, hudSheet);
-		}
-
-		// Renders the focus nagger text with a flash effect...
-		if ((Updater.tickCount / 20) % 2 == 0) // ...Medium yellow color
-			Font.draw(msg, screen, xx, yy, Color.get(1, 153));
-		else // ...Bright yellow color
-			Font.draw(msg, screen, xx, yy, Color.get(5, 255));
-	}
-
 
 	static java.awt.Dimension getWindowSize() {
 		return new java.awt.Dimension((int) (WIDTH * SCALE), (int) (HEIGHT * SCALE));

@@ -11,7 +11,6 @@ import minicraft.screen.CraftingDisplay;
 import minicraft.screen.LoadingDisplay;
 import minicraft.screen.PlayerDeathDisplay;
 import minicraft.screen.QuestsDisplay;
-import minicraft.screen.SignDisplay;
 import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldCreateDisplay;
 import minicraft.screen.WorldSelectDisplay;
@@ -80,7 +79,7 @@ public class World extends Game {
 		Logging.WORLD.debug("Resetting...");
 		playerDeadTime = 0;
 		currentLevel = 3;
-		Updater.asTick = 0;
+// 		Updater.asTick = 0;
 		Updater.inGameNotifications.clear();
 
 		// Adds a new player
@@ -123,7 +122,7 @@ public class World extends Game {
 
 		levels = new Level[6];
 
-		Updater.scoreTime = (Integer) Settings.get("scoretime") * 60 * Updater.normSpeed;
+// 		Updater.scoreTime = (Integer) Settings.get("scoretime") * 60 * Updater.normSpeed;
 
 		LoadingDisplay.setPercentage(0); // This actually isn't necessary, I think; it's just in case.
 
@@ -132,11 +131,11 @@ public class World extends Game {
 		Logging.WORLDNAMED = Logger.tag("World/" + WorldSelectDisplay.getWorldName().toUpperCase());
 
 		if (WorldSelectDisplay.hasLoadedWorld()) {
-			new Load(WorldSelectDisplay.getWorldName());
+// 			new Load(WorldSelectDisplay.getWorldName());
 		} else {
 			Analytics.WorldCreation.ping();
 
-			worldSize = (Integer) Settings.get("size");
+// 			worldSize = (Integer) Settings.get("size");
 
 			seed = settings.seed == null ? new Random().nextLong() : settings.seed;
 			random = new Random(seed);
@@ -160,15 +159,12 @@ public class World extends Game {
 			player.findStartPos(level, seed); // Finds the start level for the player
 			level.add(player);
 			QuestsDisplay.resetGameQuests();
-			CraftingDisplay.resetRecipeUnlocks();
-			TutorialDisplayHandler.reset(true);
+// 			CraftingDisplay.resetRecipeUnlocks();
+// 			TutorialDisplayHandler.reset(true);
 			AdvancementElement.resetRecipeUnlockingElements();
-			SignDisplay.resetSignTexts();
 		}
 
 		Renderer.readyToRenderGameplay = true;
-
-		Renderer.signDisplayMenu = null;
 
 		PlayerDeathDisplay.shouldRespawn = true;
 

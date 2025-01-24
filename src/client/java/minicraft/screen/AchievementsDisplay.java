@@ -124,7 +124,7 @@ public class AchievementsDisplay extends Display {
 	public void onExit() {
 		// Play confirm sound.
 		Sound.play("confirm");
-		new Save();
+// 		new Save();
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class AchievementsDisplay extends Display {
 		Achievement a = achievements.get(id);
 
 		// Return if it is in creative mode
-		if (!allowCreative && Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return false;
+// 		if (!allowCreative && Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) return false;
 		// Return if we didn't find any achievements.
 		if (a == null) return false;
 
@@ -199,7 +199,7 @@ public class AchievementsDisplay extends Display {
 			achievementScore -= a.score; // Logical?
 
 		// Save the new list of achievements stored in memory.
-		if (save) new Save();
+// 		if (save) new Save();
 
 		return true;
 	}

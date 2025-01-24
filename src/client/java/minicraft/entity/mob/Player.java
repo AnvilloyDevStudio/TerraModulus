@@ -78,7 +78,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	public static final int MAX_MULTIPLIER = 50; // Maximum score multiplier.
 
 	public double moveSpeed = 1; // The number of coordinate squares to move; each tile is 16x16.
-	private int score; // The player's score
 
 	private int multipliertime = mtm; // Time left on the current multiplier.
 	private int multiplier = 1; // Score multiplier
@@ -88,8 +87,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 	// The maximum stats that the player can have.
 	public static final int maxStat = 10;
-	public static final int maxHealth = 30, maxStamina = maxStat, maxHunger = maxStat;
-	public static int extraHealth = 0;
+	public static final int// maxHealth = 30,
+		maxStamina = maxStat, maxHunger = maxStat;
 	public static int baseHealth = 10;
 	public static final int maxArmor = 100;
 
@@ -124,9 +123,9 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	private int hungerChargeDelay; // The delay between each time the hunger bar increases your health
 	private int hungerStarveDelay; // The delay between each time the hunger bar decreases your health
 
-	public HashMap<PotionType, Integer> potioneffects; // The potion effects currently applied to the player
-	public boolean showPotionEffects; // Whether to display the current potion effects on screen
-	public boolean simplifyPotionEffects;
+// 	public HashMap<PotionType, Integer> potioneffects; // The potion effects currently applied to the player
+// 	public boolean showPotionEffects; // Whether to display the current potion effects on screen
+// 	public boolean simplifyPotionEffects;
 	public boolean renderGUI;
 	public int questExpanding; // Lets the display keeps expanded.
 	private int cooldowninfo; // Prevents you from toggling the info pane on and off super fast.
@@ -184,9 +183,9 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		};
 
-		potioneffects = new HashMap<>();
-		showPotionEffects = true;
-		simplifyPotionEffects = false;
+// 		potioneffects = new HashMap<>();
+// 		showPotionEffects = true;
+// 		simplifyPotionEffects = false;
 		renderGUI = true;
 
 		cooldowninfo = 0;
@@ -199,7 +198,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		stamina = maxStamina;
 		hunger = maxHunger;
 
-		hungerStamCnt = maxHungerStams[Settings.getIdx("diff")];
+// 		hungerStamCnt = maxHungerStams[Settings.getIdx("diff")];
 		stamHungerTicks = maxHungerTicks;
 
 		if (previousInstance != null) {
@@ -212,64 +211,30 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		updateSprites();
 	}
 
-	public int getMultiplier() {
-		return Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? multiplier : 1;
-	}
+// 	/**
+// 	 * Adds a new potion effect to the player.
+// 	 * @param type Type of potion.
+// 	 * @param duration How long the effect lasts.
+// 	 */
+// 	public void addPotionEffect(PotionType type, int duration) {
+// 		potioneffects.put(type, duration);
+// 	}
 
-	void resetMultiplier() {
-		multiplier = 1;
-		multipliertime = mtm;
-	}
+// 	/**
+// 	 * Adds a potion effect to the player.
+// 	 * @param type Type of effect.
+// 	 */
+// 	public void addPotionEffect(PotionType type) {
+// 		addPotionEffect(type, type.duration);
+// 	}
 
-	public void addMultiplier(int value) {
-		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.score")) return;
-		multiplier = Math.min(MAX_MULTIPLIER, multiplier + value);
-		multipliertime = Math.max(multipliertime, mtm - 5);
-	}
-
-	public void tickMultiplier() {
-		if ((!Updater.paused) && multiplier > 1) {
-			if (multipliertime != 0) multipliertime--;
-			if (multipliertime <= 0) resetMultiplier();
-		}
-	}
-
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
-	}
-
-	public void addScore(int points) {
-		score += points * getMultiplier();
-	}
-
-	/**
-	 * Adds a new potion effect to the player.
-	 * @param type Type of potion.
-	 * @param duration How long the effect lasts.
-	 */
-	public void addPotionEffect(PotionType type, int duration) {
-		potioneffects.put(type, duration);
-	}
-
-	/**
-	 * Adds a potion effect to the player.
-	 * @param type Type of effect.
-	 */
-	public void addPotionEffect(PotionType type) {
-		addPotionEffect(type, type.duration);
-	}
-
-	/**
-	 * Returns all the potion effects currently affecting the player.
-	 * @return all potion effects on the player.
-	 */
-	public HashMap<PotionType, Integer> getPotionEffects() {
-		return potioneffects;
-	}
+// 	/**
+// 	 * Returns all the potion effects currently affecting the player.
+// 	 * @return all potion effects on the player.
+// 	 */
+// 	public HashMap<PotionType, Integer> getPotionEffects() {
+// 		return potioneffects;
+// 	}
 
 	@Override
 	public void tick() {
@@ -278,21 +243,19 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 		super.tick(); // Ticks Mob.java
 
-		tickMultiplier();
+// 		if ((baseHealth + extraHealth) > maxHealth) {
+// 			extraHealth = maxHealth - 10;
+// 			Logging.PLAYER.warn("Current Max Health is greater than Max Health, downgrading.");
+// 		}
 
-		if ((baseHealth + extraHealth) > maxHealth) {
-			extraHealth = maxHealth - 10;
-			Logging.PLAYER.warn("Current Max Health is greater than Max Health, downgrading.");
-		}
-
-		if (potioneffects.size() > 0 && !Bed.inBed(this)) {
-			for (PotionType potionType : potioneffects.keySet().toArray(new PotionType[0])) {
-				if (potioneffects.get(potionType) <= 1) // If time is zero (going to be set to 0 in a moment)...
-					PotionItem.applyPotion(this, potionType, false); // Automatically removes this potion effect.
-				else
-					potioneffects.put(potionType, potioneffects.get(potionType) - 1); // Otherwise, replace it with one less.
-			}
-		}
+// 		if (potioneffects.size() > 0 && !Bed.inBed(this)) {
+// 			for (PotionType potionType : potioneffects.keySet().toArray(new PotionType[0])) {
+// 				if (potioneffects.get(potionType) <= 1) // If time is zero (going to be set to 0 in a moment)...
+// 					PotionItem.applyPotion(this, potionType, false); // Automatically removes this potion effect.
+// 				else
+// 					potioneffects.put(potionType, potioneffects.get(potionType) - 1); // Otherwise, replace it with one less.
+// 			}
+// 		}
 
 		if (isFishing) {
 			if (!Bed.inBed(this) && !isSwimming()) {
@@ -309,14 +272,14 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		if (cooldowninfo > 0) cooldowninfo--;
 		if (questExpanding > 0) questExpanding--;
 
-		if (input.inputPressed("POTION-EFFECTS") && cooldowninfo == 0) {
-			cooldowninfo = 10;
-			showPotionEffects = !showPotionEffects;
-		}
-
-		if (input.inputPressed("SIMPLIFY-POTION-EFFECTS")) {
-			simplifyPotionEffects = !simplifyPotionEffects;
-		}
+// 		if (input.inputPressed("POTION-EFFECTS") && cooldowninfo == 0) {
+// 			cooldowninfo = 10;
+// 			showPotionEffects = !showPotionEffects;
+// 		}
+//
+// 		if (input.inputPressed("SIMPLIFY-POTION-EFFECTS")) {
+// 			simplifyPotionEffects = !simplifyPotionEffects;
+// 		}
 
 		if (input.inputPressed("TOGGLE-HUD")) {
 			renderGUI = !renderGUI;
@@ -338,7 +301,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		} else if (onStairDelay > 0)
 			onStairDelay--; // Decrements stairDelay if it's > 0, but not on stair tile... does the player get removed from the tile beforehand, or something?
 
-		if (onTile == Tiles.get("Infinite Fall") && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+		if (onTile == Tiles.get("Infinite Fall")){// && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
 			if (onFallDelay <= 0) {
 				World.scheduleLevelChange(-1);
 				onFallDelay = 40;
@@ -346,11 +309,11 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		} else if (onFallDelay > 0) onFallDelay--;
 
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
-			// Prevent stamina/hunger decay in creative mode.
-			stamina = maxStamina;
-			hunger = maxHunger;
-		}
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) {
+// 			// Prevent stamina/hunger decay in creative mode.
+// 			stamina = maxStamina;
+// 			hunger = maxHunger;
+// 		}
 
 		// Remember: staminaRechargeDelay is a penalty delay for when the player uses up all their stamina.
 		// staminaRecharge is the rate of stamina recharge, in some sort of unknown units.
@@ -363,7 +326,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		if (staminaRechargeDelay == 0) {
 			staminaRecharge++; // Ticks since last recharge, accounting for the time potion effect.
 
-			if (isSwimming() && !potioneffects.containsKey(PotionType.Swim))
+			if (isSwimming())// && !potioneffects.containsKey(PotionType.Swim))
 				staminaRecharge = 0; // Don't recharge stamina while swimming.
 
 			// Recharge a bolt for each multiple of maxStaminaRecharge.
@@ -373,75 +336,75 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 		}
 
-		int diffIdx = Settings.getIdx("diff");
+// 		int diffIdx = Settings.getIdx("diff");
 
 		if (hunger < 0) hunger = 0; // Error correction
 
 		if (stamina < maxStamina) {
-			stamHungerTicks -= diffIdx; // Affect hunger if not at full stamina; this is 2 levels away from a hunger "burger".
-			if (stamina == 0) stamHungerTicks -= diffIdx; // Double effect if no stamina at all.
+// 			stamHungerTicks -= diffIdx; // Affect hunger if not at full stamina; this is 2 levels away from a hunger "burger".
+// 			if (stamina == 0) stamHungerTicks -= diffIdx; // Double effect if no stamina at all.
 		}
 
 		// This if statement encapsulates the hunger system
-		if (!Bed.inBed(this)) {
-			if (hungerChargeDelay > 0) { // If the hunger is recharging health...
-				stamHungerTicks -= 2 + diffIdx; // Penalize the hunger
-				if (hunger == 0) stamHungerTicks -= diffIdx; // Further penalty if at full hunger
-			}
-
-			if (Updater.tickCount % Player.hungerTickCount[diffIdx] == 0)
-				stamHungerTicks--; // hunger due to time.
-
-			if (stepCount >= Player.hungerStepCount[diffIdx]) {
-				stamHungerTicks--; // hunger due to exercise.
-				stepCount = 0; // reset.
-			}
-
-			if (stamHungerTicks <= 0) {
-				stamHungerTicks += maxHungerTicks; // Reset stamHungerTicks
-				hungerStamCnt--; // Enter 1 level away from burger.
-			}
-
-			while (hungerStamCnt <= 0) {
-				hunger--; // Reached burger level.
-				hungerStamCnt += maxHungerStams[diffIdx];
-			}
-
-			/// System that heals you depending on your hunger
-			if (health < (baseHealth + extraHealth) && hunger > maxHunger / 2) {
-				hungerChargeDelay++;
-				if (hungerChargeDelay > 20 * Math.pow(maxHunger - hunger + 2, 2)) {
-					health++;
-					hungerChargeDelay = 0;
-				}
-			} else hungerChargeDelay = 0;
-
-			if (hungerStarveDelay == 0) {
-				hungerStarveDelay = 120;
-			}
-
-			if (hunger == 0 && health > minStarveHealth[diffIdx]) {
-				if (hungerStarveDelay > 0) hungerStarveDelay--;
-				if (hungerStarveDelay == 0) {
-					hurt(new DamageSource(DamageSource.DamageType.STARVE),
-						Direction.NONE, 1); // Do 1 damage to the player
-				}
-			}
-		}
+// 		if (!Bed.inBed(this)) {
+// 			if (hungerChargeDelay > 0) { // If the hunger is recharging health...
+// 				stamHungerTicks -= 2 + diffIdx; // Penalize the hunger
+// 				if (hunger == 0) stamHungerTicks -= diffIdx; // Further penalty if at full hunger
+// 			}
+//
+// 			if (Updater.tickCount % Player.hungerTickCount[diffIdx] == 0)
+// 				stamHungerTicks--; // hunger due to time.
+//
+// 			if (stepCount >= Player.hungerStepCount[diffIdx]) {
+// 				stamHungerTicks--; // hunger due to exercise.
+// 				stepCount = 0; // reset.
+// 			}
+//
+// 			if (stamHungerTicks <= 0) {
+// 				stamHungerTicks += maxHungerTicks; // Reset stamHungerTicks
+// 				hungerStamCnt--; // Enter 1 level away from burger.
+// 			}
+//
+// 			while (hungerStamCnt <= 0) {
+// 				hunger--; // Reached burger level.
+// 				hungerStamCnt += maxHungerStams[diffIdx];
+// 			}
+//
+// 			/// System that heals you depending on your hunger
+// 			if (health < (baseHealth + extraHealth) && hunger > maxHunger / 2) {
+// 				hungerChargeDelay++;
+// 				if (hungerChargeDelay > 20 * Math.pow(maxHunger - hunger + 2, 2)) {
+// 					health++;
+// 					hungerChargeDelay = 0;
+// 				}
+// 			} else hungerChargeDelay = 0;
+//
+// 			if (hungerStarveDelay == 0) {
+// 				hungerStarveDelay = 120;
+// 			}
+//
+// 			if (hunger == 0 && health > minStarveHealth[diffIdx]) {
+// 				if (hungerStarveDelay > 0) hungerStarveDelay--;
+// 				if (hungerStarveDelay == 0) {
+// 					hurt(new DamageSource(DamageSource.DamageType.STARVE),
+// 						Direction.NONE, 1); // Do 1 damage to the player
+// 				}
+// 			}
+// 		}
 
 		// regen health
-		if (potioneffects.containsKey(PotionType.Regen)) {
-			regentick++;
-			if (regentick > 60) {
-				regentick = 0;
-				if (health < 10) {
-					health++;
-				}
-			}
-		}
+// 		if (potioneffects.containsKey(PotionType.Regen)) {
+// 			regentick++;
+// 			if (regentick > 60) {
+// 				regentick = 0;
+// 				if (health < 10) {
+// 					health++;
+// 				}
+// 			}
+// 		}
 
-		if (Updater.savecooldown > 0 && !Updater.saving)
-			Updater.savecooldown--;
+// 		if (Updater.savecooldown > 0 && !Updater.saving)
+// 			Updater.savecooldown--;
 
 
 		// Handle player input. Input is handled by the menu if we are in one.
@@ -461,8 +424,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 
 			// Executes if not saving; and... essentially halves speed if out of stamina.
-			if ((vec.x != 0 || vec.y != 0) && (staminaRechargeDelay % 2 == 0 || isSwimming()) && !Updater.saving) {
-				double spd = moveSpeed * (potioneffects.containsKey(PotionType.Speed) ? 1.5D : 1);
+			if ((vec.x != 0 || vec.y != 0) && (staminaRechargeDelay % 2 == 0 || isSwimming())) {
+				double spd = moveSpeed ;//* (potioneffects.containsKey(PotionType.Speed) ? 1.5D : 1);
 				int xd = (int) (vec.x * spd);
 				int yd = (int) (vec.y * spd);
 
@@ -475,7 +438,7 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 
 
-			if (isSwimming() && tickTime % 60 == 0 && !potioneffects.containsKey(PotionType.Swim)) { // If drowning... :P
+			if (isSwimming() && tickTime % 60 == 0) {// && !potioneffects.containsKey(PotionType.Swim)) { // If drowning... :P
 				if (stamina > 0) payStamina(1); // Take away stamina
 				else
 					hurt(new DamageSource(DamageSource.DamageType.DROWN),
@@ -501,24 +464,24 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 			}
 
 			if (input.inputPressed("attack") && stamina != 0 && onFallDelay <= 0) { // This only allows attacks when such action is possible.
-				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
+// 				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
 				staminaRecharge = 0;
 
 				attack();
 			}
 
 			if (input.inputPressed("USE") && stamina != 0 && onFallDelay <= 0) { // This only allows interactions when such action is possible.
-				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
+// 				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
 				staminaRecharge = 0;
 
 				use();
 			}
 
 			if (input.inputPressed("pickup") && (activeItem == null) && stamina != 0 && onFallDelay <= 0) {
-				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
+// 				if (!potioneffects.containsKey(PotionType.Energy)) stamina--;
 				staminaRecharge = 0;
 
-				pickup();
+// 				pickup();
 			}
 
 			if ((input.inputPressed("INVENTORY") || input.inputPressed("craft")) && activeItem != null) {
@@ -527,9 +490,9 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 
 			if (Game.getDisplay() == null) {
 				if (input.inputPressed("craft")) { // obtain SHIFT modifier input with E
-					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, Localization.getStaticDisplay(
-						"minicraft.displays.crafting"), this, true));
-					return;
+// 					Game.setDisplay(new CraftingDisplay(Recipes.craftRecipes, Localization.getStaticDisplay(
+// 						"minicraft.displays.crafting"), this, true));
+// 					return;
 				} else if (input.inputPressed("INVENTORY")) {
 					Game.setDisplay(new PlayerInvDisplay(this));
 					return;
@@ -541,11 +504,11 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 					return;
 				}
 
-				if (input.inputDown("QUICK-SAVE") && !Updater.saving) {
-					Updater.saving = true;
-					LoadingDisplay.setPercentage(0);
-					new Save(WorldSelectDisplay.getWorldName());
-				}
+// 				if (input.inputDown("QUICK-SAVE") && !Updater.saving) {
+// 					Updater.saving = true;
+// 					LoadingDisplay.setPercentage(0);
+// // 					new Save(WorldSelectDisplay.getWorldName());
+// 				}
 			}
 
 			if (attackTime > 0) {
@@ -657,8 +620,8 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		for (Entity e : entities)
 			if (e != this) {
 				blocked |= !(e instanceof ItemEntity || e instanceof Particle);
-				if ((activeItem = e.take(this)) != null)
-					return;
+// 				if ((activeItem = e.take(this)) != null)
+// 					return;
 			}
 
 		if (!blocked) {
@@ -968,7 +931,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		if (remove) itemEntity.remove();
 		if (successful) {
 			Sound.play("pickup");
-			addScore(1);
 		}
 	}
 
@@ -1050,9 +1012,9 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	 * @return true if the player had enough stamina, false if not.
 	 */
 	public boolean payStamina(int cost) {
-		if (potioneffects.containsKey(PotionType.Energy))
-			return true; // If the player has the potion effect for infinite stamina, return true (without subtracting cost).
-		else if (stamina <= 0) return false; // If the player doesn't have enough stamina, then return false; failure.
+// 		if (potioneffects.containsKey(PotionType.Energy))
+// 			return true; // If the player has the potion effect for infinite stamina, return true (without subtracting cost).
+// 		else if (stamina <= 0) return false; // If the player doesn't have enough stamina, then return false; failure.
 
 		if (cost < 0) cost = 0; // Error correction
 		stamina -= Math.min(stamina, cost); // Subtract the cost from the current stamina
@@ -1097,9 +1059,6 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 	public void die() {
 		Analytics.SinglePlayerDeath.ping();
 
-		score -= score / 3; // Subtracts score penalty (minus 1/3 of the original score)
-		resetMultiplier();
-
 		// Make death chest
 		DeathChest dc = new DeathChest(this);
 
@@ -1120,15 +1079,15 @@ public class Player extends Mob implements ItemHolder, ClientTickable {
 		payStamina(dmg * 2);
 	}
 
-	@Override
-	public boolean isFireImmune() {
-		return potioneffects.containsKey(PotionType.Lava);
-	}
+// 	@Override
+// 	public boolean isFireImmune() {
+// 		return potioneffects.containsKey(PotionType.Lava);
+// 	}
 
 	@Override
 	public boolean hurt(DamageSource source, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") || hurtTime > 0 || Bed.inBed(this))
-			return false; // Can't get hurt in creative, hurt cooldown, or while someone is in bed
+// 		if (Game.isMode("minicraft.displays.world_create.options.game_mode.creative") || hurtTime > 0 || Bed.inBed(this))
+// 			return false; // Can't get hurt in creative, hurt cooldown, or while someone is in bed
 
 		int healthDam = 0, armorDam = 0, suffered = 0;
 		if (this == Game.player) {

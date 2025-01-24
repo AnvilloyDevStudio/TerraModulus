@@ -3,35 +3,28 @@ package minicraft.saveload;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
-import minicraft.core.io.FileHandler;
 import minicraft.core.io.InputHandler;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Arrow;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
-import minicraft.entity.FireSpark;
 import minicraft.entity.ItemEntity;
-import minicraft.entity.Spark;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
-import minicraft.entity.furniture.KnightStatue;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.RepairBench;
 import minicraft.entity.furniture.RewardChest;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
 import minicraft.entity.mob.Knight;
 import minicraft.entity.mob.Mob;
 import minicraft.entity.mob.MobAi;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.Pig;
 import minicraft.entity.mob.Player;
 import minicraft.entity.mob.Sheep;
@@ -46,39 +39,27 @@ import minicraft.gfx.Color;
 import minicraft.gfx.Ellipsis;
 import minicraft.gfx.Font;
 import minicraft.gfx.FontStyle;
-import minicraft.gfx.Point;
 import minicraft.gfx.Screen;
 import minicraft.item.ArmorItem;
 import minicraft.item.DyeItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
-import minicraft.item.Recipe;
 import minicraft.item.StackableItem;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.network.Network;
 import minicraft.screen.AchievementsDisplay;
-import minicraft.screen.CraftingDisplay;
 import minicraft.screen.Display;
 import minicraft.screen.LoadingDisplay;
 import minicraft.screen.MultiplayerDisplay;
-import minicraft.screen.PopupDisplay;
 import minicraft.screen.QuestsDisplay;
 import minicraft.screen.RelPos;
 import minicraft.screen.ResourcePackDisplay;
-import minicraft.screen.SignDisplay;
 import minicraft.screen.SkinDisplay;
-import minicraft.screen.TutorialDisplayHandler;
 import minicraft.screen.WorldCreateDisplay;
-import minicraft.screen.WorldSelectDisplay;
-import minicraft.screen.entry.ListEntry;
-import minicraft.screen.entry.StringEntry;
 import minicraft.util.AdvancementElement;
 import minicraft.util.Logging;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
@@ -96,19 +77,14 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class Load {
 
@@ -131,10 +107,10 @@ public class Load {
 		overflowingItems = new HashSet<>();
 	}
 
-	public Load(String worldname)
-		throws BackupCreationFailedException, WorldLoadingFailedException, UserPromptCancelledException {
-		this(worldname, true);
-	}
+// 	public Load(String worldname)
+// 		throws BackupCreationFailedException, WorldLoadingFailedException, UserPromptCancelledException {
+// 		this(worldname, true);
+// 	}
 
 	public static class WorldLoadingInterruptedException extends Exception {
 		public WorldLoadingInterruptedException() {}
@@ -154,249 +130,249 @@ public class Load {
 		}
 	}
 
-	public Load(String worldname, boolean loadGame)
-		throws UserPromptCancelledException, WorldLoadingFailedException, BackupCreationFailedException {
-		loadFromFile(location + "/saves/" + worldname + "/Game" + extension);
-		if (data.get(0).contains(".")) worldVer = new Version(data.get(0));
+// 	public Load(String worldname, boolean loadGame)
+// 		throws UserPromptCancelledException, WorldLoadingFailedException, BackupCreationFailedException {
+// 		loadFromFile(location + "/saves/" + worldname + "/Game" + extension);
+// 		if (data.get(0).contains(".")) worldVer = new Version(data.get(0));
+//
+// 		//if (!hasGlobalPrefs)
+// 		//	hasGlobalPrefs = worldVer.compareTo(new Version("1.9.2")) >= 0;
+//
+// 		if (!loadGame) return;
+//
+// 		// Is dev build or newer version
+// 		if (worldVer != null && (Game.VERSION.isDev() || worldVer.compareTo(Game.VERSION) < 0)) {
+// 			Logging.SAVELOAD.info("World of unexpected version detected, backup prompting...");
+// 			ArrayList<ListEntry> entries = new ArrayList<>();
+// 			entries.addAll(Arrays.asList(StringEntry.useLines(Color.WHITE, false,
+// 				Localization.getLocalized("minicraft.displays.save.popup_display.world_backup_prompt.msg",
+// 					worldVer, Game.VERSION))));
+// 			entries.addAll(Arrays.asList(StringEntry.useLines("minicraft.display.popup.escape_cancel")));
+//
+// 			AtomicBoolean acted = new AtomicBoolean(false);
+// 			AtomicBoolean continues = new AtomicBoolean(false);
+// 			AtomicBoolean doBackup = new AtomicBoolean(false);
+//
+// 			ArrayList<PopupDisplay.PopupActionCallback> callbacks = new ArrayList<>();
+// 			callbacks.add(new PopupDisplay.PopupActionCallback("EXIT", m -> {
+// 				Game.exitDisplay();
+// 				acted.set(true);
+// 				return true;
+// 			}));
+//
+// 			callbacks.add(new PopupDisplay.PopupActionCallback("ENTER|Y", m -> {
+// 				Game.exitDisplay();
+// 				continues.set(true);
+// 				doBackup.set(true);
+// 				acted.set(true);
+// 				return true;
+// 			}));
+//
+// 			callbacks.add(new PopupDisplay.PopupActionCallback("N", m -> {
+// 				Game.exitDisplay();
+// 				continues.set(true);
+// 				acted.set(true);
+// 				return true;
+// 			}));
+//
+// 			Game.setDisplay(new PopupDisplay(new PopupDisplay.PopupConfig(
+// 					Localization.getStaticDisplay("minicraft.displays.save.popup_display.world_backup_prompt"),
+// 				callbacks, 2),
+// 				entries.toArray(new ListEntry[0])));
+//
+// 			while (true) {
+// 				if (acted.get()) {
+// 					if (continues.get()) {
+// 						if (doBackup.get()) {
+// 							Logging.SAVELOAD.info("Performing world backup...");
+// 							int i = 0;
+// 							String filename = worldname;
+// 							File f = new File(location + "/saves/", filename);
+// 							while (f.exists()) { // Increments world name if world exists
+// 								i++;
+// 								filename = String.format("%s (%d)", worldname, i);
+// 								f = new File(location + "/saves/", filename);
+// 							}
+// 							f.mkdirs();
+// 							try {
+// 								FileHandler.copyFolderContents(Paths.get(location, "saves", worldname),
+// 									f.toPath(), FileHandler.SKIP, false);
+// 							} catch (IOException e) {
+// 								Logging.SAVELOAD.error(e, "Error occurs while performing world backup, loading aborted");
+// 								throw new BackupCreationFailedException(e);
+// 							}
+//
+// 							Logging.SAVELOAD.info("World backup \"{}\" is created.", filename);
+// 							WorldSelectDisplay.updateWorlds();
+// 						} else
+// 							Logging.SAVELOAD.warn("World backup is skipped.");
+// 						Logging.SAVELOAD.debug("World loading continues...");
+// 					} else {
+// 						Logging.SAVELOAD.info("User cancelled world loading, loading aborted.");
+// 						throw new UserPromptCancelledException();
+// 					}
+//
+// 					break;
+// 				}
+//
+// 				try {
+// 					//noinspection BusyWait
+// 					Thread.sleep(10);
+// 				} catch (InterruptedException ignored) {}
+// 			}
+// 		}
+//
+// 		if (worldVer == null) { // < 1.9.1
+// 			try {
+// 				HistoricLoad.loadSave(worldname);
+// 			} catch (LoadingSessionFailedException e) {
+// 				Logging.SAVELOAD.error(e, "Failed to load world \"{}\"", worldname);
+// 				throw new WorldLoadingFailedException(e);
+// 			}
+// 		} else if (worldVer.compareTo(new Version("1.9.2")) < 0) {
+// 			new LegacyLoad(worldname);
+// 		} else {
+// 			location += "/saves/" + worldname + "/";
+//
+// 			loadGame("Game"); // More of the version will be determined here
+// 			// 10%
+// 			loadWorld("Level");
+// 			// 65%
+// 			loadEntities("Entities");
+// 			// 75%
+// 			loadInventory("Inventory", Game.player.getInventory());
+// 			// 85%
+// 			loadPlayer("Player", Game.player);
+// 			// 100%
+//
+// 			LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.completing"));
+// 			if (!overflowingItems.isEmpty()) {
+// 				Game.player.getLevel().add(new RewardChest(overflowingItems), Game.player.x, Game.player.y);
+// 				Logging.SAVELOAD.debug("Added a RewardChest containing inventory-overflowing items.");
+// 			}
+//
+// 			if (worldVer.compareTo(new Version("2.2.0-dev3")) < 0) {
+// 				Logging.SAVELOAD.trace("Old version dungeon detected.");
+// 				ArrayList<ListEntry> entries = new ArrayList<>();
+// 				entries.addAll(Arrays.asList(StringEntry.useLines(Color.RED,
+// 						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.0"),
+// 						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.1"),
+// 						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.2")
+// 				)));
+//
+// 				entries.addAll(Arrays.asList(StringEntry.useLines(Color.WHITE, "",
+// 						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.3", Game.input.getMapping("select")),
+// 						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.4", Game.input.getMapping("exit"))
+// 				)));
+//
+// 				AtomicBoolean acted = new AtomicBoolean(false);
+// 				AtomicBoolean continues = new AtomicBoolean(false);
+//
+// 				ArrayList<PopupDisplay.PopupActionCallback> callbacks = new ArrayList<>();
+// 				callbacks.add(new PopupDisplay.PopupActionCallback("select", popup -> {
+// 					Game.exitDisplay();
+// 					acted.set(true);
+// 					continues.set(true);
+// 					return true;
+// 				}));
+//
+// 				callbacks.add(new PopupDisplay.PopupActionCallback("exit", popup -> {
+// 					Game.exitDisplay();
+// 					acted.set(true);
+// 					return true;
+// 				}));
+//
+// 				Game.setDisplay(new PopupDisplay(new PopupDisplay.PopupConfig(null, callbacks, 0), entries.toArray(new ListEntry[0])));
+//
+// 				while (true) {
+// 					if (acted.get()) {
+// 						if (continues.get()) {
+// 							Logging.SAVELOAD.trace("Regenerating dungeon (B4)...");
+// 							LoadingDisplay.setMessage(Localization.getStaticDisplay(
+// 								"minicraft.displays.loading.message.dungeon_regeneration"));
+// 							int lvlidx = World.lvlIdx(-4);
+// 							boolean reAdd = Game.player.getLevel().depth == -4;
+// 							Level oriLevel = World.levels[lvlidx];
+// 							World.levels[lvlidx] = new Level(oriLevel.w, oriLevel.h, oriLevel.getSeed(), -4, World.levels[World.lvlIdx(-3)], true);
+// 							if (reAdd) World.levels[lvlidx].add(Game.player);
+// 						} else {
+// 							throw new UserPromptCancelledException();
+// 						}
+//
+// 						break;
+// 					}
+//
+// 					try {
+// 						//noinspection BusyWait
+// 						Thread.sleep(10);
+// 					} catch (InterruptedException ignored) { }
+// 				}
+// 			}
+// 		}
+// 	}
 
-		//if (!hasGlobalPrefs)
-		//	hasGlobalPrefs = worldVer.compareTo(new Version("1.9.2")) >= 0;
+// 	public Load() {
+// 		this(Game.VERSION);
+// 	}
+//
+// 	public Load(@Nullable Version worldVersion) {
+// 		this(false, false);
+// 		worldVer = worldVersion;
+// 	}
 
-		if (!loadGame) return;
-
-		// Is dev build or newer version
-		if (worldVer != null && (Game.VERSION.isDev() || worldVer.compareTo(Game.VERSION) < 0)) {
-			Logging.SAVELOAD.info("World of unexpected version detected, backup prompting...");
-			ArrayList<ListEntry> entries = new ArrayList<>();
-			entries.addAll(Arrays.asList(StringEntry.useLines(Color.WHITE, false,
-				Localization.getLocalized("minicraft.displays.save.popup_display.world_backup_prompt.msg",
-					worldVer, Game.VERSION))));
-			entries.addAll(Arrays.asList(StringEntry.useLines("minicraft.display.popup.escape_cancel")));
-
-			AtomicBoolean acted = new AtomicBoolean(false);
-			AtomicBoolean continues = new AtomicBoolean(false);
-			AtomicBoolean doBackup = new AtomicBoolean(false);
-
-			ArrayList<PopupDisplay.PopupActionCallback> callbacks = new ArrayList<>();
-			callbacks.add(new PopupDisplay.PopupActionCallback("EXIT", m -> {
-				Game.exitDisplay();
-				acted.set(true);
-				return true;
-			}));
-
-			callbacks.add(new PopupDisplay.PopupActionCallback("ENTER|Y", m -> {
-				Game.exitDisplay();
-				continues.set(true);
-				doBackup.set(true);
-				acted.set(true);
-				return true;
-			}));
-
-			callbacks.add(new PopupDisplay.PopupActionCallback("N", m -> {
-				Game.exitDisplay();
-				continues.set(true);
-				acted.set(true);
-				return true;
-			}));
-
-			Game.setDisplay(new PopupDisplay(new PopupDisplay.PopupConfig(
-					Localization.getStaticDisplay("minicraft.displays.save.popup_display.world_backup_prompt"),
-				callbacks, 2),
-				entries.toArray(new ListEntry[0])));
-
-			while (true) {
-				if (acted.get()) {
-					if (continues.get()) {
-						if (doBackup.get()) {
-							Logging.SAVELOAD.info("Performing world backup...");
-							int i = 0;
-							String filename = worldname;
-							File f = new File(location + "/saves/", filename);
-							while (f.exists()) { // Increments world name if world exists
-								i++;
-								filename = String.format("%s (%d)", worldname, i);
-								f = new File(location + "/saves/", filename);
-							}
-							f.mkdirs();
-							try {
-								FileHandler.copyFolderContents(Paths.get(location, "saves", worldname),
-									f.toPath(), FileHandler.SKIP, false);
-							} catch (IOException e) {
-								Logging.SAVELOAD.error(e, "Error occurs while performing world backup, loading aborted");
-								throw new BackupCreationFailedException(e);
-							}
-
-							Logging.SAVELOAD.info("World backup \"{}\" is created.", filename);
-							WorldSelectDisplay.updateWorlds();
-						} else
-							Logging.SAVELOAD.warn("World backup is skipped.");
-						Logging.SAVELOAD.debug("World loading continues...");
-					} else {
-						Logging.SAVELOAD.info("User cancelled world loading, loading aborted.");
-						throw new UserPromptCancelledException();
-					}
-
-					break;
-				}
-
-				try {
-					//noinspection BusyWait
-					Thread.sleep(10);
-				} catch (InterruptedException ignored) {}
-			}
-		}
-
-		if (worldVer == null) { // < 1.9.1
-			try {
-				HistoricLoad.loadSave(worldname);
-			} catch (LoadingSessionFailedException e) {
-				Logging.SAVELOAD.error(e, "Failed to load world \"{}\"", worldname);
-				throw new WorldLoadingFailedException(e);
-			}
-		} else if (worldVer.compareTo(new Version("1.9.2")) < 0) {
-			new LegacyLoad(worldname);
-		} else {
-			location += "/saves/" + worldname + "/";
-
-			loadGame("Game"); // More of the version will be determined here
-			// 10%
-			loadWorld("Level");
-			// 65%
-			loadEntities("Entities");
-			// 75%
-			loadInventory("Inventory", Game.player.getInventory());
-			// 85%
-			loadPlayer("Player", Game.player);
-			// 100%
-
-			LoadingDisplay.setMessage(Localization.getStaticDisplay("minicraft.displays.loading.message.type.completing"));
-			if (!overflowingItems.isEmpty()) {
-				Game.player.getLevel().add(new RewardChest(overflowingItems), Game.player.x, Game.player.y);
-				Logging.SAVELOAD.debug("Added a RewardChest containing inventory-overflowing items.");
-			}
-
-			if (worldVer.compareTo(new Version("2.2.0-dev3")) < 0) {
-				Logging.SAVELOAD.trace("Old version dungeon detected.");
-				ArrayList<ListEntry> entries = new ArrayList<>();
-				entries.addAll(Arrays.asList(StringEntry.useLines(Color.RED,
-						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.0"),
-						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.1"),
-						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.2")
-				)));
-
-				entries.addAll(Arrays.asList(StringEntry.useLines(Color.WHITE, "",
-						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.3", Game.input.getMapping("select")),
-						Localization.getLocalized("minicraft.displays.loading.regeneration_popup.display.4", Game.input.getMapping("exit"))
-				)));
-
-				AtomicBoolean acted = new AtomicBoolean(false);
-				AtomicBoolean continues = new AtomicBoolean(false);
-
-				ArrayList<PopupDisplay.PopupActionCallback> callbacks = new ArrayList<>();
-				callbacks.add(new PopupDisplay.PopupActionCallback("select", popup -> {
-					Game.exitDisplay();
-					acted.set(true);
-					continues.set(true);
-					return true;
-				}));
-
-				callbacks.add(new PopupDisplay.PopupActionCallback("exit", popup -> {
-					Game.exitDisplay();
-					acted.set(true);
-					return true;
-				}));
-
-				Game.setDisplay(new PopupDisplay(new PopupDisplay.PopupConfig(null, callbacks, 0), entries.toArray(new ListEntry[0])));
-
-				while (true) {
-					if (acted.get()) {
-						if (continues.get()) {
-							Logging.SAVELOAD.trace("Regenerating dungeon (B4)...");
-							LoadingDisplay.setMessage(Localization.getStaticDisplay(
-								"minicraft.displays.loading.message.dungeon_regeneration"));
-							int lvlidx = World.lvlIdx(-4);
-							boolean reAdd = Game.player.getLevel().depth == -4;
-							Level oriLevel = World.levels[lvlidx];
-							World.levels[lvlidx] = new Level(oriLevel.w, oriLevel.h, oriLevel.getSeed(), -4, World.levels[World.lvlIdx(-3)], true);
-							if (reAdd) World.levels[lvlidx].add(Game.player);
-						} else {
-							throw new UserPromptCancelledException();
-						}
-
-						break;
-					}
-
-					try {
-						//noinspection BusyWait
-						Thread.sleep(10);
-					} catch (InterruptedException ignored) { }
-				}
-			}
-		}
-	}
-
-	public Load() {
-		this(Game.VERSION);
-	}
-
-	public Load(@Nullable Version worldVersion) {
-		this(false, false);
-		worldVer = worldVersion;
-	}
-
-	public Load(boolean loadConfig, boolean partialLoad) {
-		if (!loadConfig) return;
-		boolean resave = false;
-
-
-		location += "/";
-
-		// Check if Preferences.json exists. (new version)
-		if (new File(location + "Preferences.json").exists()) {
-			loadPrefs("Preferences", partialLoad);
-
-			// Check if Preferences.miniplussave exists. (old version)
-		} else if (new File(location + "Preferences" + extension).exists()) {
-			loadPrefsOld("Preferences", partialLoad);
-			Logging.SAVELOAD.info("Upgrading preferences to JSON.");
-			resave = true;
-
-			// No preferences file found.
-		} else {
-			Logging.SAVELOAD.warn("No preferences found, creating new file.");
-			resave = true;
-		}
-
-		if (partialLoad) return; // Partial loading only loads partial preferences
-
-		// Load unlocks. (new version)
-		File testFileOld = new File(location + "unlocks" + extension);
-		File testFile = new File(location + "Unlocks" + extension);
-		if (new File(location + "Unlocks.json").exists()) {
-			loadUnlocks("Unlocks");
-		} else if (testFile.exists() || testFileOld.exists()) { // Load old version
-			if (testFileOld.exists() && !testFile.exists()) {
-				if (testFileOld.renameTo(testFile)) {
-					new LegacyLoad(testFile);
-				} else {
-					Logging.SAVELOAD.info("Failed to rename unlocks to Unlocks; loading old version.");
-					new LegacyLoad(testFileOld);
-				}
-			}
-
-			loadUnlocksOld("Unlocks");
-			resave = true;
-			Logging.SAVELOAD.info("Upgrading unlocks to JSON.");
-		} else {
-			Logging.SAVELOAD.warn("No unlocks found, creating new file.");
-			resave = true;
-		}
-
-		// We need to load everything before we save, so it doesn't overwrite anything.
-		if (resave) {
-			new Save();
-		}
-	}
+// 	public Load(boolean loadConfig, boolean partialLoad) {
+// 		if (!loadConfig) return;
+// 		boolean resave = false;
+//
+//
+// 		location += "/";
+//
+// 		// Check if Preferences.json exists. (new version)
+// 		if (new File(location + "Preferences.json").exists()) {
+// 			loadPrefs("Preferences", partialLoad);
+//
+// 			// Check if Preferences.miniplussave exists. (old version)
+// 		} else if (new File(location + "Preferences" + extension).exists()) {
+// 			loadPrefsOld("Preferences", partialLoad);
+// 			Logging.SAVELOAD.info("Upgrading preferences to JSON.");
+// 			resave = true;
+//
+// 			// No preferences file found.
+// 		} else {
+// 			Logging.SAVELOAD.warn("No preferences found, creating new file.");
+// 			resave = true;
+// 		}
+//
+// 		if (partialLoad) return; // Partial loading only loads partial preferences
+//
+// 		// Load unlocks. (new version)
+// 		File testFileOld = new File(location + "unlocks" + extension);
+// 		File testFile = new File(location + "Unlocks" + extension);
+// 		if (new File(location + "Unlocks.json").exists()) {
+// 			loadUnlocks("Unlocks");
+// 		} else if (testFile.exists() || testFileOld.exists()) { // Load old version
+// 			if (testFileOld.exists() && !testFile.exists()) {
+// 				if (testFileOld.renameTo(testFile)) {
+// 					new LegacyLoad(testFile);
+// 				} else {
+// 					Logging.SAVELOAD.info("Failed to rename unlocks to Unlocks; loading old version.");
+// 					new LegacyLoad(testFileOld);
+// 				}
+// 			}
+//
+// 			loadUnlocksOld("Unlocks");
+// 			resave = true;
+// 			Logging.SAVELOAD.info("Upgrading unlocks to JSON.");
+// 		} else {
+// 			Logging.SAVELOAD.warn("No unlocks found, creating new file.");
+// 			resave = true;
+// 		}
+//
+// 		// We need to load everything before we save, so it doesn't overwrite anything.
+// 		if (resave) {
+// // 			new Save();
+// 		}
+// 	}
 
 	public static ArrayList<String> loadFile(String filename) throws IOException {
 		ArrayList<String> lines = new ArrayList<>();
@@ -536,21 +512,11 @@ public class Load {
 		if (worldVer.compareTo(new Version("1.9.3-dev3")) < 0)
 			diffIdx--; // Account for change in difficulty
 
-		Settings.setIdx("diff", diffIdx);
-
-		AirWizard.beaten = Boolean.parseBoolean(data.remove(0));
-
-		// Check if the AirWizard was beaten in versions prior to 2.1.0
-		if (worldVer.compareTo(new Version("2.1.0-dev2")) < 0) {
-			if (AirWizard.beaten) {
-				Logging.SAVELOAD.debug("AirWizard was beaten in an old version, giving achievement...");
-				AchievementsDisplay.setAchievement("minicraft.achievement.airwizard", true);
-			}
-		}
+// 		Settings.setIdx("diff", diffIdx);
 
 		if (worldVer.compareTo(new Version("2.2.0-dev1")) >= 0) {
-			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
-			Settings.set("tutorials", Boolean.parseBoolean(data.remove(0)));
+// 			Settings.set("quests", Boolean.parseBoolean(data.remove(0)));
+// 			Settings.set("tutorials", Boolean.parseBoolean(data.remove(0)));
 		}
 
 		LoadingDisplay.progress(10);
@@ -566,8 +532,8 @@ public class Load {
 				mode--; // We changed the min mode idx from 1 to 0.
 			if (mode == 3) {
 				Updater.scoreTime = Integer.parseInt(modeinfo[1]);
-				if (worldVer.compareTo(new Version("1.9.4")) >= 0)
-					Settings.set("scoretime", modeinfo[2]);
+// 				if (worldVer.compareTo(new Version("1.9.4")) >= 0)
+// 					Settings.set("scoretime", modeinfo[2]);
 			}
 		} else {
 			mode = Integer.parseInt(modedata);
@@ -577,7 +543,7 @@ public class Load {
 			if (mode == 3) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode);
+// 		Settings.setIdx("mode", mode);
 	}
 
 	private void loadPrefsOld(String filename, boolean partialLoad) {
@@ -587,11 +553,11 @@ public class Load {
 		if (!data.get(2).contains(";")) // signifies that this file was last written to by a version after 2.0.2.
 			prefVer = new Version(data.remove(0));
 
-		Settings.set("sound", Boolean.parseBoolean(data.remove(0)));
-		Settings.set("autosave", Boolean.parseBoolean(data.remove(0)));
+// 		Settings.set("sound", Boolean.parseBoolean(data.remove(0)));
+// 		Settings.set("autosave", Boolean.parseBoolean(data.remove(0)));
 
-		if (prefVer.compareTo(new Version("2.0.4-dev2")) >= 0)
-			Settings.set("fps", Integer.parseInt(data.remove(0)));
+// 		if (prefVer.compareTo(new Version("2.0.4-dev2")) >= 0)
+// 			Settings.set("fps", Integer.parseInt(data.remove(0)));
 
 		if (partialLoad) return; // Partial loading only loads basic settings.
 
@@ -674,12 +640,12 @@ public class Load {
 		Version prefVer = new Version(json.getString("version"));
 
 		// Settings
-		Settings.set("sound", json.getBoolean("sound"));
-		Settings.set("autosave", json.getBoolean("autosave"));
-		Settings.set("fps", json.getInt("fps"));
-		Settings.set("showquests", json.optBoolean("showquests", true));
-		if (json.has("hwa")) Settings.set("hwa", json.getBoolean("hwa")); // Default should have been configured
-		Settings.set("updatecheck", json.opt("updateChecking"));
+// 		Settings.set("sound", json.getBoolean("sound"));
+// 		Settings.set("autosave", json.getBoolean("autosave"));
+// 		Settings.set("fps", json.getInt("fps"));
+// 		Settings.set("showquests", json.optBoolean("showquests", true));
+// 		if (json.has("hwa")) Settings.set("hwa", json.getBoolean("hwa")); // Default should have been configured
+// 		Settings.set("updatecheck", json.opt("updateChecking"));
 
 		if (partialLoad) return; // Partial loading only loads basic settings.
 
@@ -725,8 +691,8 @@ public class Load {
 		for (String unlock : data) {
 			unlock = unlock.replace("HOURMODE", "H_ScoreTime").replace("MINUTEMODE", "M_ScoreTime").replace("M_ScoreTime", "_ScoreTime").replace("2H_ScoreTime", "120_ScoreTime");
 
-			if (unlock.contains("_ScoreTime"))
-				Settings.getEntry("scoretime").setValueVisibility(Integer.parseInt(unlock.substring(0, unlock.indexOf("_"))), true);
+// 			if (unlock.contains("_ScoreTime"))
+// 				Settings.getEntry("scoretime").setValueVisibility(Integer.parseInt(unlock.substring(0, unlock.indexOf("_"))), true);
 		}
 	}
 
@@ -740,7 +706,7 @@ public class Load {
 		}
 
 		for (Object i : json.getJSONArray("visibleScoreTimes")) {
-			Settings.getEntry("scoretime").setValueVisibility(i, true); // Minutes
+// 			Settings.getEntry("scoretime").setValueVisibility(i, true); // Minutes
 		}
 
 		// Load unlocked achievements.
@@ -761,7 +727,7 @@ public class Load {
 
 			boolean hasSeed = worldVer.compareTo(new Version("2.0.7-dev2")) >= 0;
 			long seed = hasSeed ? Long.parseLong(data.get(2)) : 0;
-			Settings.set("size", lvlw);
+// 			Settings.set("size", lvlw);
 
 			short[] tiles = new short[lvlw * lvlh];
 			short[] tdata = new short[lvlw * lvlh];
@@ -876,7 +842,7 @@ public class Load {
 				JSONObject questsObj = new JSONObject(loadFromFile(location + "advancements.json", true));
 				@SuppressWarnings("unused")
 				Version dataVersion = new Version(questsObj.getString("Version"));
-				TutorialDisplayHandler.load(questsObj);
+// 				TutorialDisplayHandler.load(questsObj);
 				AdvancementElement.loadRecipeUnlockingElements(questsObj);
 				QuestsDisplay.load(questsObj);
 				advancementsLoadSucceeded = true;
@@ -888,38 +854,9 @@ public class Load {
 		}
 
 		if (!advancementsLoadSucceeded) {
-			TutorialDisplayHandler.reset(false);
+// 			TutorialDisplayHandler.reset(false);
 			AdvancementElement.resetRecipeUnlockingElements();
 			QuestsDisplay.resetGameQuests();
-		}
-
-		boolean signsLoadSucceeded = false;
-		if (new File(location + "signs.json").exists()) {
-			try {
-				JSONObject fileObj = new JSONObject(loadFromFile(location + "signs.json", true));
-				@SuppressWarnings("unused")
-				Version dataVersion = new Version(fileObj.getString("Version"));
-				JSONArray dataObj = fileObj.getJSONArray("signs");
-				HashMap<Map.Entry<Integer, Point>, List<String>> signTexts = new HashMap<>();
-				for (int i = 0; i < dataObj.length(); i++) {
-					JSONObject signObj = dataObj.getJSONObject(i);
-					signTexts.put(
-						new AbstractMap.SimpleImmutableEntry<>(signObj.getInt("level"), new Point(signObj.getInt("x"), signObj.getInt("y"))),
-						signObj.getJSONArray("lines").toList().stream().map(e -> (String) e).collect(Collectors.toList())
-					);
-				}
-
-				SignDisplay.loadSignTexts(signTexts);
-				signsLoadSucceeded = true;
-			} catch (IOException e) {
-				Logging.SAVELOAD.error(e, "Unable to load signs.json, reset sign data instead.");
-			}
-		} else {
-			Logging.SAVELOAD.debug("signs.json not found, reset sign data instead.");
-		}
-
-		if (!signsLoadSucceeded) {
-			SignDisplay.resetSignTexts();
 		}
 
 		LoadingDisplay.progress(5);
@@ -957,8 +894,8 @@ public class Load {
 		player.spawnx = Integer.parseInt(data.remove(0));
 		player.spawny = Integer.parseInt(data.remove(0));
 		player.health = Integer.parseInt(data.remove(0));
-		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0)
-			player.extraHealth = Integer.parseInt(data.remove(0));
+// 		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0)
+// 			player.extraHealth = Integer.parseInt(data.remove(0));
 		if (worldVer.compareTo(new Version("2.0.4-dev7")) >= 0)
 			player.hunger = Integer.parseInt(data.remove(0));
 		player.armor = Integer.parseInt(data.remove(0));
@@ -973,7 +910,6 @@ public class Load {
 				player.curArmor = (ArmorItem) Items.get(data.remove(0), true);
 			}
 		}
-		player.setScore(Integer.parseInt(data.remove(0)));
 
 		if (worldVer.compareTo(new Version("2.0.4-dev7")) < 0) {
 			int arrowCount = Integer.parseInt(data.remove(0));
@@ -996,16 +932,16 @@ public class Load {
 				loadMode(modedata); // Only load if you're loading the main player
 		}
 
-		String potioneffects = data.remove(0);
-		if (!potioneffects.equals("PotionEffects[]")) {
-			String[] effects = potioneffects.replace("PotionEffects[", "").replace("]", "").split(":");
-
-			for (String s : effects) {
-				String[] effect = s.split(";");
-				PotionType pName = Enum.valueOf(PotionType.class, effect[0]);
-				PotionItem.applyPotion(player, pName, Integer.parseInt(effect[1]));
-			}
-		}
+// 		String potioneffects = data.remove(0);
+// 		if (!potioneffects.equals("PotionEffects[]")) {
+// 			String[] effects = potioneffects.replace("PotionEffects[", "").replace("]", "").split(":");
+//
+// 			for (String s : effects) {
+// 				String[] effect = s.split(";");
+// 				PotionType pName = Enum.valueOf(PotionType.class, effect[0]);
+// 				PotionItem.applyPotion(player, pName, Integer.parseInt(effect[1]));
+// 			}
+// 		}
 
 		if (worldVer.compareTo(new Version("1.9.4-dev4")) < 0) {
 			String colors = data.remove(0).replace("[", "").replace("]", "");
@@ -1032,36 +968,36 @@ public class Load {
 		}
 
 		// Loading unlocked recipes.
-		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0) {
-			ArrayList<Recipe> recipes = new ArrayList<>();
-			JSONObject unlockedRecipes = new JSONObject(data.remove(0));
-			for (String key : unlockedRecipes.keySet()) {
-				JSONArray costsJson = unlockedRecipes.getJSONArray(key);
-				String[] costs = new String[costsJson.length()];
-				for (int j = 0; j < costsJson.length(); j++) {
-					costs[j] = costsJson.getString(j);
-				}
-
-				// Skipping removed vanilla recipes
-				if (worldVer.compareTo(new Version("2.2.0-dev6")) <= 0) {
-					// Iron Ore * 4 + Coal * 1 => Iron * 1
-					if (key.equalsIgnoreCase("iron_1") &&
-						costs.length == 2 && costs[0].equalsIgnoreCase("iron Ore_4") &&
-						costs[1].equalsIgnoreCase("coal_1"))
-						continue;
-					// Gold Ore * 4 + Coal * 1 => Gold * 1
-					if (key.equalsIgnoreCase("gold_1") &&
-						costs.length == 2 && costs[0].equalsIgnoreCase("gold Ore_4") &&
-						costs[1].equalsIgnoreCase("coal_1"))
-						continue;
-				}
-
-				recipes.add(new Recipe(key, costs));
-			}
-
-			CraftingDisplay.loadUnlockedRecipes(recipes);
-		} else
-			CraftingDisplay.resetRecipeUnlocks();
+// 		if (worldVer.compareTo(new Version("2.2.0-dev3")) >= 0) {
+// 			ArrayList<Recipe> recipes = new ArrayList<>();
+// 			JSONObject unlockedRecipes = new JSONObject(data.remove(0));
+// 			for (String key : unlockedRecipes.keySet()) {
+// 				JSONArray costsJson = unlockedRecipes.getJSONArray(key);
+// 				String[] costs = new String[costsJson.length()];
+// 				for (int j = 0; j < costsJson.length(); j++) {
+// 					costs[j] = costsJson.getString(j);
+// 				}
+//
+// 				// Skipping removed vanilla recipes
+// 				if (worldVer.compareTo(new Version("2.2.0-dev6")) <= 0) {
+// 					// Iron Ore * 4 + Coal * 1 => Iron * 1
+// 					if (key.equalsIgnoreCase("iron_1") &&
+// 						costs.length == 2 && costs[0].equalsIgnoreCase("iron Ore_4") &&
+// 						costs[1].equalsIgnoreCase("coal_1"))
+// 						continue;
+// 					// Gold Ore * 4 + Coal * 1 => Gold * 1
+// 					if (key.equalsIgnoreCase("gold_1") &&
+// 						costs.length == 2 && costs[0].equalsIgnoreCase("gold Ore_4") &&
+// 						costs[1].equalsIgnoreCase("coal_1"))
+// 						continue;
+// 				}
+//
+// 				recipes.add(new Recipe(key, costs));
+// 			}
+//
+// 			CraftingDisplay.loadUnlockedRecipes(recipes);
+// 		} else
+// 			CraftingDisplay.resetRecipeUnlocks();
 	}
 
 	protected static String subOldName(String name, Version worldVer) {
@@ -1175,7 +1111,6 @@ public class Load {
 
 		for (int i = 0; i < World.levels.length; i++) {
 			World.levels[i].checkChestCount();
-			World.levels[i].checkAirWizard();
 		}
 
 		LoadingDisplay.progress(10);
@@ -1211,16 +1146,7 @@ public class Load {
 
 		Entity newEntity;
 
-		if (entityName.equals("Spark") && !isLocalSave) {
-			int awID = Integer.parseInt(info.get(2));
-			Entity sparkOwner = Network.getEntity(awID);
-			if (sparkOwner instanceof AirWizard)
-				newEntity = new Spark((AirWizard) sparkOwner, x, y);
-			else {
-				Logging.SAVELOAD.error("Failed to load Spark; owner id doesn't point to a correct entity");
-				return null;
-			}
-		} else if (entityName.contains(" Bed")) { // with a space, meaning that the bed has a color name in the front
+		if (entityName.contains(" Bed")) { // with a space, meaning that the bed has a color name in the front
 			String colorName = entityName.substring(0, entityName.length() - 4).toUpperCase().replace(' ', '_');
 			try {
 				newEntity = new Bed(DyeItem.DyeColor.valueOf(colorName));
@@ -1248,16 +1174,9 @@ public class Load {
 		if (entityName.equals("FireSpark") && !isLocalSave) {
 			int obID = Integer.parseInt(info.get(2));
 			Entity sparkOwner = Network.getEntity(obID);
-			if (sparkOwner instanceof ObsidianKnight)
-				newEntity = new FireSpark((ObsidianKnight) sparkOwner, x, y);
-			else {
-				Logging.SAVELOAD.error("Failed to load FireSpark; owner id doesn't point to a correct entity");
-				return null;
-			}
-		}
-
-		if (newEntity == null)
+			Logging.SAVELOAD.error("Failed to load FireSpark; owner id doesn't point to a correct entity");
 			return null;
+		}
 
 		if (newEntity instanceof Mob) { // This is structured the same way as in Save.java.
 			Mob mob = (Mob) newEntity;
@@ -1332,9 +1251,6 @@ public class Load {
 				newEntity = new Spawner(mob);
 		} else if (newEntity instanceof Lantern && worldVer.compareTo(new Version("1.9.4")) >= 0 && info.size() > 3) {
 			newEntity = new Lantern(Lantern.Type.values()[Integer.parseInt(info.get(2))]);
-		} else if (newEntity instanceof KnightStatue) {
-			int health = Integer.parseInt(info.get(2));
-			newEntity = new KnightStatue(health);
 		}
 
 		if (!isLocalSave) {
@@ -1400,13 +1316,10 @@ public class Load {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) return null;
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
-			case "Workbench":
-				return new Crafter(Crafter.Type.Workbench);
+// 			case "Workbench":
+// 				return new Crafter(Crafter.Type.Workbench);
 			case "Chest":
 				return new Chest();
 			case "DeathChest":
@@ -1415,16 +1328,16 @@ public class Load {
 				return new DungeonChest(null);
 			case "RewardChest":
 				return new RewardChest(null);
-			case "Anvil":
-				return new Crafter(Crafter.Type.Anvil);
-			case "Enchanter":
-				return new Crafter(Crafter.Type.Enchanter);
-			case "Loom":
-				return new Crafter(Crafter.Type.Loom);
-			case "Furnace":
-				return new Crafter(Crafter.Type.Furnace);
-			case "Oven":
-				return new Crafter(Crafter.Type.Oven);
+// 			case "Anvil":
+// 				return new Crafter(Crafter.Type.Anvil);
+// 			case "Enchanter":
+// 				return new Crafter(Crafter.Type.Enchanter);
+// 			case "Loom":
+// 				return new Crafter(Crafter.Type.Loom);
+// 			case "Furnace":
+// 				return new Crafter(Crafter.Type.Furnace);
+// 			case "Oven":
+// 				return new Crafter(Crafter.Type.Oven);
 			case "Bed":
 				return new Bed();
 			case "Tnt":
@@ -1441,12 +1354,8 @@ public class Load {
 				return new SmashParticle(0, 0);
 			case "TextParticle":
 				return new TextParticle("", 0, 0, 0);
-			case "KnightStatue":
-				return new KnightStatue(0);
-			case "ObsidianKnight":
-				return new ObsidianKnight(0);
-			case "DyeVat":
-				return new Crafter(Crafter.Type.DyeVat);
+// 			case "DyeVat":
+// 				return new Crafter(Crafter.Type.DyeVat);
 			case "RepairBench": return new RepairBench();
 			default:
 				Logging.SAVELOAD.error("LOAD ERROR: Unknown or outdated entity requested: {}", string);

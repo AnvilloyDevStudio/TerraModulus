@@ -4,18 +4,15 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.RewardChest;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.Knight;
@@ -32,8 +29,6 @@ import minicraft.item.ArmorItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.screen.LoadingDisplay;
@@ -183,16 +178,6 @@ public class LegacyLoad {
 		Updater.setTime(Integer.parseInt(data.get(1)));
 		Updater.gameTime = 65000; // Prevents time cheating.
 
-		if (worldVer.compareTo(new Version("1.9.2")) < 0) {
-			Settings.set("autosave", Boolean.parseBoolean(data.get(3)));
-			Settings.set("sound", Boolean.parseBoolean(data.get(4)));
-			if (worldVer.compareTo(new Version("1.9.2-dev2")) >= 0)
-				AirWizard.beaten = Boolean.parseBoolean(data.get(5));
-		} else { // This is 1.9.2 official or after
-			Settings.setIdx("diff", Integer.parseInt(data.get(3)));
-			AirWizard.beaten = Boolean.parseBoolean(data.get(4));
-		}
-
 		LoadingDisplay.progress(10);
 	}
 
@@ -207,7 +192,7 @@ public class LegacyLoad {
 			int lvlw = Integer.parseInt(data.get(0));
 			int lvlh = Integer.parseInt(data.get(1));
 			int lvldepth = Integer.parseInt(data.get(2));
-			Settings.set("size", lvlw);
+// 			Settings.set("size", lvlw);
 
 			short[] tiles = new short[lvlw * lvlh];
 			short[] tdata = new short[lvlw * lvlh];
@@ -250,7 +235,6 @@ public class LegacyLoad {
 		Game.currentLevel = Integer.parseInt(data.get(8));
 		modedata = data.get(9);
 
-		player.setScore(Integer.parseInt(data.get(6)));
 		World.levels[Game.currentLevel].add(player);
 
 		int mode;
@@ -263,19 +247,19 @@ public class LegacyLoad {
 			if (mode == 4) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode);
+// 		Settings.setIdx("mode", mode);
 
 		boolean hasEffects;
 		hasEffects = !data.get(10).equals("PotionEffects[]"); // Newer save
 
-		if (hasEffects) {
-			String[] effects = data.get(10).replace("PotionEffects[", "").replace("]", "").split(":");
-			for (String s : effects) {
-				String[] effect = s.split(";");
-				String pName = effect[0];
-				PotionItem.applyPotion(player, Enum.valueOf(PotionType.class, pName), Integer.parseInt(effect[1]));
-			}
-		}
+// 		if (hasEffects) {
+// 			String[] effects = data.get(10).replace("PotionEffects[", "").replace("]", "").split(":");
+// 			for (String s : effects) {
+// 				String[] effect = s.split(";");
+// 				String pName = effect[0];
+// 				PotionItem.applyPotion(player, Enum.valueOf(PotionType.class, pName), Integer.parseInt(effect[1]));
+// 			}
+// 		}
 
 		String colors = data.get(11).replace("[", "").replace("]", "");
 		String[] color = colors.split(";");
@@ -416,29 +400,26 @@ public class LegacyLoad {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) return null;
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
-			case "Workbench":
-				return new Crafter(Crafter.Type.Workbench);
+// 			case "Workbench":
+// 				return new Crafter(Crafter.Type.Workbench);
 			case "Chest":
 				return new Chest();
 			case "DeathChest":
 				return new DeathChest();
 			case "DungeonChest":
 				return new DungeonChest(null);
-			case "Anvil":
-				return new Crafter(Crafter.Type.Anvil);
-			case "Enchanter":
-				return new Crafter(Crafter.Type.Enchanter);
-			case "Loom":
-				return new Crafter(Crafter.Type.Loom);
-			case "Furnace":
-				return new Crafter(Crafter.Type.Furnace);
-			case "Oven":
-				return new Crafter(Crafter.Type.Oven);
+// 			case "Anvil":
+// 				return new Crafter(Crafter.Type.Anvil);
+// 			case "Enchanter":
+// 				return new Crafter(Crafter.Type.Enchanter);
+// 			case "Loom":
+// 				return new Crafter(Crafter.Type.Loom);
+// 			case "Furnace":
+// 				return new Crafter(Crafter.Type.Furnace);
+// 			case "Oven":
+// 				return new Crafter(Crafter.Type.Oven);
 			case "Bed":
 				return new Bed();
 			case "Tnt":

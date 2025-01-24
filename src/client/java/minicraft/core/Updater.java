@@ -1,17 +1,13 @@
 package minicraft.core;
 
-import minicraft.core.io.Localization;
 import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.furniture.Bed;
-import minicraft.entity.mob.Player;
 import minicraft.level.Level;
 import minicraft.level.tile.Tile;
-import minicraft.level.tile.Tiles;
 import minicraft.saveload.Save;
 import minicraft.screen.DebugPanelDisplay;
 import minicraft.screen.Display;
-import minicraft.screen.EndGameDisplay;
 import minicraft.screen.LevelTransitionDisplay;
 import minicraft.screen.AppToast;
 import minicraft.screen.PlayerDeathDisplay;
@@ -56,10 +52,10 @@ public class Updater extends Game {
 	public static boolean updateNoteTick = false;
 	public static int notetick = 0; // "note"= notifications.
 
-	private static final int astime = 7200; // tands for Auto-Save Time (interval)
-	public static int asTick = 0; // The time interval between autosaves.
-	public static boolean saving = false; // If the game is performing a save.
-	public static int savecooldown; // Prevents saving many times too fast, I think.
+// 	private static final int astime = 7200; // tands for Auto-Save Time (interval)
+// 	public static int asTick = 0; // The time interval between autosaves.
+// 	public static boolean saving = false; // If the game is performing a save.
+// 	public static int savecooldown; // Prevents saving many times too fast, I think.
 	public static int screenshot = 0; // Counter for screenshot queries.
 
 	public enum Time {
@@ -148,31 +144,20 @@ public class Updater extends Game {
 			}
 		}
 
-		// Auto-save tick; marks when to do autosave.
-		if (!paused)
-			asTick++;
-		if (asTick > astime) {
-			if ((boolean) Settings.get("autosave") && !gameOver && player.health > 0) {
-
-				new Save(WorldSelectDisplay.getWorldName());
-			}
-
-			asTick = 0;
-		}
+// 		// Auto-save tick; marks when to do autosave.
+// 		if (!paused)
+// 			asTick++;
+// 		if (asTick > astime) {
+// 			if ((boolean) Settings.get("autosave") && !gameOver && player.health > 0) {
+//
+// // 				new Save(WorldSelectDisplay.getWorldName());
+// 			}
+//
+// 			asTick = 0;
+// 		}
 
 		// Increment tickCount if the game is not paused
 		if (!paused && timeFlow) setTime(tickCount + 1);
-
-		// SCORE MODE ONLY
-
-		if (isMode("minicraft.displays.world_create.options.game_mode.score") && (!paused && !gameOver)) {
-			if (scoreTime <= 0) { // GAME OVER
-				gameOver = true;
-				setDisplay(new EndGameDisplay());
-			}
-
-			scoreTime--;
-		}
 
 		Renderer.appStatusBar.tick();
 		if (input.getMappedKey("BACK_QUOTE").isDown())
@@ -199,7 +184,7 @@ public class Updater extends Game {
 			gameTime++;
 
 			input.tick(); // INPUT TICK; no other class should call this, I think...especially the *Menu classes.
-			TutorialDisplayHandler.tick(input);
+// 			TutorialDisplayHandler.tick(input);
 			AdvancementElement.AdvancementTrigger.tick();
 			Renderer.tickHotBar();
 

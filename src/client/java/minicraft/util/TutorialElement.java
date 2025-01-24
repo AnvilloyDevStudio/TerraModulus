@@ -16,6 +16,6 @@ public class TutorialElement extends AdvancementElement {
 	 */
 	public void update() {
 		super.update();
-		TutorialDisplayHandler.updateCompletedElement(this);
+// 		TutorialDisplayHandler.updateCompletedElement(this);
 	}
 }

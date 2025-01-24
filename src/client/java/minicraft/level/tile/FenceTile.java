@@ -111,13 +111,14 @@ public class FenceTile extends Tile {
 
 	@Override
 	public boolean hurt(Level level, int x, int y, Entity source, @Nullable Item item, Direction attackDir, int damage) {
-		if (Game.isMode("minicraft.settings.mode.creative")) {
-			level.add(new SmashParticle(x * 16, y * 16));
-			Sound.play("monsterhurt");
-			level.dropItem(x * 16 + 8, y * 16 + 8, Items.get(name));
-			level.setTile(x, y, Tiles.get((short) level.getData(x, y)));
-			return true;
-		} else if (item instanceof ToolItem && source instanceof Player) {
+// 		if (Game.isMode("minicraft.settings.mode.creative")) {
+// 			level.add(new SmashParticle(x * 16, y * 16));
+// 			Sound.play("monsterhurt");
+// 			level.dropItem(x * 16 + 8, y * 16 + 8, Items.get(name));
+// 			level.setTile(x, y, Tiles.get((short) level.getData(x, y)));
+// 			return true;
+// 		} else
+			if (item instanceof ToolItem && source instanceof Player) {
 			ToolItem tool = (ToolItem) item;
 			if (tool.type == type.getRequiredTool()) {
 				if (((Player) source).payStamina(4 - tool.level) && tool.payDurability()) {

@@ -93,7 +93,7 @@ public class ToolItem extends Item {
 		if (type == ToolType.Bow && player.payStamina(1) && inventory.count(Items.arrowItem) > 0) {
 			inventory.removeItem(Items.arrowItem);
 			level.add(new Arrow(player, attackDir, this.level));
-			if (!Game.isMode("minicraft.settings.mode.creative")) dur--;
+// 			if (!Game.isMode("minicraft.settings.mode.creative")) dur--;
 			AchievementsDisplay.setAchievement("minicraft.achievement.bow",true);
 			return true;
 		}
@@ -103,7 +103,7 @@ public class ToolItem extends Item {
 
 	public boolean payDurability() {
 		if (dur <= 0) return false;
-		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) dur--;
+// 		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) dur--;
 		return true;
 	}
 

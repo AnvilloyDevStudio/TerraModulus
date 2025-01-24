@@ -3,14 +3,12 @@ package minicraft.level;
 import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.ItemEntity;
 import minicraft.entity.furniture.Chest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.Spawner;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
@@ -33,13 +31,11 @@ import minicraft.item.Item;
 import minicraft.level.tile.Tile;
 import minicraft.level.tile.Tiles;
 import minicraft.level.tile.TorchTile;
-import minicraft.level.tile.TreeTile;
 import minicraft.util.DisplayString;
 import minicraft.util.Logging;
 import minicraft.util.MyUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -53,7 +49,7 @@ import java.util.function.ToIntFunction;
 public class Level {
 	private final Random random;
 
-	private static final String[] levelNames = { "Sky", "Surface", "Iron", "Gold", "Lava", "Dungeon" };
+	private static final String[] levelNames = { "Sky", "Surface", "Iron", "Gold", "Lava" };
 
 	public static String getLevelName(int depth) {
 		return levelNames[-1 * depth + 1];
@@ -74,8 +70,6 @@ public class Level {
 
 	public short[] tiles; // An array of all the tiles in the world.
 	public short[] data; // An array of the data of the tiles in the world.
-
-	public final TreeTile.TreeType[] treeTypes; // An array of tree types
 
 	public final int depth; // Depth level of the level
 	public int monsterDensity = 16; // Affects the number of monsters that are on the level, bigger the number the less monsters spawn.
@@ -142,9 +136,9 @@ public class Level {
 	}
 
 	private void updateMobCap() {
-		maxMobCount = 150 + 150 * Settings.getIdx("diff");
+// 		maxMobCount = 150 + 150 * Settings.getIdx("diff");
 		if (depth == 1) maxMobCount /= 2;
-		if (depth == 0 || depth == -4 || depth == -5) maxMobCount = maxMobCount * 2 / 3;
+		if (depth == 0 || depth == -5) maxMobCount = maxMobCount * 2 / 3;
 	}
 
 	public Level(int w, int h, long seed, int level, Level parentLevel, boolean makeWorld) {
@@ -154,37 +148,6 @@ public class Level {
 		this.seed = seed;
 		random = new Random(seed);
 		short[][] maps; // Multidimensional array (an array within a array), used for the map
-
-		treeTypes = new TreeTile.TreeType[w * h];
-		{
-			LevelGen noise1 = new LevelGen(w, h, 32);
-			LevelGen noise2 = new LevelGen(w, h, 32);
-			TreeTile.TreeType[] types = TreeTile.TreeType.values();
-			for (int y = 0; y < h; y++) { // Loop through height
-				for (int x = 0; x < w; x++) { // Loop through width
-					// Randomly selecting a tree type.
-					int i = x + y * w;
-					double val = Math.abs(noise1.values[i] - noise2.values[i]) * 3 - 2;
-					// This calculates a sort of distance based on the current coordinate.
-					double xd = x / (w - 1.0) * 2 - 1;
-					double yd = y / (h - 1.0) * 2 - 1;
-					if (xd < 0) xd = -xd;
-					if (yd < 0) yd = -yd;
-					double dist = Math.max(xd, yd);
-					dist = dist * dist * dist * dist;
-					dist = dist * dist * dist * dist;
-					val += 1 - dist * 20;
-					val += 1.5; // Assuming the range of value is from 0 to 2.
-					val *= types.length / 2.0;
-					val += 1; // Incrementing index.
-					// The original val mainly falls in small interval instead of averagely.
-					val = 1.0 / (3 * types.length) * Math.pow(val - 5, 2); // Quadratically bloating the value.
-					int idx = (int) Math.round(val - 1); // Decrementing index.
-					treeTypes[x + y * w] = (idx >= types.length || idx < 0) ? TreeTile.TreeType.OAK // Oak by default.
-						: types[idx];
-				}
-			}
-		}
 
 		if (level != -4 && level != 0)
 			monsterDensity = 8;
@@ -216,17 +179,11 @@ public class Level {
 		if (level == 0)
 			generateVillages();
 
-		if (level == -4)
-			generateDungeonStructures();
-
 		if (parentLevel != null) { // If the level above this one is not null (aka, if this isn't a sky level)
 			for (int y = 0; y < h; y++) { // Loop through height
 				for (int x = 0; x < w; x++) { // Loop through width
 					if (parentLevel.getTile(x, y) == Tiles.get("Stairs Down")) { // If the tile in the level above the current one is a stairs down then...
-						if (level == -4) { /// Make the obsidian wall formation around the stair in the dungeon level
-							Structure.dungeonGate.draw(this, x, y); // Te gate should not intersect with the boss room.
-							Structure.dungeonBossRoom.draw(this, w / 2, h / 2); // Generating the boss room at the center.
-						} else if (level == 0) { // Surface
+						if (level == 0) { // Surface
 							Logging.WORLD.trace("Setting tiles around ({},{}) to hard rock", x, y);
 							setAreaTiles(x, y, 1, Tiles.get("Hard Rock"), 0); // surround the sky stairs with hard rock
 						} else // Any other level, the up-stairs should have dirt on all sides.
@@ -255,8 +212,6 @@ public class Level {
 
 		checkChestCount(false);
 
-		checkAirWizard();
-
 		if (Logging.logLevel) printTileLocs(Tiles.get("Stairs Down"));
 	}
 
@@ -273,34 +228,6 @@ public class Level {
 
 	public long getSeed() {
 		return seed;
-	}
-
-	public void checkAirWizard() {
-		checkAirWizard(true);
-	}
-
-	private void checkAirWizard(boolean check) {
-		if (depth == 1 && !AirWizard.beaten) { // Add the airwizard to the surface
-
-			boolean found = false;
-			if (check) {
-				for (Entity e : entitiesToAdd)
-					if (e instanceof AirWizard) {
-						found = true;
-						break;
-					}
-				for (Entity e : entities)
-					if (e instanceof AirWizard) {
-						found = true;
-						break;
-					}
-			}
-
-			if (!found) {
-				AirWizard aw = new AirWizard();
-				add(aw, w / 2, h / 2, true);
-			}
-		}
 	}
 
 	public void checkChestCount() {
@@ -662,19 +589,10 @@ public class Level {
 				if ((Updater.getTime() == Updater.Time.Night && Updater.pastDay1 || depth != 0) && EnemyMob.checkStartPos(this, nx, ny)
 					&& !isLight(nx, ny)) { // if night or underground, with a valid tile and dim place, spawn an enemy mob.
 
-					if (depth != -4) { // Normal mobs
-						if (rnd <= 40) add((new Slime(lvl)), nx, ny);
-						else if (rnd <= 75) add((new Zombie(lvl)), nx, ny);
-						else if (rnd >= 85) add((new Skeleton(lvl)), nx, ny);
-						else add((new Creeper(lvl)), nx, ny);
-
-					} else { // Special dungeon mobs
-						if (rnd <= 40) add((new Snake(lvl)), nx, ny);
-						else if (rnd <= 75) add((new Knight(lvl)), nx, ny);
-						else if (rnd >= 85) add((new Snake(lvl)), nx, ny);
-						else add((new Knight(lvl)), nx, ny);
-
-					}
+					if (rnd <= 40) add((new Slime(lvl)), nx, ny);
+					else if (rnd <= 75) add((new Zombie(lvl)), nx, ny);
+					else if (rnd >= 85) add((new Skeleton(lvl)), nx, ny);
+					else add((new Creeper(lvl)), nx, ny);
 
 					spawned = true;
 					continue; // Only 1 mob is spawned at the same time.
@@ -710,8 +628,7 @@ public class Level {
 	public void removeAllEnemies() {
 		for (Entity e : getEntityArray()) {
 			if (e instanceof EnemyMob)
-				if (!(e instanceof AirWizard) || Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) // Don't remove the airwizard bosses! Unless in creative, since you can spawn more.
-					e.remove();
+				e.remove();
 		}
 	}
 
@@ -1171,38 +1088,6 @@ public class Level {
 					}
 
 					break;
-				}
-			}
-		}
-	}
-
-	private void generateDungeonStructures() {
-		for (int i = 0; i < Math.sqrt(w); i++) {
-			int x = random.nextInt(w - 2) + 1;
-			int y = random.nextInt(h - 2) + 1;
-
-			if (x > 8 && y > 8 && x < w - 8 && y < w - 8) {
-				if (random.nextBoolean()) {
-					Structure.dungeonGarden.draw(this, x, y);
-				} else {
-					Structure.dungeonChest.draw(this, x, y, furniture -> {
-							if (furniture instanceof DungeonChest)
-								((DungeonChest) furniture).populateInv(random);
-						});
-				}
-			}
-		}
-	}
-
-	/**
-	 * Regenerating/repairing the boss room in the dungeon.
-	 */
-	public void regenerateBossRoom() {
-		if (depth == -4) {
-			Structure.dungeonBossRoom.draw(tiles, w / 2, h / 2, w); // Generating the boss room at the center.
-			for (int x = w / 2 - 4; x < w / 2 + 5; x++) { // Resetting tile data.
-				for (int y = h / 2 - 4; y < h / 2 + 5; y++) {
-					setData(x, y, 0);
 				}
 			}
 		}

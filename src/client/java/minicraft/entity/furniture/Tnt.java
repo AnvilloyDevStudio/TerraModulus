@@ -100,12 +100,12 @@ public class Tnt extends Furniture {
 		super.render(screen);
 	}
 
-	@Override
-	public @Nullable Item take(Player player) {
-		if (!fuseLit)
-			return super.take(player);
-		return null;
-	}
+// 	@Override
+// 	public @Nullable Item take(Player player) {
+// 		if (!fuseLit)
+// 			return super.take(player);
+// 		return null;
+// 	}
 
 	@Override
 	public boolean use(Player player, @Nullable Item item, Direction attackDir) {

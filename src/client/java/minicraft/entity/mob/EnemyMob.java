@@ -44,7 +44,7 @@ public class EnemyMob extends MobAi {
 	 * @param rwChance The chance of this mob will walk in a random direction (random walk chance)
 	 */
 	public EnemyMob(int lvl, SpriteLink[][][] lvlSprites, int health, boolean isFactor, int detectDist, int lifetime, int rwTime, int rwChance) {
-		super(lvlSprites[0], isFactor ? (lvl == 0 ? 1 : lvl * lvl) * health * ((Double) (Math.pow(2, Settings.getIdx("diff")))).intValue() : health, lifetime, rwTime, rwChance);
+		super(lvlSprites[0], isFactor ? (lvl == 0 ? 1 : lvl * lvl) * health * ((Double) (Math.pow(2, 1/*Settings.getIdx("diff")*/))).intValue() : health, lifetime, rwTime, rwChance);
 		this.lvl = lvl == 0 ? 1 : lvl;
 		this.lvlSprites = java.util.Arrays.copyOf(lvlSprites, lvlSprites.length);
 		this.detectDist = detectDist;
@@ -84,7 +84,7 @@ public class EnemyMob extends MobAi {
 		super.tick();
 
 		Player player = getClosestPlayer();
-		if (player != null && !Bed.sleeping() && randomWalkTime <= 0 && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) { // Checks if player is on zombie's level, if there is no time left on randonimity timer, and if the player is not in creative.
+		if (player != null && !Bed.sleeping() && randomWalkTime <= 0){// && !Game.isMode("minicraft.displays.world_create.options.game_mode.creative")) { // Checks if player is on zombie's level, if there is no time left on randonimity timer, and if the player is not in creative.
 			int xd = player.x - x;
 			int yd = player.y - y;
 			if (xd * xd + yd * yd < detectDist * detectDist) {
@@ -121,7 +121,7 @@ public class EnemyMob extends MobAi {
 	@Override
 	public boolean attack(Entity entity) {
 		return hurt(new DamageSource(DamageSource.DamageType.GENERIC, this, null), dir,
-			lvl * (Settings.get("diff").equals("minicraft.settings.difficulty.hard") ? 2 : 1));
+			lvl * (/*Settings.get("diff").equals("minicraft.settings.difficulty.hard") ? 2 :*/ 1));
 	}
 
 	@Override
@@ -139,10 +139,6 @@ public class EnemyMob extends MobAi {
 		return false;
 	}
 
-	public void die() {
-		super.die(50 * lvl, 1);
-	}
-
 	/**
 	 * Determines if the mob can spawn at the giving position in the given map.
 	 * @param level The level which the mob wants to spawn in.
@@ -151,7 +147,7 @@ public class EnemyMob extends MobAi {
 	 * @return true if the mob can spawn here, false if not.
 	 */
 	public static boolean checkStartPos(Level level, int x, int y) { // Find a place to spawn the mob
-		int r = (level.depth == -4 ? (Game.isMode("minicraft.displays.world_create.options.game_mode.score") ? 22 : 15) : 13);
+		int r = (level.depth == -4 ? 15 : 13);
 
 		if (!MobAi.checkStartPos(level, x, y, 60, r))
 			return false;

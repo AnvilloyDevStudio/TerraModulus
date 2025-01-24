@@ -152,10 +152,6 @@ public class CropTile extends FarmTile {
 			level.dropItem(x * 16 + 8, y * 16 + 8, 1, Items.get(name));
 		}
 
-		if (age == maxAge && entity instanceof Player) {
-			((Player) entity).addScore(random.nextInt(5) + 1);
-		}
-
 		// Play sound.
 		Sound.play("monsterhurt");
 

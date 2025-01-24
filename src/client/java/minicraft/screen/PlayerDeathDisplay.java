@@ -24,22 +24,20 @@ public class PlayerDeathDisplay extends Display {
 		ArrayList<ListEntry> entries = new ArrayList<>(Arrays.asList(
 			new StringEntry(Localization.getStaticDisplay("minicraft.displays.player_death.display.time",
 				InfoDisplay.getTimeString())),
-			new StringEntry(Localization.getStaticDisplay("minicraft.displays.player_death.display.score",
-				Game.player.getScore())),
 			new BlankEntry()
 		));
 
-		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.hardcore")) {
-			entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.respawn"),
-				() -> {
-				World.resetGame();
-				Game.setDisplay(null);
-			}));
-		}
+// 		if (!Game.isMode("minicraft.displays.world_create.options.game_mode.hardcore")) {
+// 			entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.respawn"),
+// 				() -> {
+// 				World.resetGame();
+// 				Game.setDisplay(null);
+// 			}));
+// 		}
 
 		entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.save_quit"),
 			() -> {
-			new Save(WorldSelectDisplay.getWorldName());
+// 			new Save(WorldSelectDisplay.getWorldName());
 			Game.setDisplay(new TitleDisplay());
 		}));
 		entries.add(new SelectEntry(Localization.getStaticDisplay("minicraft.displays.player_death.quit"),

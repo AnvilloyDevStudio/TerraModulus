@@ -4,17 +4,14 @@ import minicraft.core.Game;
 import minicraft.core.Updater;
 import minicraft.core.World;
 import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.entity.Entity;
 import minicraft.entity.furniture.Bed;
 import minicraft.entity.furniture.Chest;
-import minicraft.entity.furniture.Crafter;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.DungeonChest;
 import minicraft.entity.furniture.Lantern;
 import minicraft.entity.furniture.Spawner;
 import minicraft.entity.furniture.Tnt;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.Knight;
@@ -35,8 +32,6 @@ import minicraft.item.ArmorItem;
 import minicraft.item.Inventory;
 import minicraft.item.Item;
 import minicraft.item.Items;
-import minicraft.item.PotionItem;
-import minicraft.item.PotionType;
 import minicraft.item.StackableItem;
 import minicraft.item.UnknownItem;
 import minicraft.level.Level;
@@ -352,21 +347,21 @@ public class HistoricLoad {
 					throw new Load.MalformedSaveDataValueException("Secondary version, Index 3 (Arrow count)", e);
 				}
 
-				try {
-					Settings.set("autosave", Load.parseBoolean(data.get(4)));
-				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
-					throw new Load.MalformedSaveDataValueException("Secondary version, Index 4 (Auto-save toggle)", e);
-				}
+// 				try {
+// 					Settings.set("autosave", Load.parseBoolean(data.get(4)));
+// 				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
+// 					throw new Load.MalformedSaveDataValueException("Secondary version, Index 4 (Auto-save toggle)", e);
+// 				}
 
 				// Index 5 (Sound toggle) -> Settings->sound is now saved in preferences instead of world-wide,
 				// data validation only.
 				validateBooleanSaveData(data.get(5), "Seconadry version, Index 5 (Sound toggle)");
 			} else if (data.size() == 5) { // Since Apr 2, 2017 until Apr 12, 2017 (1.9.1)
-				try {
-					Settings.set("autosave", Load.parseBoolean(data.get(3)));
-				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
-					throw new Load.MalformedSaveDataValueException("Tertiary version, Index 3 (Auto-save toggle)", e);
-				}
+// 				try {
+// 					Settings.set("autosave", Load.parseBoolean(data.get(3)));
+// 				} catch (IndexOutOfBoundsException | Load.IllegalDataValueException e) {
+// 					throw new Load.MalformedSaveDataValueException("Tertiary version, Index 3 (Auto-save toggle)", e);
+// 				}
 
 				// Index 4 (Sound toggle) -> Settings->sound is now saved in preferences instead of world-wide,
 				// data validation only.
@@ -546,7 +541,7 @@ public class HistoricLoad {
 				throw new Load.MalformedSaveDataFormatException(
 					String.format("Corrupted .miniplussave (Level data data count: %d)", dataA.size()));
 
-			Settings.set("size", w);
+// 			Settings.set("size", w);
 			short[] tiles = new short[w * h];
 			short[] data = new short[w * h];
 			for (int x = 0; x < w; ++x) {
@@ -623,7 +618,7 @@ public class HistoricLoad {
 			if (mode == 4) Updater.scoreTime = 300;
 		}
 
-		Settings.setIdx("mode", mode - 1); // Value is shifted in newer versions.
+// 		Settings.setIdx("mode", mode - 1); // Value is shifted in newer versions.
 	}
 
 	private static final Pattern CLOTHING_COLOR_REGEX = Pattern.compile("\\[(\\d+);(\\d+);(\\d+)]");
@@ -682,25 +677,25 @@ public class HistoricLoad {
 							throw new Load.MalformedSaveDataValueException("Potion effect time", e);
 						}
 
-						switch (split[0]) { // In fact, "P." should not be saved as an effect name.
-							case "Potion": break;// "Potion" takes no effect but saved in some versions.
-							case "Speed": PotionItem.applyPotion(Game.player, PotionType.Speed, time); break;
-							case "Light": PotionItem.applyPotion(Game.player, PotionType.Light, time); break;
-							case "Swim": PotionItem.applyPotion(Game.player, PotionType.Swim, time); break;
-							case "Energy": PotionItem.applyPotion(Game.player, PotionType.Energy, time); break;
-							case "Regen": PotionItem.applyPotion(Game.player, PotionType.Regen, time); break;
-							case "Time": PotionItem.applyPotion(Game.player, PotionType.Time, time); break;
-							case "Lava": PotionItem.applyPotion(Game.player, PotionType.Lava, time); break;
-							case "Shield": PotionItem.applyPotion(Game.player, PotionType.Shield, time); break;
-							case "Haste": PotionItem.applyPotion(Game.player, PotionType.Haste, time); break;
-							default:
+// 						switch (split[0]) { // In fact, "P." should not be saved as an effect name.
+// 							case "Potion": break;// "Potion" takes no effect but saved in some versions.
+// 							case "Speed": PotionItem.applyPotion(Game.player, PotionType.Speed, time); break;
+// 							case "Light": PotionItem.applyPotion(Game.player, PotionType.Light, time); break;
+// 							case "Swim": PotionItem.applyPotion(Game.player, PotionType.Swim, time); break;
+// 							case "Energy": PotionItem.applyPotion(Game.player, PotionType.Energy, time); break;
+// 							case "Regen": PotionItem.applyPotion(Game.player, PotionType.Regen, time); break;
+// 							case "Time": PotionItem.applyPotion(Game.player, PotionType.Time, time); break;
+// 							case "Lava": PotionItem.applyPotion(Game.player, PotionType.Lava, time); break;
+// 							case "Shield": PotionItem.applyPotion(Game.player, PotionType.Shield, time); break;
+// 							case "Haste": PotionItem.applyPotion(Game.player, PotionType.Haste, time); break;
+// 							default:
 								throw new Load.IllegalSaveDataValueException(String.format("Invalid potion type: %s", split[0]));
-						}
+// 						}
 					} catch (Load.IllegalSaveDataValueException | Load.MalformedSaveDataValueException e) {
 						throw new Load.MalformedSaveDataValueException(String.format("Potion effect (index: %d)", count), e);
 					}
 
-					count++;
+// 					count++;
 				}
 			} catch (Load.MalformedSaveDataValueException e) {
 				throw new Load.MalformedSaveDataValueException("Active potion effects", e);
@@ -761,7 +756,7 @@ public class HistoricLoad {
 			}
 
 			try {
-				Game.player.setScore(Integer.parseInt(data.get(6)));
+				Integer.parseInt(data.get(6));
 			} catch (NumberFormatException e) {
 				throw new Load.MalformedSaveDataValueException("Index 6 (Player score)", e);
 			}
@@ -1199,29 +1194,26 @@ public class HistoricLoad {
 				return new Knight(mobLevel);
 			case "Snake":
 				return new Snake(mobLevel);
-			case "AirWizard":
-				if (mobLevel > 1) throw new Load.IllegalDataValueException("Mob level: " + mobLevel);
-				return new AirWizard();
 			case "Spawner":
 				return new Spawner(new Zombie(1));
-			case "Workbench":
-				return new Crafter(Crafter.Type.Workbench);
+// 			case "Workbench":
+// 				return new Crafter(Crafter.Type.Workbench);
 			case "Chest":
 				return new Chest();
 			case "DeathChest":
 				return new DeathChest();
 			case "DungeonChest":
 				return new DungeonChest(null);
-			case "Anvil":
-				return new Crafter(Crafter.Type.Anvil);
-			case "Enchanter":
-				return new Crafter(Crafter.Type.Enchanter);
-			case "Loom":
-				return new Crafter(Crafter.Type.Loom);
-			case "Furnace":
-				return new Crafter(Crafter.Type.Furnace);
-			case "Oven":
-				return new Crafter(Crafter.Type.Oven);
+// 			case "Anvil":
+// 				return new Crafter(Crafter.Type.Anvil);
+// 			case "Enchanter":
+// 				return new Crafter(Crafter.Type.Enchanter);
+// 			case "Loom":
+// 				return new Crafter(Crafter.Type.Loom);
+// 			case "Furnace":
+// 				return new Crafter(Crafter.Type.Furnace);
+// 			case "Oven":
+// 				return new Crafter(Crafter.Type.Oven);
 			case "Bed":
 				return new Bed();
 			case "Tnt":

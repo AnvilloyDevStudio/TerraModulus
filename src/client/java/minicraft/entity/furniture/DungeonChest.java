@@ -109,10 +109,10 @@ public class DungeonChest extends Chest {
 			super.touchedBy(entity);
 	}
 
-	@Override
-	public @Nullable Item take(Player player) {
-		if (!isLocked)
-			return super.take(player);
-		return null;
-	}
+// 	@Override
+// 	public @Nullable Item take(Player player) {
+// 		if (!isLocked)
+// 			return super.take(player);
+// 		return null;
+// 	}
 }

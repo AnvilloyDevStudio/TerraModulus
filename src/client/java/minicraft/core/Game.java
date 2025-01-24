@@ -1,15 +1,11 @@
 package minicraft.core;
 
 import minicraft.core.io.InputHandler;
-import minicraft.core.io.Localization;
-import minicraft.core.io.Settings;
 import minicraft.core.io.Sound;
 import minicraft.entity.mob.Player;
 import minicraft.level.Level;
 import minicraft.level.tile.Tiles;
 import minicraft.network.Analytics;
-import minicraft.network.GameUpdateHandler;
-import minicraft.saveload.Load;
 import minicraft.saveload.Version;
 import minicraft.screen.Display;
 import minicraft.screen.AppToast;
@@ -38,8 +34,6 @@ public class Game {
 	public static List<DisplayString> inGameNotifications = new ArrayList<>();
 	public static ArrayDeque<AppToast> inAppToasts = new ArrayDeque<>();
 	public static ArrayDeque<Toast> inGameToasts = new ArrayDeque<>(); // Canvas size is limited, so handled one by one
-
-	public static GameUpdateHandler updateHandler;
 
 	public static int MAX_FPS;
 	public static boolean debug = false;
@@ -82,10 +76,10 @@ public class Game {
 		return displayQuery.isEmpty() ? null : displayQuery.peekLast();
 	}
 
-	// GAMEMODE
-	public static boolean isMode(String mode) {
-		return ((String) Settings.get("mode")).equalsIgnoreCase(mode);
-	}
+// 	// GAMEMODE
+// 	public static boolean isMode(String mode) {
+// 		return ((String) Settings.get("mode")).equalsIgnoreCase(mode);
+// 	}
 
 	// LEVEL
 	public static Level[] levels = new Level[6]; // This array stores the different levels.
@@ -110,12 +104,10 @@ public class Game {
 
 		Analytics.GameStartup.ping();
 
-		new Load(true, true); // This loads basic saved preferences.
+// 		new Load(true, true); // This loads basic saved preferences.
 		// Reference: https://stackoverflow.com/a/13832805
-		if ((boolean) Settings.get("hwa")) System.setProperty("sun.java2d.opengl", "true");
-		MAX_FPS = (int) Settings.get("fps"); // DO NOT put this above.
-
-		updateHandler = new GameUpdateHandler();
+// 		if ((boolean) Settings.get("hwa")) System.setProperty("sun.java2d.opengl", "true");
+// 		MAX_FPS = (int) Settings.get("fps"); // DO NOT put this above.
 
 		input = new InputHandler(Renderer.canvas);
 
@@ -133,7 +125,7 @@ public class Game {
 
 		World.resetGame(); // "half"-starts a new game, to set up initial variables
 		player.eid = 0;
-		new Load(true, false); // This loads any saved preferences.
+// 		new Load(true, false); // This loads any saved preferences.
 
 		// Update fullscreen frame if Updater.FULLSCREEN was updated previously
 		if (Updater.FULLSCREEN) {

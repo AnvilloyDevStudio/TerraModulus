@@ -238,7 +238,7 @@ public class Sound {
 	}
 
 	public void play() {
-		if (!(boolean) Settings.get("sound")) return;
+// 		if (!(boolean) Settings.get("sound")) return;
 		pointers.add(new AudioPointer());
 	}
 

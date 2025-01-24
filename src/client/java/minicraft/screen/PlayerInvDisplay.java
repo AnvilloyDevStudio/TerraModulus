@@ -34,7 +34,7 @@ public class PlayerInvDisplay extends Display {
 
 	private @Nullable List<ListEntry> itemDescription = null;
 
-	private final boolean creativeMode;
+// 	private final boolean creativeMode;
 	private final Inventory creativeInv;
 
 	public PlayerInvDisplay(Player player) {
@@ -42,26 +42,26 @@ public class PlayerInvDisplay extends Display {
 			"minicraft.display.menus.inventory"), ItemListMenu.POS_LEFT, this::update) };
 		this.player = player;
 		Menu.Builder descriptionMenuBuilder = new Menu.Builder(true, 3, RelPos.TOP_LEFT);
-		creativeMode = Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
+// 		creativeMode = Game.isMode("minicraft.displays.world_create.options.game_mode.creative");
 		itemDescription = getDescription();
 		if (itemDescription != null) descriptionMenuBuilder.setEntries(itemDescription);
 		Menu descriptionMenu = descriptionMenuBuilder.setPositioning(new Point(padding, menus[0].getBounds().getBottom() + 8), RelPos.BOTTOM_RIGHT)
 			.setSelectable(false)
 			.createMenu();
-		if (creativeMode) {
-			creativeInv = Items.getCreativeModeInventory();
-			menus = new Menu[] {
-				menus[0],
-				new InventoryMenu(player, creativeInv, Localization.getStaticDisplay(
-					"minicraft.displays.player_inv.container_title.items"), ItemListMenu.POS_RIGHT, true),
-				descriptionMenu
-			};
-
-			onSelectionChange(1, 0);
-		} else {
+// 		if (creativeMode) {
+// 			creativeInv = Items.getCreativeModeInventory();
+// 			menus = new Menu[] {
+// 				menus[0],
+// 				new InventoryMenu(player, creativeInv, Localization.getStaticDisplay(
+// 					"minicraft.displays.player_inv.container_title.items"), ItemListMenu.POS_RIGHT, true),
+// 				descriptionMenu
+// 			};
+//
+// 			onSelectionChange(1, 0);
+// 		} else {
 			creativeInv = null;
 			menus = new Menu[] { menus[0], descriptionMenu };
-		}
+// 		}
 
 		onScreenKeyboardMenu = OnScreenKeyboardMenu.checkAndCreateMenu();
 		if (onScreenKeyboardMenu != null)
@@ -87,15 +87,15 @@ public class PlayerInvDisplay extends Display {
 		boolean mainMethod = false;
 
 		itemDescription = getDescription();
-		if (itemDescription == null) menus[creativeMode ? 2 : 1].shouldRender = false;
-		else {
-			menus[creativeMode ? 2 : 1].shouldRender = true;
-			menus[creativeMode ? 2 : 1].setEntries(itemDescription);
-			menus[creativeMode ? 2 : 1].builder()
-				.setMenuSize(null)
-				.setDisplayLength(0)
-				.recalculateFrame(); // This resizes menu
-		}
+// 		if (itemDescription == null) menus[creativeMode ? 2 : 1].shouldRender = false;
+// 		else {
+// 			menus[creativeMode ? 2 : 1].shouldRender = true;
+// 			menus[creativeMode ? 2 : 1].setEntries(itemDescription);
+// 			menus[creativeMode ? 2 : 1].builder()
+// 				.setMenuSize(null)
+// 				.setDisplayLength(0)
+// 				.recalculateFrame(); // This resizes menu
+// 		}
 
 		Menu curMenu = menus[selection];
 		if (onScreenKeyboardMenu == null || !curMenu.isSearcherBarActive() && !onScreenKeyboardMenu.isVisible()) {
@@ -134,72 +134,72 @@ public class PlayerInvDisplay extends Display {
 		}
 
 		if (mainMethod || !onScreenKeyboardMenu.isVisible()) {
-			if (creativeMode) {
-				int otherIdx = getOtherIdx();
-
-				if (curMenu.getNumOptions() == 0) return;
-
-				Inventory from, to;
-				if (selection == 0) {
-					if (input.inputPressed("SELECT") && menus[0].getNumOptions() > 0) {
-						player.activeItem = player.getInventory().remove(menus[0].getSelection());
-						Game.exitDisplay();
-						return;
-					}
-
-					from = player.getInventory();
-
-					int fromSel = curMenu.getSelection();
-					Item fromItem = from.get(fromSel);
-
-					boolean deleteAll;
-					if (input.getMappedKey("SHIFT-D").isClicked() || input.buttonPressed(ControllerButton.Y)) {
-						deleteAll = true;
-					} else if (input.getMappedKey("D").isClicked() || input.buttonPressed(ControllerButton.X)) {
-						deleteAll = !(fromItem instanceof StackableItem) || ((StackableItem) fromItem).count == 1;
-					} else return;
-
-					if (deleteAll) {
-						from.remove(fromSel);
-					} else {
-						((StackableItem) fromItem).count--; // this is known to be valid.
-					}
-
-					update();
-					((InventoryMenu) curMenu).refresh();
-				} else {
-					from = creativeInv;
-					to = player.getInventory();
-
-					int toSel = menus[otherIdx].getSelection();
-					int fromSel = curMenu.getSelection();
-
-					Item fromItem = from.get(fromSel);
-
-					boolean transferAll;
-					if (input.getMappedKey("SHIFT-SELECT").isClicked()) {
-						transferAll = true;
-					} else if (input.inputPressed("SELECT")) { // If stack limit is available, this can transfer whole stack
-						transferAll = !(fromItem instanceof StackableItem);
-					} else return;
-
-					Item toItem = fromItem.copy();
-					if (toItem instanceof StackableItem && transferAll)
-						((StackableItem) toItem).count = ((StackableItem) toItem).maxCount;
-
-					if (to.add(toItem) != null)
-						Logging.PLAYER.trace("Item {} cannot be added to the player inventory because max slot reached.", toItem);
-
-					update();
-					((InventoryMenu) menus[otherIdx]).refresh();
-				}
-
-			} else {
+// 			if (creativeMode) {
+// 				int otherIdx = getOtherIdx();
+//
+// 				if (curMenu.getNumOptions() == 0) return;
+//
+// 				Inventory from, to;
+// 				if (selection == 0) {
+// 					if (input.inputPressed("SELECT") && menus[0].getNumOptions() > 0) {
+// 						player.activeItem = player.getInventory().remove(menus[0].getSelection());
+// 						Game.exitDisplay();
+// 						return;
+// 					}
+//
+// 					from = player.getInventory();
+//
+// 					int fromSel = curMenu.getSelection();
+// 					Item fromItem = from.get(fromSel);
+//
+// 					boolean deleteAll;
+// 					if (input.getMappedKey("SHIFT-D").isClicked() || input.buttonPressed(ControllerButton.Y)) {
+// 						deleteAll = true;
+// 					} else if (input.getMappedKey("D").isClicked() || input.buttonPressed(ControllerButton.X)) {
+// 						deleteAll = !(fromItem instanceof StackableItem) || ((StackableItem) fromItem).count == 1;
+// 					} else return;
+//
+// 					if (deleteAll) {
+// 						from.remove(fromSel);
+// 					} else {
+// 						((StackableItem) fromItem).count--; // this is known to be valid.
+// 					}
+//
+// 					update();
+// 					((InventoryMenu) curMenu).refresh();
+// 				} else {
+// 					from = creativeInv;
+// 					to = player.getInventory();
+//
+// 					int toSel = menus[otherIdx].getSelection();
+// 					int fromSel = curMenu.getSelection();
+//
+// 					Item fromItem = from.get(fromSel);
+//
+// 					boolean transferAll;
+// 					if (input.getMappedKey("SHIFT-SELECT").isClicked()) {
+// 						transferAll = true;
+// 					} else if (input.inputPressed("SELECT")) { // If stack limit is available, this can transfer whole stack
+// 						transferAll = !(fromItem instanceof StackableItem);
+// 					} else return;
+//
+// 					Item toItem = fromItem.copy();
+// 					if (toItem instanceof StackableItem && transferAll)
+// 						((StackableItem) toItem).count = ((StackableItem) toItem).maxCount;
+//
+// 					if (to.add(toItem) != null)
+// 						Logging.PLAYER.trace("Item {} cannot be added to the player inventory because max slot reached.", toItem);
+//
+// 					update();
+// 					((InventoryMenu) menus[otherIdx]).refresh();
+// 				}
+//
+// 			} else {
 				if (input.inputPressed("SELECT") && menus[0].getNumOptions() > 0) {
 					player.activeItem = player.getInventory().remove(menus[0].getSelection());
 					Game.exitDisplay();
 				}
-			}
+// 			}
 		}
 	}
 
@@ -237,37 +237,37 @@ public class PlayerInvDisplay extends Display {
 				renderCounterNumber(screen, boundsLeft.getRight() + 2 - 10, boundsLeft.getTop() + 3,
 					0, 4, 5, capLeft, Color.GRAY);
 			}
-		} else if (creativeMode) { // assert selection == 1
-			// LHS is not focused
-			Rectangle boundsLeft = menus[0].getBounds();
-			int sizeLeft = player.getInventory().invSize();
-			int capLeft = player.getInventory().getMaxSlots();
-			// Minimized counter
-			if (sizeLeft < 10) {
-				// Background
-				screen.render(null, boundsLeft.getRight() - 4 - 8, boundsLeft.getTop() - 1,
-					0, 12, 4, 9, counterSheet);
-				// Skips the middle part as that is for more digits
-				screen.render(null, boundsLeft.getRight() - 4 - 4, boundsLeft.getTop() - 1,
-					8, 12, 4, 9, counterSheet);
-
-				// Digits
-				renderCounterNumber(screen, boundsLeft.getRight() - 4 - 6, boundsLeft.getTop() + 1,
-					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
-			} else {
-				// Background
-				screen.render(null, boundsLeft.getRight() - 4 - 12, boundsLeft.getTop() - 1,
-					0, 12, 12, 9, counterSheet);
-
-				// Digits
-				renderCounterNumber(screen, boundsLeft.getRight() - 4 - 10, boundsLeft.getTop() + 1,
-					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
-			}
+// 		} else if (creativeMode) { // assert selection == 1
+// 			// LHS is not focused
+// 			Rectangle boundsLeft = menus[0].getBounds();
+// 			int sizeLeft = player.getInventory().invSize();
+// 			int capLeft = player.getInventory().getMaxSlots();
+// 			// Minimized counter
+// 			if (sizeLeft < 10) {
+// 				// Background
+// 				screen.render(null, boundsLeft.getRight() - 4 - 8, boundsLeft.getTop() - 1,
+// 					0, 12, 4, 9, counterSheet);
+// 				// Skips the middle part as that is for more digits
+// 				screen.render(null, boundsLeft.getRight() - 4 - 4, boundsLeft.getTop() - 1,
+// 					8, 12, 4, 9, counterSheet);
+//
+// 				// Digits
+// 				renderCounterNumber(screen, boundsLeft.getRight() - 4 - 6, boundsLeft.getTop() + 1,
+// 					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
+// 			} else {
+// 				// Background
+// 				screen.render(null, boundsLeft.getRight() - 4 - 12, boundsLeft.getTop() - 1,
+// 					0, 12, 12, 9, counterSheet);
+//
+// 				// Digits
+// 				renderCounterNumber(screen, boundsLeft.getRight() - 4 - 10, boundsLeft.getTop() + 1,
+// 					0, 4, 5, sizeLeft, fadeColor(colorByHeaviness(calculateHeaviness(sizeLeft, capLeft), false)));
+// 			}
 		}
 
 		// Searcher help text
 		String text = Localization.getLocalized("minicraft.displays.player_inv.display.help", Game.input.getMapping("SEARCHER-BAR"));
-		Font.draw(text, screen, selection == 0 ? 12 : Screen.w - 12 - Font.textWidth(text), menus[creativeMode ? 2 : 1].getBounds().getBottom() + 8, Color.WHITE);
+// 		Font.draw(text, screen, selection == 0 ? 12 : Screen.w - 12 - Font.textWidth(text), menus[creativeMode ? 2 : 1].getBounds().getBottom() + 8, Color.WHITE);
 
 		if (onScreenKeyboardMenu != null)
 			onScreenKeyboardMenu.render(screen);
@@ -342,18 +342,18 @@ public class PlayerInvDisplay extends Display {
 	@Override
 	protected void onSelectionChange(int oldSel, int newSel) {
 		super.onSelectionChange(oldSel, newSel);
-		if (creativeMode) {
-			// Hide Items Inventory when not selecting it.
-			if (selection == 0) menus[1].shouldRender = false;
-			else menus[1].shouldRender = true;
-
-			if (oldSel == newSel)
-				return; // this also serves as a protection against access to menus[0] when such may not exist.
-			if (newSel == 0)
-				menus[2].builder().setPositioning(new Point(padding, menus[0].getBounds().getBottom() + 8), RelPos.BOTTOM_RIGHT);
-			if (newSel == 1)
-				menus[2].builder().setPositioning(new Point(Screen.w - padding, menus[1].getBounds().getBottom() + 8), RelPos.BOTTOM_LEFT);
-		}
+// 		if (creativeMode) {
+// 			// Hide Items Inventory when not selecting it.
+// 			if (selection == 0) menus[1].shouldRender = false;
+// 			else menus[1].shouldRender = true;
+//
+// 			if (oldSel == newSel)
+// 				return; // this also serves as a protection against access to menus[0] when such may not exist.
+// 			if (newSel == 0)
+// 				menus[2].builder().setPositioning(new Point(padding, menus[0].getBounds().getBottom() + 8), RelPos.BOTTOM_RIGHT);
+// 			if (newSel == 1)
+// 				menus[2].builder().setPositioning(new Point(Screen.w - padding, menus[1].getBounds().getBottom() + 8), RelPos.BOTTOM_LEFT);
+// 		}
 	}
 
 	private int getOtherIdx() {

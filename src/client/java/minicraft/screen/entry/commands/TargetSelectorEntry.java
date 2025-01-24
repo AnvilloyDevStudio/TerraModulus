@@ -7,19 +7,14 @@ import minicraft.core.io.Sound;
 import minicraft.entity.Arrow;
 import minicraft.entity.Direction;
 import minicraft.entity.Entity;
-import minicraft.entity.FireSpark;
 import minicraft.entity.ItemEntity;
-import minicraft.entity.Spark;
 import minicraft.entity.furniture.DeathChest;
 import minicraft.entity.furniture.Furniture;
-import minicraft.entity.furniture.KnightStatue;
-import minicraft.entity.mob.AirWizard;
 import minicraft.entity.mob.Cow;
 import minicraft.entity.mob.Creeper;
 import minicraft.entity.mob.EnemyMob;
 import minicraft.entity.mob.Knight;
 import minicraft.entity.mob.Mob;
-import minicraft.entity.mob.ObsidianKnight;
 import minicraft.entity.mob.PassiveMob;
 import minicraft.entity.mob.Pig;
 import minicraft.entity.mob.Player;
@@ -57,7 +52,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
-import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -842,13 +836,10 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 				List<Class<? extends Entity>> classes = Arrays.asList(
 					// Furniture not in FurnitureItem
 					DeathChest.class,
-					KnightStatue.class,
 					// Mob
-					AirWizard.class,
 					Cow.class,
 					Creeper.class,
 					Knight.class,
-					ObsidianKnight.class,
 					Pig.class,
 					Player.class,
 					Sheep.class,
@@ -863,9 +854,7 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 					SmashParticle.class,
 					TextParticle.class,
 					// Other entities
-					Arrow.class,
-					FireSpark.class,
-					Spark.class
+					Arrow.class
 				);
 				classes.forEach(c -> entityNames.put(c, nameSeparator.apply(c.getSimpleName())));
 			}
@@ -875,7 +864,6 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 				Chest("Chest", e -> e instanceof minicraft.entity.furniture.Chest),
 				Lantern("Lantern", e -> e instanceof minicraft.entity.furniture.Lantern),
 				Spawner("Spawner", e -> e instanceof minicraft.entity.furniture.Spawner),
-				Boss("Boss", e -> e instanceof AirWizard || e instanceof ObsidianKnight),
 				Enemy("Enemy", e -> e instanceof EnemyMob), // Or hostile
 				Passive("Passive", e -> e instanceof PassiveMob),
 				Mob("Mob", e -> e instanceof Mob),
@@ -883,9 +871,8 @@ public class TargetSelectorEntry extends ArrayEntry<TargetSelectorEntry.TargetSc
 				Player("Player", e -> e instanceof Player),
 				Particle("Particle", e -> e instanceof minicraft.entity.particle.Particle),
 				Item("Item", e -> e instanceof ItemEntity),
-				Spark("Spark", e -> e instanceof Spark || e instanceof FireSpark),
 				Arrow("Arrow", e -> e instanceof Arrow),
-				Projectile("Projectile", e -> e instanceof Arrow || e instanceof Spark || e instanceof FireSpark);
+				Projectile("Projectile", e -> e instanceof Arrow);
 
 				public final String name;
 				public final Predicate<Entity> filter;

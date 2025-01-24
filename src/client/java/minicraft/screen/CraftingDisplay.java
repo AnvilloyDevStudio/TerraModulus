@@ -37,7 +37,7 @@ public class CraftingDisplay extends Display {
 
 	private final boolean isPersonalCrafter;
 
-	private static final HashSet<Recipe> unlockedRecipes = new HashSet<>();
+// 	private static final HashSet<Recipe> unlockedRecipes = new HashSet<>();
 
 	public CraftingDisplay(List<Recipe> recipes, DisplayString title, Player player) {
 		this(recipes, title, player, false);
@@ -65,9 +65,9 @@ public class CraftingDisplay extends Display {
 	}
 
 	private void refreshDisplayRecipes() {
-		List<Recipe> recipes = availableRecipes.stream().filter(unlockedRecipes::contains).collect(Collectors.toList());
-		menus[0] = recipeMenu = new RecipeMenu(recipes, title, player);
-		this.recipes = recipes.toArray(new Recipe[0]);
+// 		List<Recipe> recipes = availableRecipes.stream().filter(unlockedRecipes::contains).collect(Collectors.toList());
+// 		menus[0] = recipeMenu = new RecipeMenu(recipes, title, player);
+// 		this.recipes = recipes.toArray(new Recipe[0]);
 		refreshData();
 
 		onScreenKeyboardMenu = OnScreenKeyboardMenu.checkAndCreateMenu();
@@ -224,21 +224,21 @@ public class CraftingDisplay extends Display {
 		}
 	}
 
-	public static void resetRecipeUnlocks() {
-		unlockedRecipes.clear();
-	}
+// 	public static void resetRecipeUnlocks() {
+// 		unlockedRecipes.clear();
+// 	}
 
-	public static void unlockRecipe(@NotNull Recipe recipe) {
-		unlockedRecipes.add(recipe);
-		refreshInstanceIfNeeded();
-	}
+// 	public static void unlockRecipe(@NotNull Recipe recipe) {
+// 		unlockedRecipes.add(recipe);
+// 		refreshInstanceIfNeeded();
+// 	}
 
-	public static Set<Recipe> getUnlockedRecipes() {
-		return new HashSet<>(unlockedRecipes);
-	}
+// 	public static Set<Recipe> getUnlockedRecipes() {
+// 		return new HashSet<>(unlockedRecipes);
+// 	}
 
-	public static void loadUnlockedRecipes(Collection<Recipe> recipes) {
-		resetRecipeUnlocks();
-		unlockedRecipes.addAll(recipes);
-	}
+// 	public static void loadUnlockedRecipes(Collection<Recipe> recipes) {
+// 		resetRecipeUnlocks();
+// 		unlockedRecipes.addAll(recipes);
+// 	}
 }

@@ -37,7 +37,6 @@ public final class Tiles {
 
 		tiles.put((short) 0, new GrassTile("Grass"));
 		tiles.put((short) 1, new DirtTile("Dirt"));
-		tiles.put((short) 2, new FlowerTile("Flower"));
 		tiles.put((short) 3, new HoleTile("Hole"));
 		tiles.put((short) 4, new StairsTile("Stairs Up", true));
 		tiles.put((short) 5, new StairsTile("Stairs Down", false));
@@ -46,7 +45,6 @@ public final class Tiles {
 		tiles.put((short) 17, new LavaTile("Lava"));
 
 		tiles.put((short) 7, new RockTile("Rock"));
-		tiles.put((short) 8, new TreeTile("Tree"));
 		tiles.put((short) 9, new SaplingTile("Tree Sapling", Tiles.get("Grass"), Tiles.get("Tree")));
 		tiles.put((short) 10, new SandTile("Sand"));
 		tiles.put((short) 11, new CactusTile("Cactus"));
@@ -98,9 +96,6 @@ public final class Tiles {
 		tiles.put((short) 44, new MaterialTile(Tile.Material.Obsidian));
 		tiles.put((short) 45, new DecorTile(DecorTile.decorType.ORNATE_STONE));
 		tiles.put((short) 46, new DecorTile(DecorTile.decorType.ORNATE_OBSIDIAN));
-		tiles.put((short) 47, new BossWallTile());
-		tiles.put((short) 48, new BossFloorTile());
-		tiles.put((short) 49, new BossDoorTile());
 		tiles.put((short) 50, new TomatoTile("Tomato"));
 		tiles.put((short) 51, new CarrotTile("Carrot"));
 		tiles.put((short) 52, new HeavenlyBerriesTile("Heavenly Berries"));
@@ -109,7 +104,6 @@ public final class Tiles {
 		tiles.put((short) 55, new FenceTile(Tile.Material.Stone));
 		tiles.put((short) 56, new FenceTile(Tile.Material.Obsidian));
 		tiles.put((short) 57, new TorchTile());
-		tiles.put((short) 58, new SignTile());
 		tiles.put((short) 59, new DecorTile(DecorTile.decorType.ORNATE_WOOD));
 
 		// WARNING: don't use this tile for anything!
