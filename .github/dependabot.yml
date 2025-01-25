@@ -11,9 +11,3 @@ updates:
     open-pull-requests-limit: 8
     schedule:
       interval: "daily"
-    ignore:
-      - dependency-name: "org.tinylog*"
-    groups:
-      badlogicgames:
-        patterns:
-          - "com.badlogicgames*"
