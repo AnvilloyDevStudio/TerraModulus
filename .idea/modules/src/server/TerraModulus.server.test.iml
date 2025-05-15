@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":server:test" external.linked.project.path="$MODULE_DIR$/../../../../src/server" external.root.project.path="$MODULE_DIR$/../../../.." external.system.id="GRADLE" external.system.module.group="TerraModulus" external.system.module.type="sourceSet" external.system.module.version="0.1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output-test url="file://$MODULE_DIR$/../../../../src/server/build/classes/java/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../../src/server/src/test" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="TerraModulus.server.main" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:26.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.tinylog:tinylog-impl:2.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.tinylog:tinylog-api:2.4.1" level="project" />
+    <orderEntry type="module" module-name="TerraModulus.common.main" />
+    <orderEntry type="library" name="Gradle: org.codehaus.mojo:animal-sniffer-annotations:1.18" level="project" />
+  </component>
+  <component name="TestModuleProperties" production-module="TerraModulus.server.main" />
+</module>
