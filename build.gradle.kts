@@ -35,13 +35,13 @@ subprojects {
 
 project(":common") {
     dependencies {
-        implementation("org.jetbrains:annotations:26.0.2")
+        api("org.jetbrains:annotations:26.0.2")
     }
 }
 
 project(":client") {
     dependencies {
-        implementation(project(":common"))
+        api(project(":common"))
     }
 
     application {
@@ -51,7 +51,7 @@ project(":client") {
 
 project(":server") {
     dependencies {
-        implementation(project(":common"))
+        api(project(":common"))
     }
 
     application {
