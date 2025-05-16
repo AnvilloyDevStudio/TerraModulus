@@ -5,8 +5,5 @@
 
 package terramodulus.core
 
-abstract class AbstractTerraModulus {
-	abstract var tps: Int
-
-	abstract fun run()
-}
+const val NAME = "TerraModulus"
+const val VERSION = "0.1.0" // TODO placeholder

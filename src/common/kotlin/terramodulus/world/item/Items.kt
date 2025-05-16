@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package terramodulus.core
+package terramodulus.world.item
 
-abstract class AbstractTerraModulus {
-	abstract var tps: Int
-
-	abstract fun run()
+class Items {
 }

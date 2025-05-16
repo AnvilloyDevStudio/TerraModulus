@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package terramodulus.core
-
-abstract class AbstractTerraModulus {
-	abstract var tps: Int
-
-	abstract fun run()
-}
+/**
+ * Critical components
+ */
+package terramodulus.core;
