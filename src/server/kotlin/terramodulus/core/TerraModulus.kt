@@ -6,6 +6,10 @@
 package terramodulus.core
 
 class TerraModulus : AbstractTerraModulus() {
+	override var tps: Int
+		get() = TODO("Not yet implemented")
+		set(value) {}
+
 	override fun run() {
 		TODO("Not yet implemented")
 	}

@@ -45,6 +45,9 @@ project(":common") {
         api("org.jetbrains.kotlinx:multik-default:0.2.3")
         api(kotlin("reflect"))
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+        api("com.github.oshi:oshi-core:6.8.0")
+        api("net.java.dev.jna:jna:5.17.0")
+        api("net.java.dev.jna:jna-platform:5.17.0")
     }
 }
 
@@ -54,7 +57,7 @@ project(":client") {
     }
 
     application {
-        mainClass = "terramodulus.client.Main"
+        mainClass = "terramodulus.core.MainKt"
     }
 }
 
@@ -64,6 +67,44 @@ project(":server") {
     }
 
     application {
-        mainClass = "terramodulus.server.Main"
+        mainClass = "terramodulus.core.MainKt"
+    }
+}
+
+enum class Target {
+    CLIENT, SERVER;
+}
+
+/** Build Ferricia Engine with Cargo */
+fun Exec.configureCargoBuild(target: Target) {
+    workingDir = rootProject.file("ferricia")
+    commandLine("cargo", "build")
+    if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
+    args("-F")
+    when (target) {
+        Target.CLIENT -> args("client")
+        Target.SERVER -> args("server")
+    }
+}
+
+tasks.register<Exec>("run_client") {
+    group = "application"
+    description = "Run client"
+    finalizedBy(":client:run")
+    configureCargoBuild(Target.CLIENT)
+}
+
+tasks.register<Exec>("run_server") {
+    group = "application"
+    description = "Run server"
+    finalizedBy(":server:run")
+    configureCargoBuild(Target.SERVER)
+}
+
+configure(listOf(project(":server"), project(":client"))) {
+    tasks.named<JavaExec>("run") {
+        jvmArgs("-Djava.library.path=${rootProject.file("ferricia/target/${
+            if (project.hasProperty("release")) "release" else "debug"
+        }").path}")
     }
 }
