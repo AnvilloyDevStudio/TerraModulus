@@ -58,7 +58,7 @@ See branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/rel
 
 At this stage, branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/relictus) would be taken as reference.
 
-Tasks:
+Tasks (*To Be Replanned*):
 - [Feature Removals & Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
 - [Crash Report System](https://github.com/AnvilloyDevStudio/TerraModulus/issues/33)
   - Part 1: Basic system
