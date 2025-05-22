@@ -2,9 +2,8 @@
 
 # TerraModulus
 
-TerraModulus is a now fork of [Minicraft+](https://github.com/MinicraftPlus/minicraft-plus-revived)
-(at [`58460dd`](https://github.com/MinicraftPlus/minicraft-plus-revived/commit/58460ddf4860423a915289d96152150cc09238f6)),
-but eventually will be detached from the original codebase.
+TerraModulus is a modularized top-down 3D sandbox survival game, conceptually inspired by [*Minicraft+*](https://github.com/MinicraftPlus/minicraft-plus-revived).
+Currently, it is still in very early development stage, you may follow this repository or its Discord server (invite link on badge) for updates!
 
 ## Status
 
