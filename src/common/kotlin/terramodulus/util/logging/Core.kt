@@ -1,0 +1,11 @@
+/*
+ * SPDX-FileCopyrightText: 2025 TerraModulus Team and Contributors
+ * SPDX-License-Identifier: LGPL-3.0-only
+ */
+
+package terramodulus.util.logging
+
+import io.github.oshai.kotlinlogging.KLogger
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+fun logger(func: () -> Unit): KLogger = KotlinLogging.logger(func)

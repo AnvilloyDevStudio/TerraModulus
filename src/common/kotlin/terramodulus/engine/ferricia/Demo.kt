@@ -5,7 +5,7 @@
 
 package terramodulus.engine.ferricia
 
-object Demo {
+internal object Demo {
 	external fun hello(name: String): String
 	external fun clientOnly(): Int
 }

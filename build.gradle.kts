@@ -26,12 +26,12 @@ subprojects {
 
     tasks.compileKotlin {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
     kotlin {
-        jvmToolchain(21)
+        jvmToolchain(17)
     }
 }
 
@@ -45,9 +45,16 @@ project(":common") {
         api("org.jetbrains.kotlinx:multik-default:0.2.3")
         api(kotlin("reflect"))
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-        api("com.github.oshi:oshi-core:6.8.0")
-        api("net.java.dev.jna:jna:5.17.0")
-        api("net.java.dev.jna:jna-platform:5.17.0")
+        implementation("com.github.oshi:oshi-core:6.8.0")
+        implementation("net.java.dev.jna:jna:5.17.0")
+        implementation("net.java.dev.jna:jna-platform:5.17.0")
+        api("com.google.errorprone:error_prone_annotations:2.38.0")
+        implementation("org.apache.logging.log4j:log4j-core:2.24.3")
+        implementation("org.apache.logging.log4j:log4j-api:2.24.3")
+        implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3")
+        implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.3"))
+        annotationProcessor("org.apache.logging.log4j:log4j-core:2.24.3")
+        implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     }
 }
 
