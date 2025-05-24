@@ -11,9 +11,9 @@
         <Console name="CONSOLE" target="SYSTEM_OUT">
             <PatternLayout pattern="%highlight{%d{DEFAULT_NANOS} [%T] [%p] %c: %m}%n" noConsoleNoAnsi="true"/>
         </Console>
-        <File name="FILE" fileName="logs/main.log">
-            <PatternLayout pattern="%d{DEFAULT_NANOS} [%T] [%p] %c: %m%n" disableAnsi="true"/>
-        </File>
+<!--        <DelayedFile name="FILE">-->
+<!--            <PatternLayout pattern="%d{DEFAULT_NANOS} [%T] [%p] %c: %m%n" disableAnsi="true"/>-->
+<!--        </DelayedFile>-->
     </Appenders>
     <Loggers>
         <AsyncRoot level="TRACE">
