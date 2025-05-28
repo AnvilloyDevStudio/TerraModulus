@@ -44,9 +44,9 @@ fun notifyAndRecordError(error: Error) {
 }
 
 fun triggerSessionCrash() {
-
+	TODO()
 }
 
-fun triggerGlobalCrash() {
-
+fun triggerGlobalCrash(error: Error): Nothing {
+	TODO()
 }

@@ -14,6 +14,4 @@ package terramodulus.util.exception
  * [NullPointerException], [AssertionError], [ClassCastException], [NoSuchElementException],
  * [ConcurrentModificationException], [ArrayStoreException], etc.
  */
-class CodeLogicFault(override val message: String, override val cause: Throwable?) : Fault(message, cause) {
-	constructor(message: String) : this(message, null)
-}
+class CodeLogicFault(cause: Throwable) : Fault("Illogical code", cause)

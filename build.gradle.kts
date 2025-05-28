@@ -77,6 +77,7 @@ project(":client") {
     dependencies {
         implementation(project(":kernel"))
         api(project(":common"))
+        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
     }
 
     application {
@@ -88,6 +89,7 @@ project(":server") {
     dependencies {
         implementation(project(":kernel"))
         api(project(":common"))
+        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
     }
 
     application {

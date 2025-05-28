@@ -5,7 +5,9 @@
 
 package terramodulus.common.core
 
-abstract class AbstractTerraModulus {
+import java.io.Closeable
+
+abstract class AbstractTerraModulus : Closeable {
 	abstract var tps: Int
 
 	abstract fun run()
