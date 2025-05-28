@@ -7,11 +7,12 @@ package terramodulus.util.exception
 
 /**
  * Code logic problems or bugs are regarded as defects in the software code and thus
- * should be emitted as [Fault]s.
+ * should be emitted as [Fault]s. This alerts that a made assumption or assertion was false.
  *
- * @param cause accepts [IllegalArgumentException], [IllegalStateException], [IndexOutOfBoundsException],
- * [ArithmeticException], [NumberFormatException], [NullPointerException], [AssertionError],
- * [ClassCastException], [NoSuchElementException], [ConcurrentModificationException]
+ * @param cause generally accepts [IllegalArgumentException], [IllegalStateException],
+ * [IndexOutOfBoundsException], [ArithmeticException], [NumberFormatException],
+ * [NullPointerException], [AssertionError], [ClassCastException], [NoSuchElementException],
+ * [ConcurrentModificationException], [ArrayStoreException], etc.
  */
 class CodeLogicFault(override val message: String, override val cause: Throwable?) : Fault(message, cause) {
 	constructor(message: String) : this(message, null)
