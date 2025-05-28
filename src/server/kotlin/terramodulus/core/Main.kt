@@ -5,7 +5,10 @@
 
 package terramodulus.core
 
+import terramodulus.common.core.setupInit
+
 fun main() {
+	setupInit()
 	println("java.library.path = ${System.getProperty("java.library.path")}")
 
 }

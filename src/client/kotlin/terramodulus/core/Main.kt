@@ -5,13 +5,10 @@
 
 package terramodulus.core
 
-import terramodulus.util.exception.UnhandledExceptionFault
+import terramodulus.common.core.setupInit
 
 fun main(args: Array<String>) {
-	Thread.setDefaultUncaughtExceptionHandler { _, e ->
-		// TODO find a way to add fun to commonize this part for client and server `main`
-		UnhandledExceptionFault.global(e)
-	}
+	setupInit()
 	println("java.library.path = ${System.getProperty("java.library.path")}")
 
 	val game = TerraModulus()

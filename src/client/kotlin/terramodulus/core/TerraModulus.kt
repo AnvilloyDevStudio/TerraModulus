@@ -5,6 +5,8 @@
 
 package terramodulus.core
 
+import terramodulus.common.core.AbstractTerraModulus
+
 class TerraModulus : AbstractTerraModulus() {
 	override var tps: Int
 		get() = TODO("Not yet implemented")

@@ -11,7 +11,7 @@ plugins {
 }
 
 rootProject.name = "TerraModulus"
-include("common", "client", "server")
+include("common", "internal", "kernel", "client", "server")
 rootProject.children.forEach {
     it.projectDir = File(settingsDir, "src/${it.name}")
 }

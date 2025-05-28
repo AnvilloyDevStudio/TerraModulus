@@ -7,9 +7,12 @@ plugins {
     application
 }
 
+configure(listOf(project(":server"), project(":client"))) {
+    apply(plugin = "application")
+}
+
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "application")
 
     version = "0.1.0"
 
@@ -35,8 +38,22 @@ subprojects {
     }
 }
 
+project(":kernel") {
+    dependencies {
+        implementation(project(":common"))
+    }
+}
+
+project(":internal") {
+    dependencies {
+        implementation("net.java.dev.jna:jna:5.17.0")
+        implementation("net.java.dev.jna:jna-platform:5.17.0")
+    }
+}
+
 project(":common") {
     dependencies {
+        implementation(project(":internal"))
         api("org.jetbrains:annotations:26.0.2")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         api("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
@@ -46,8 +63,6 @@ project(":common") {
         api(kotlin("reflect"))
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         implementation("com.github.oshi:oshi-core:6.8.0")
-        implementation("net.java.dev.jna:jna:5.17.0")
-        implementation("net.java.dev.jna:jna-platform:5.17.0")
         api("com.google.errorprone:error_prone_annotations:2.38.0")
         implementation("org.apache.logging.log4j:log4j-core:2.24.3")
         implementation("org.apache.logging.log4j:log4j-api:2.24.3")
@@ -60,6 +75,7 @@ project(":common") {
 
 project(":client") {
     dependencies {
+        implementation(project(":kernel"))
         api(project(":common"))
     }
 
@@ -70,6 +86,7 @@ project(":client") {
 
 project(":server") {
     dependencies {
+        implementation(project(":kernel"))
         api(project(":common"))
     }
 
