@@ -7,7 +7,7 @@ plugins {
     application
 }
 
-configure(listOf(project(":server"), project(":client"))) {
+configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     apply(plugin = "application")
 }
 
@@ -21,40 +21,43 @@ allprojects {
     }
 }
 
-subprojects {
-    sourceSets.main {
-        kotlin.srcDir("kotlin")
-        resources.srcDir("resources")
-    }
+configure(listOf(project(":kernel"), project(":internal"))) {
+    configure(listOf(project("common"), project("client"), project("server"))) {
+        sourceSets.main {
+            kotlin.srcDir("kotlin")
+            resources.srcDir("resources")
+        }
 
-    tasks.compileKotlin {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+        tasks.compileKotlin {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
+            }
+        }
+
+        kotlin {
+            jvmToolchain(17)
         }
     }
 
-    kotlin {
-        jvmToolchain(17)
+    configure(listOf(project("client"), project("server"))) {
+        dependencies {
+            implementation(project("${parent!!.path}:common"))
+        }
     }
 }
 
 project(":kernel") {
-    dependencies {
-        implementation(project(":common"))
-        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
+    arrayOf("common", "client", "server").forEach {
+        project(it) {
+            dependencies {
+                implementation(project(":internal:$it"))
+            }
+        }
     }
 }
 
-project(":internal") {
+project(":kernel:common") {
     dependencies {
-        implementation("net.java.dev.jna:jna:5.17.0")
-        implementation("net.java.dev.jna:jna-platform:5.17.0")
-    }
-}
-
-project(":common") {
-    dependencies {
-        implementation(project(":internal"))
         api("org.jetbrains:annotations:26.0.2")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         api("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
@@ -72,28 +75,24 @@ project(":common") {
         annotationProcessor("org.apache.logging.log4j:log4j-core:2.24.3")
         runtimeOnly("com.lmax:disruptor:4.0.0")
         api("io.github.oshai:kotlin-logging-jvm:7.0.3")
+        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
     }
 }
 
-project(":client") {
-    dependencies {
-        implementation(project(":kernel"))
-        api(project(":common"))
-        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
-    }
-
-    application {
-        mainClass = "terramodulus.core.MainKt"
-    }
+project(":kernel:client").dependencies {
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
 }
 
-project(":server") {
-    dependencies {
-        implementation(project(":kernel"))
-        api(project(":common"))
-        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
-    }
+project(":kernel:server").dependencies {
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
+}
 
+project(":internal:common").dependencies {
+    implementation("net.java.dev.jna:jna:5.17.0")
+    implementation("net.java.dev.jna:jna-platform:5.17.0")
+}
+
+configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     application {
         mainClass = "terramodulus.core.MainKt"
     }
@@ -115,21 +114,21 @@ fun Exec.configureCargoBuild(target: Target) {
     }
 }
 
-tasks.register<Exec>("run_client") {
+tasks.register<Exec>("runClient") {
     group = "application"
     description = "Run client"
-    finalizedBy(":client:run")
+    finalizedBy(":kernel:client:run")
     configureCargoBuild(Target.CLIENT)
 }
 
-tasks.register<Exec>("run_server") {
+tasks.register<Exec>("runServer") {
     group = "application"
     description = "Run server"
-    finalizedBy(":server:run")
+    finalizedBy(":kernel:server:run")
     configureCargoBuild(Target.SERVER)
 }
 
-configure(listOf(project(":server"), project(":client"))) {
+configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     tasks.named<JavaExec>("run") {
         jvmArgs("-Djava.library.path=${rootProject.file("ferricia/target/${
             if (project.hasProperty("release")) "release" else "debug"
