@@ -41,6 +41,7 @@ subprojects {
 project(":kernel") {
     dependencies {
         implementation(project(":common"))
+        implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
     }
 }
 
@@ -69,7 +70,8 @@ project(":common") {
         implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3")
         implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.3"))
         annotationProcessor("org.apache.logging.log4j:log4j-core:2.24.3")
-        implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+        runtimeOnly("com.lmax:disruptor:4.0.0")
+        api("io.github.oshai:kotlin-logging-jvm:7.0.3")
     }
 }
 

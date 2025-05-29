@@ -48,5 +48,6 @@ fun triggerSessionCrash() {
 }
 
 fun triggerGlobalCrash(error: Error): Nothing {
+	logger.error(error) {}
 	TODO()
 }

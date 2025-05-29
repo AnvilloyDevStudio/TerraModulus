@@ -5,16 +5,17 @@
 
 package terramodulus.core
 
-import jdk.internal.joptsimple.OptionException
-import jdk.internal.joptsimple.OptionParser
-import jdk.internal.joptsimple.OptionSet
-import jdk.internal.joptsimple.OptionSpec
-import jdk.internal.joptsimple.ValueConversionException
-import jdk.internal.joptsimple.ValueConverter
+import joptsimple.OptionException
+import joptsimple.OptionParser
+import joptsimple.OptionSet
+import joptsimple.OptionSpec
+import joptsimple.ValueConversionException
+import joptsimple.ValueConverter
 import terramodulus.common.core.ApplicationArgumentParsingError
 import terramodulus.common.core.ApplicationInitializationFault
 import terramodulus.common.core.run
 import terramodulus.common.core.setupInit
+import terramodulus.engine.UIManager
 import terramodulus.util.exception.CodeLogicFault
 import terramodulus.util.exception.triggerGlobalCrash
 import java.awt.Dimension
@@ -23,6 +24,11 @@ import java.nio.file.Path
 
 fun main(args: Array<String>) {
 	setupInit()
+	UIManager().use {
+		println("Hello World!")
+		Thread.sleep(5000)
+	}
+	return
 	try {
 		parseArgs(args)
 	} catch (e: ApplicationArgumentParsingError) {

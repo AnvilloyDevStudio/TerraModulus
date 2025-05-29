@@ -7,10 +7,12 @@ package terramodulus.engine.ferricia
 
 import terramodulus.internal.platform.Kernel32
 
+const val NULL: Long = 0;
+
 fun loadLibrary() {
-	if (Kernel32.INSTANCE != null) {
+	if (Kernel32.INSTANCE != null) { // For Windows
 		Kernel32.INSTANCE.SetDllDirectoryW(System.getProperty("java.library.path")) // must use backslashes
 	}
-	System.loadLibrary("ferricia")
 
+	System.loadLibrary("ferricia")
 }

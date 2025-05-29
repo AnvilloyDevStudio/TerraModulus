@@ -5,7 +5,8 @@
 
 package terramodulus.common.core
 
-import jdk.internal.joptsimple.OptionException
+import joptsimple.OptionException
+import terramodulus.engine.initEngine
 import terramodulus.util.exception.Error
 import terramodulus.util.exception.Fault
 import terramodulus.util.exception.UnhandledExceptionFault
@@ -33,6 +34,8 @@ fun setupInit() {
 	System.getProperties().entries.forEach {
 		logger.info { "\t${it.key} = ${it.value}" }
 	}
+
+	initEngine() // TODO remove; test only; consider other places
 }
 
 fun run(game: AbstractTerraModulus) {

@@ -18,7 +18,7 @@
     <Loggers>
         <AsyncRoot level="TRACE">
             <AppenderRef ref="CONSOLE"/>
-            <AppenderRef ref="FILE"/>
+<!--            <AppenderRef ref="FILE"/>-->
         </AsyncRoot>
     </Loggers>
 </Configuration>
