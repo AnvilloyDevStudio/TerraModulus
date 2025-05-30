@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package terramodulus.gfx
+package terramodulus.mui.gms
 
-class Screen {
+abstract class Menu {
+	abstract fun render()
 }

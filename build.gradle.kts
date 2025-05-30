@@ -133,5 +133,6 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
         jvmArgs("-Djava.library.path=${rootProject.file("ferricia/target/${
             if (project.hasProperty("release")) "release" else "debug"
         }").path}")
+        args("--screen-size", "800x500")
     }
 }

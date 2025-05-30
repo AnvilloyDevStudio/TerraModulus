@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package terramodulus.audio
+package terramodulus.mui.gms
 
-class AudioSystem {
+class ScreenManager {
 }

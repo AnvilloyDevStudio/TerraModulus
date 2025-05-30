@@ -5,7 +5,7 @@
 
 package terramodulus.engine.ferricia
 
-object UI {
+internal object MUI {
 	/**
 	 * @return SDL handle pointer
 	 */
@@ -26,4 +26,6 @@ object UI {
 	 * @param windowHandle window handle pointer
 	 */
 	external fun dropWindowHandle(windowHandle: Long);
+
+	external fun getGLVersion(): String;
 }

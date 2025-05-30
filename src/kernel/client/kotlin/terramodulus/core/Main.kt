@@ -13,9 +13,8 @@ import joptsimple.ValueConversionException
 import joptsimple.ValueConverter
 import terramodulus.common.core.ApplicationArgumentParsingError
 import terramodulus.common.core.ApplicationInitializationFault
-import terramodulus.common.core.run
 import terramodulus.common.core.setupInit
-import terramodulus.engine.UIManager
+import terramodulus.mui.GuiManager
 import terramodulus.util.exception.CodeLogicFault
 import terramodulus.util.exception.triggerGlobalCrash
 import java.awt.Dimension
@@ -24,17 +23,13 @@ import java.nio.file.Path
 
 fun main(args: Array<String>) {
 	setupInit()
-	UIManager().use {
-		println("Hello World!")
-		Thread.sleep(5000)
-	}
-	return
 	try {
 		parseArgs(args)
 	} catch (e: ApplicationArgumentParsingError) {
 		triggerGlobalCrash(ApplicationInitializationFault(e))
 	}
-	run(TerraModulus())
+	GuiManager()
+// 	run(TerraModulus())
 }
 
 /**
@@ -104,14 +99,14 @@ internal class ArgumentOptions(parser: OptionParser) {
 
 			override fun valuePattern() = null
 		})
-	val dataDir: OptionSpec<Path> = parser.accepts("data-dir")
-		.withRequiredArg()
-		.required()
-		.withValuesConvertedBy(PathConverter)
-	val resources: OptionSpec<Path> = parser.accepts("resources")
-		.withRequiredArg()
-		.required()
-		.withValuesConvertedBy(PathConverter)
+// 	val dataDir: OptionSpec<Path> = parser.accepts("data-dir")
+// 		.withRequiredArg()
+// 		.required()
+// 		.withValuesConvertedBy(PathConverter)
+// 	val resources: OptionSpec<Path> = parser.accepts("resources")
+// 		.withRequiredArg()
+// 		.required()
+// 		.withValuesConvertedBy(PathConverter)
 }
 
 /**
@@ -121,6 +116,6 @@ internal class ArgumentOptions(parser: OptionParser) {
 class Arguments internal constructor(options: ArgumentOptions, args: OptionSet) {
 	val fullscreen = args.has(options.fullscreen)
 	val screenSize: Dimension? = args.valueOf(options.screenSize)
-	val dataDir: Path = args.valueOf(options.dataDir)
-	val resources: Path = args.valueOf(options.resources)
+// 	val dataDir: Path = args.valueOf(options.dataDir)
+// 	val resources: Path = args.valueOf(options.resources)
 }

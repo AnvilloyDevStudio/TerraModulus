@@ -9,7 +9,7 @@ import terramodulus.internal.platform.Kernel32
 
 const val NULL: Long = 0;
 
-fun loadLibrary() {
+internal fun loadLibrary() {
 	if (Kernel32.INSTANCE != null) { // For Windows
 		Kernel32.INSTANCE.SetDllDirectoryW(System.getProperty("java.library.path")) // must use backslashes
 	}

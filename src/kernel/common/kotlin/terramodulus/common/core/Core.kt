@@ -30,10 +30,11 @@ fun setupInit() {
 		triggerGlobalCrash(UnhandledExceptionFault.global(e))
 	}
 
-	logger.info { "System Properties:" }
-	System.getProperties().entries.forEach {
-		logger.info { "\t${it.key} = ${it.value}" }
-	}
+	logger.info {"System Properties:\n${
+		System.getProperties().entries.joinToString(separator = "\n") {
+			"\t${it.key}=${it.value}"
+		}
+	}"}
 
 	initEngine() // TODO remove; test only; consider other places
 }

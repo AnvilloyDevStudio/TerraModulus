@@ -4,7 +4,7 @@
   ~ SPDX-License-Identifier: LGPL-3.0-only
   -->
 
-<Configuration xmlns="https://logging.apache.org/xml/ns"
+<Configuration status="ALL" xmlns="https://logging.apache.org/xml/ns"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:schemaLocation="https://logging.apache.org/xml/ns https://logging.apache.org/xml/ns/log4j-config-2.xsd">
     <Appenders>
