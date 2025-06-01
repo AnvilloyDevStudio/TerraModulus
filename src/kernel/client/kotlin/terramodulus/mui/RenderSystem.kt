@@ -5,6 +5,11 @@
 
 package terramodulus.mui
 
-class RenderSystem {
+import terramodulus.engine.Canvas
 
+class RenderSystem internal constructor() {
+
+	fun render(canvas: Canvas) {
+
+	}
 }

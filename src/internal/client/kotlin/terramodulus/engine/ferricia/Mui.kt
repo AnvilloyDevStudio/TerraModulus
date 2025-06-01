@@ -5,7 +5,9 @@
 
 package terramodulus.engine.ferricia
 
-internal object MUI {
+import terramodulus.engine.MuiEvent
+
+internal object Mui {
 	/**
 	 * @return SDL handle pointer
 	 */
@@ -27,5 +29,14 @@ internal object MUI {
 	 */
 	external fun dropWindowHandle(windowHandle: Long);
 
-	external fun getGLVersion(): String;
+	/**
+	 * @param windowHandle window handle pointer
+	 */
+	external fun getGLVersion(windowHandle: Long): String;
+
+	/**
+	 * @param sdlHandle SDL handle pointer
+	 * @return the list of all MUI events in this frame
+	 */
+	external fun sdlPoll(sdlHandle: Long): Array<MuiEvent>;
 }

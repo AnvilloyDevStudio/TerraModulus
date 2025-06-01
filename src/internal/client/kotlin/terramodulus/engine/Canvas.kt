@@ -5,13 +5,13 @@
 
 package terramodulus.engine
 
-import terramodulus.engine.ferricia.MUI.getGLVersion
+import terramodulus.engine.ferricia.Mui.getGLVersion
 
 /**
- * Manages the OpenGL viewport rendering as a "canvas"; managed by the GL context.
+ * Manages the OpenGL viewport rendering as a "**canvas**"; managed by the GL context.
  *
  * This manages GL viewport in the SDL window and rendering in the viewport.
  */
-class Canvas internal constructor() {
-	val glVersion = getGLVersion()
+class Canvas internal constructor(private val windowHandle: Long) {
+	val glVersion = getGLVersion(windowHandle)
 }

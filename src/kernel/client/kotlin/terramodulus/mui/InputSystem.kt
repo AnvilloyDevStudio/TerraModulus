@@ -5,5 +5,5 @@
 
 package terramodulus.mui
 
-class InputSystem {
+class InputSystem internal constructor() {
 }

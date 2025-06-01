@@ -5,10 +5,11 @@
 
 package terramodulus.engine
 
-import terramodulus.engine.ferricia.MUI.dropSdlHandle
-import terramodulus.engine.ferricia.MUI.dropWindowHandle
-import terramodulus.engine.ferricia.MUI.initSdlHandle
-import terramodulus.engine.ferricia.MUI.initWindowHandle
+import terramodulus.engine.ferricia.Mui.dropSdlHandle
+import terramodulus.engine.ferricia.Mui.dropWindowHandle
+import terramodulus.engine.ferricia.Mui.initSdlHandle
+import terramodulus.engine.ferricia.Mui.initWindowHandle
+import terramodulus.engine.ferricia.Mui.sdlPoll
 import java.io.Closeable
 
 /**
@@ -17,7 +18,9 @@ import java.io.Closeable
 class Window : Closeable {
 	private val sdlHandle = initSdlHandle()
 	private val windowHandle = initWindowHandle(sdlHandle)
-	val canvas = Canvas()
+	val canvas = Canvas(windowHandle)
+
+	fun pollEvents() = sdlPoll(sdlHandle)
 
 	override fun close() {
 		dropWindowHandle(windowHandle)

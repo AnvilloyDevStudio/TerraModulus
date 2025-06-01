@@ -5,5 +5,5 @@
 
 package terramodulus.mui
 
-class AudioSystem {
+class AudioSystem internal constructor() {
 }

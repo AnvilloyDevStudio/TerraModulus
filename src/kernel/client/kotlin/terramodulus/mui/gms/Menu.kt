@@ -6,5 +6,7 @@
 package terramodulus.mui.gms
 
 abstract class Menu {
+	private val components = LinkedHashSet<Component>()
+
 	abstract fun render()
 }
