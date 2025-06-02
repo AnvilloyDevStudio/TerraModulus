@@ -13,6 +13,7 @@ import joptsimple.ValueConversionException
 import joptsimple.ValueConverter
 import terramodulus.common.core.ApplicationArgumentParsingError
 import terramodulus.common.core.ApplicationInitializationFault
+import terramodulus.common.core.run
 import terramodulus.common.core.setupInit
 import terramodulus.mui.GuiManager
 import terramodulus.util.exception.CodeLogicFault
@@ -28,8 +29,8 @@ fun main(args: Array<String>) {
 	} catch (e: ApplicationArgumentParsingError) {
 		triggerGlobalCrash(ApplicationInitializationFault(e))
 	}
-	GuiManager()
-// 	run(TerraModulus())
+
+	run(TerraModulus())
 }
 
 /**
@@ -37,7 +38,7 @@ fun main(args: Array<String>) {
  * should not be accessible normally.
  * Some features are then not used due to this, including but not limited to:
  * - [ValueConverter.valuePattern]
- * - [jdk.internal.joptsimple.HelpFormatter]
+ * - [joptsimple.HelpFormatter]
  * - [OptionParser.printHelpOn]
  *
  * @throws ApplicationArgumentParsingError

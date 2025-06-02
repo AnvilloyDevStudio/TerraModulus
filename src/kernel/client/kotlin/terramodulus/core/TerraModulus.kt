@@ -6,14 +6,21 @@
 package terramodulus.core
 
 import terramodulus.common.core.AbstractTerraModulus
+import terramodulus.mui.GuiManager
 
-class TerraModulus : AbstractTerraModulus() {
+class TerraModulus internal constructor() : AbstractTerraModulus() {
+	private val guiManager = GuiManager()
+
 	override var tps: Int
 		get() = TODO("Not yet implemented")
 		set(value) {}
 
 	override fun run() {
-		TODO("Not yet implemented")
+		guiManager.showWindow()
+		while (true) {
+			guiManager.updateCanvas()
+			Thread.sleep(1)
+		}
 	}
 
 	override fun close() {

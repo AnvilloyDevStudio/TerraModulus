@@ -36,7 +36,7 @@ fun setupInit() {
 		}
 	}"}
 
-	initEngine() // TODO remove; test only; consider other places
+	initEngine()
 }
 
 fun run(game: AbstractTerraModulus) {

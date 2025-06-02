@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/internal/client/TerraModulus.internal.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/internal/client/TerraModulus.internal.client.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/src/kernel/client/TerraModulus.kernel.client.main.iml" filepath="$PROJECT_DIR$/.idea/modules/src/kernel/client/TerraModulus.kernel.client.main.iml" />
     </modules>
   </component>
 </project>
