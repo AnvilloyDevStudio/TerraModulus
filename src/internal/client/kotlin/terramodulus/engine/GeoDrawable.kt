@@ -5,10 +5,5 @@
 
 package terramodulus.engine
 
-import terramodulus.engine.ferricia.Core
-import terramodulus.engine.ferricia.loadLibrary
-
-fun initEngine() {
-	loadLibrary()
-	Core.init()
+sealed class GeoDrawable(handle: ULong) : Drawable(handle) {
 }

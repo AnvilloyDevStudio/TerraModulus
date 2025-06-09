@@ -5,6 +5,11 @@
 
 package terramodulus.mui
 
-class AuiManager internal constructor() {
+import terramodulus.mui.audio.AudioSystem
+
+/**
+ * Audio User Interface (AUI) Manager
+ */
+internal class AuiManager internal constructor() {
 	val audioSystem = AudioSystem()
 }

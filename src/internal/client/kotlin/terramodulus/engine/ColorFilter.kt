@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package terramodulus.mui
+package terramodulus.engine
 
-class InputSystem internal constructor() {
+sealed class ColorFilter {
 }

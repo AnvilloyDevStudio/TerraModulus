@@ -5,10 +5,16 @@
 
 package terramodulus.mui.gms
 
+import terramodulus.mui.gms.impl.LaunchingScreen
+
 class ScreenManager internal constructor() {
 	private val screens = ArrayDeque<Screen>()
-	private val queue = ArrayDeque<ScreenOperation>()
-	private val handle = Handle()
+	private val screenQueue = ArrayDeque<ScreenOperation>()
+	private val handle: Handle = HandleImpl()
+
+	init {
+		screens.add(LaunchingScreen())
+	}
 
 	private sealed interface ScreenOperation {
 		/**
@@ -35,33 +41,55 @@ class ScreenManager internal constructor() {
 		class Reset(val screen: () -> Screen) : ScreenOperation
 	}
 
-	inner class Handle {
+	sealed interface Handle {
 		/**
 		 * @see ScreenOperation.Exit
 		 */
-		fun exit(n: Int) {
-			queue.add(ScreenOperation.Exit(n))
+		fun exit(n: Int)
+
+		/**
+		 * @see ScreenOperation.Open
+		 */
+		fun open(screen: () -> Screen)
+
+		/**
+		 * @see ScreenOperation.ExitTo
+		 */
+		fun exitTo(screen: Screen)
+
+		/**
+		 * @see ScreenOperation.Reset
+		 */
+		fun reset(screen: () -> Screen)
+	}
+
+	private inner class HandleImpl : Handle {
+		/**
+		 * @see ScreenOperation.Exit
+		 */
+		override fun exit(n: Int) {
+			screenQueue.add(ScreenOperation.Exit(n))
 		}
 
 		/**
 		 * @see ScreenOperation.Open
 		 */
-		fun open(screen: () -> Screen) {
-			queue.add(ScreenOperation.Open(screen))
+		override fun open(screen: () -> Screen) {
+			screenQueue.add(ScreenOperation.Open(screen))
 		}
 
 		/**
 		 * @see ScreenOperation.ExitTo
 		 */
-		fun exitTo(screen: Screen) {
-			queue.add(ScreenOperation.ExitTo(screen))
+		override fun exitTo(screen: Screen) {
+			screenQueue.add(ScreenOperation.ExitTo(screen))
 		}
 
 		/**
 		 * @see ScreenOperation.Reset
 		 */
-		fun reset(screen: () -> Screen) {
-			queue.add(ScreenOperation.Reset(screen))
+		override fun reset(screen: () -> Screen) {
+			screenQueue.add(ScreenOperation.Reset(screen))
 		}
 	}
 }

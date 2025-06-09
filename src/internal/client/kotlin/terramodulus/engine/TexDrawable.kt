@@ -5,10 +5,5 @@
 
 package terramodulus.engine
 
-import terramodulus.engine.ferricia.Core
-import terramodulus.engine.ferricia.loadLibrary
-
-fun initEngine() {
-	loadLibrary()
-	Core.init()
+sealed class TexDrawable(handle: ULong) : Drawable(handle) {
 }

@@ -16,3 +16,11 @@ internal fun loadLibrary() {
 
 	System.loadLibrary("ferricia")
 }
+
+internal object Core {
+	/**
+	 * Initializes the Engine handle.
+	 */
+	@JvmName("init")
+	external fun init()
+}

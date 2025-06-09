@@ -7,25 +7,23 @@ package terramodulus.mui
 
 import terramodulus.engine.MuiEvent
 import terramodulus.engine.Window
+import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.ScreenManager
+import terramodulus.mui.input.InputSystem
 import terramodulus.util.logging.logger
 import java.io.Closeable
 import java.io.File
 
 private val logger = logger {}
 
-private fun getPathOfResource(path: String): String {
-	return File(object {}.javaClass.getResource(path)!!.toURI()).absolutePath
-}
-
-class GuiManager internal constructor() : Closeable {
+/**
+ * Graphical User Interface (GUI) Manager
+ */
+internal class GuiManager internal constructor() : Closeable {
 	private val window = Window()
-	private val canvas = window.canvas
-	val renderSystem = RenderSystem()
+	val renderSystem = RenderSystem(window.canvas)
 	val inputSystem = InputSystem()
 	val screenManager = ScreenManager()
-	val texture = canvas.loadImage(getPathOfResource("/test.png"))
-	val shader = canvas.loadShaders(getPathOfResource("/test.vsh"), getPathOfResource("/test.fsh"))
 
 	internal fun showWindow() = window.show()
 
@@ -237,7 +235,7 @@ class GuiManager internal constructor() : Closeable {
 				}
 			}
 		}
-		canvas.renderImage(shader, texture)
+		renderSystem.render()
 		window.swap()
 	}
 

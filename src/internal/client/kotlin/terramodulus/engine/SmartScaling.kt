@@ -5,10 +5,7 @@
 
 package terramodulus.engine
 
-import terramodulus.engine.ferricia.Core
-import terramodulus.engine.ferricia.loadLibrary
+import terramodulus.engine.ferricia.Mui.modelSmartScaling
 
-fun initEngine() {
-	loadLibrary()
-	Core.init()
+class SmartScaling(w: Int, h: Int) : ModelTransform(modelSmartScaling(arrayOf(w, h))) {
 }

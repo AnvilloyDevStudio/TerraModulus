@@ -5,13 +5,15 @@
 
 package terramodulus.engine
 
+import terramodulus.engine.ferricia.Mui.drawGuiGeo
+import terramodulus.engine.ferricia.Mui.drawGuiTex
 import terramodulus.engine.ferricia.Mui.dropCanvasHandle
+import terramodulus.engine.ferricia.Mui.geoShaders
 import terramodulus.engine.ferricia.Mui.getGLVersion
 import terramodulus.engine.ferricia.Mui.initCanvasHandle
 import terramodulus.engine.ferricia.Mui.loadImageToCanvas
 import terramodulus.engine.ferricia.Mui.renderTexture
-import terramodulus.engine.ferricia.Mui.shaders
-import java.awt.Image
+import terramodulus.engine.ferricia.Mui.texShaders
 import java.io.Closeable
 
 /**
@@ -19,15 +21,23 @@ import java.io.Closeable
  *
  * This manages GL viewport in the SDL window and rendering in the viewport.
  */
-class Canvas internal constructor(private val windowHandle: Long) : Closeable {
+class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
+	private val canvasHandle = initCanvasHandle(windowHandle)
 	val glVersion = getGLVersion(windowHandle)
-	val canvasHandle = initCanvasHandle()
 
 	fun loadImage(path: String) = loadImageToCanvas(canvasHandle, path)
 
-	fun loadShaders(vsh: String, fsh: String) = shaders(canvasHandle, vsh, fsh)
+	fun loadGeoShaders(vsh: String, fsh: String) = geoShaders(vsh, fsh)
+
+	fun loadTexShaders(vsh: String, fsh: String) = texShaders(vsh, fsh)
 
 	fun renderImage(shader: UInt, texture: UInt) = renderTexture(canvasHandle, shader, texture)
+
+	fun drawGuiGeoObj(drawable: GeoDrawable, programHandle: ULong) =
+		drawGuiGeo(canvasHandle, drawable.handle, programHandle)
+
+	fun drawGuiTexObj(drawable: TexDrawable, programHandle: ULong, textureHandle: UInt) =
+		drawGuiTex(canvasHandle, drawable.handle, programHandle, textureHandle)
 
 	override fun close() {
 		dropCanvasHandle(canvasHandle)
