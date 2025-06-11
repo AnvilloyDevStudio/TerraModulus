@@ -116,6 +116,13 @@ internal object Mui {
 	external fun newSimpleLineGeom(data: IntArray): ULong
 
 	/**
+	 * @param data `[x0, y0, x1, y1, r, g, b, a]`
+	 * @return SimpleRectGeom handle pointer
+	 */
+	@JvmName("newSimpleRectGeom")
+	external fun newSimpleRectGeom(data: IntArray): ULong
+
+	/**
 	 * @param data `[x0, y0, x1, y1]`
 	 * @return SpriteMesh as DrawableSet handle pointer
 	 */
@@ -128,6 +135,20 @@ internal object Mui {
 	 */
 	@JvmName("modelSmartScaling")
 	external fun modelSmartScaling(data: IntArray): ULongArray
+
+	/**
+	 * @param data `[w, h]`
+	 * @return FullScaling handle pointers
+	 */
+	@JvmName("modelFullScaling")
+	external fun modelFullScaling(data: IntArray): ULongArray
+
+	/**
+	 * @param data `[x, y]`
+	 * @return SimpleTranslation handle pointers
+	 */
+	@JvmName("modelSimpleTranslation")
+	external fun modelSimpleTranslation(data: FloatArray): ULongArray
 
 	/**
 	 * @param data alpha

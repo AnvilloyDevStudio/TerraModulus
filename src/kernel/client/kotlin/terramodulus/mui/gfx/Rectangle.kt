@@ -39,6 +39,8 @@ data class RectangleI(
 		}
 	}
 
+	val size get() = Dimension2I(width, height)
+
 	fun anchor(pos: Anchor5) = when (pos) {
 		Anchor5.TopLeft -> Vector2I(x, y + width)
 		Anchor5.TopRight -> Vector2I(x + width, y + height)
@@ -99,6 +101,8 @@ data class RectangleF(
 			return RectangleF(minX, maxX, minY, maxY)
 		}
 	}
+
+	val size get() = Dimension2F(width, height)
 
 	fun anchor(pos: Anchor5) = when (pos) {
 		Anchor5.TopLeft -> Vector2F(x, y + width)

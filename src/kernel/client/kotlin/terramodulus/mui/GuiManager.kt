@@ -27,10 +27,12 @@ internal class GuiManager internal constructor() : Closeable {
 
 	internal fun showWindow() = window.show()
 
-	/**
-	 * Screen updating, targeting twice as *maximum FPS*.
-	 */
-	internal fun updateScreen() {}
+// 	/**
+// 	 * Screen updating, targeting as the same as *maximum FPS*,
+// 	 * but the numbers of ticks are not supposed to be compensated when missed,
+// 	 * so it is up to the callers to compensate missed activities.
+// 	 */
+// 	internal fun updateScreens() {}
 
 	/**
 	 * Canvas updating, per frame, maximally the *maximum FPS*.

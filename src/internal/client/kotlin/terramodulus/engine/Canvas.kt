@@ -39,10 +39,10 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 
 	fun loadTexShaders(vsh: String, fsh: String) = texShaders(vsh, fsh)
 
-	fun renderGuiGeo(drawable: GeoDrawable, programHandle: ULong) =
+	fun renderGuiGeo(drawable: GeomDrawable, programHandle: ULong) =
 		drawGuiGeo(canvasHandle, drawable.handle, programHandle)
 
-	fun renderGuiTex(drawable: TexDrawable, programHandle: ULong, textureHandle: UInt) =
+	fun renderGuiTex(drawable: MeshDrawable, programHandle: ULong, textureHandle: UInt) =
 		drawGuiTex(canvasHandle, drawable.handle, programHandle, textureHandle)
 
 	override fun close() {

@@ -19,6 +19,7 @@ class TerraModulus internal constructor() : AbstractTerraModulus() {
 		guiManager.showWindow()
 		while (true) {
 			guiManager.updateCanvas()
+// 			guiManager.updateScreens()
 			Thread.sleep(1)
 		}
 	}

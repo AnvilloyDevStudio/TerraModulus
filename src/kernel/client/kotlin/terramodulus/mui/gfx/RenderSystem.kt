@@ -6,8 +6,8 @@
 package terramodulus.mui.gfx
 
 import terramodulus.engine.Canvas
-import terramodulus.engine.GeoDrawable
-import terramodulus.engine.TexDrawable
+import terramodulus.engine.GeomDrawable
+import terramodulus.engine.MeshDrawable
 import java.io.File
 
 private fun getPathOfResource(path: String): String {
@@ -15,7 +15,7 @@ private fun getPathOfResource(path: String): String {
 }
 
 class RenderSystem internal constructor(private val canvas: Canvas) {
-	internal val handle: Handle = HandleImpl()
+	val handle: Handle = HandleImpl()
 	private val texShaders = canvas.loadTexShaders(
 		getPathOfResource("/gms_tex.vsh"),
 		getPathOfResource("/gms_tex.fsh")
@@ -24,18 +24,25 @@ class RenderSystem internal constructor(private val canvas: Canvas) {
 		getPathOfResource("/gms_geo.vsh"),
 		getPathOfResource("/gms_geo.fsh")
 	)
+	val targetFps = 1000;
 
 	sealed interface Handle {
 		fun loadTexture(path: String): UInt
+
+		fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float)
 	}
 
 	private inner class HandleImpl : Handle {
 		override fun loadTexture(path: String) = canvas.loadImage(getPathOfResource(path))
+
+		override fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float) {
+			canvas.setClearColor(red, green, blue, alpha)
+		}
 	}
 
-	internal fun renderGuiTex(drawable: TexDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)
+	internal fun renderGuiTex(drawable: MeshDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)
 
-	internal fun renderGuiGeo(drawable: GeoDrawable) = canvas.renderGuiGeo(drawable, texShaders)
+	internal fun renderGuiGeo(drawable: GeomDrawable) = canvas.renderGuiGeo(drawable, geoShaders)
 
 	internal fun render() {
 

@@ -5,9 +5,15 @@
 
 package terramodulus.mui.gms.impl
 
+import terramodulus.mui.gfx.RectangleI
+import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Screen
 
-class ResourceLoadingScreen : Screen() {
+class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() {
+	init {
+		addComponent(SpriteComponent(RectangleI(0, 0, 400, 100), renderSystemHandle.loadTexture("/test.png")))
+	}
+
 	override fun exit() {
 		TODO("Not yet implemented")
 	}

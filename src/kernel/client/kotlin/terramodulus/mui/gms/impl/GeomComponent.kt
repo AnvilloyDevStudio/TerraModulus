@@ -5,15 +5,13 @@
 
 package terramodulus.mui.gms.impl
 
-import terramodulus.mui.gfx.GuiSprite
+import terramodulus.mui.gfx.GuiGeometry
 import terramodulus.mui.gfx.RectangleI
 import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Component
 
-class SpriteComponent(override var rect: RectangleI, texture: UInt) : Component() {
-	val sprite = GuiSprite(rect, texture)
-
+class GeomComponent(val geom: GuiGeometry, override var rect: RectangleI) : Component() {
 	override fun render(renderSystem: RenderSystem) {
-		sprite.render(renderSystem)
+		geom.render(renderSystem)
 	}
 }

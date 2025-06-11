@@ -7,6 +7,9 @@ package terramodulus.engine
 
 import terramodulus.engine.ferricia.Mui.newSpriteMesh
 
-class SpriteMesh(x0: Int, y0: Int, x1: Int, y1: Int) : TexDrawable(newSpriteMesh(intArrayOf(x0, y0, x1, y1))) {
+sealed class MeshDrawable(handle: ULong) : Drawable(handle) {
+}
+
+class SpriteMesh(x0: Int, y0: Int, x1: Int, y1: Int) : MeshDrawable(newSpriteMesh(intArrayOf(x0, y0, x1, y1))) {
 
 }

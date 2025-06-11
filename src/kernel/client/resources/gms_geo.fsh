@@ -2,6 +2,8 @@
 
 varying vec4 texColor;
 
+uniform mat4 filter;
+
 void main() {
-    gl_FragColor = texColor;
+    gl_FragColor = filter * texColor;
 }

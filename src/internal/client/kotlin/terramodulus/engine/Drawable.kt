@@ -11,5 +11,9 @@ import terramodulus.engine.ferricia.Mui.addModelTransform
 sealed class Drawable(internal val handle: ULong) {
 	fun add(model: ModelTransform) = addModelTransform(handle, model.wideHandle)
 
-	fun add(filter: ColorFilter) = addColorFilter(handle, filter.wideHandle)
+	fun add(filter: ColorFilter) {
+		println(this)
+		println(filter)
+		addColorFilter(handle, filter.wideHandle)
+	}
 }

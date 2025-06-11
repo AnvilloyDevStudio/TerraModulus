@@ -18,15 +18,35 @@ abstract class Screen {
 	val handle: Handle = HandleImpl()
 
 	private sealed interface ComponentOperation {
-		class Add(val component: () -> Component) : ComponentOperation
+		fun apply(components: LinkedHashSet<Component>)
 
-		class Remove(val component: Component) : ComponentOperation
+		class Add(val component: () -> Component) : ComponentOperation {
+			override fun apply(components: LinkedHashSet<Component>) {
+				components.add(component())
+			}
+		}
+
+		class Remove(val component: Component) : ComponentOperation {
+			override fun apply(components: LinkedHashSet<Component>) {
+				components.remove(component)
+			}
+		}
 	}
 
 	private sealed interface MenuOperation {
-		class Add(val menu: () -> Menu) : MenuOperation
+		fun apply(menus: LinkedHashSet<Menu>)
 
-		class Remove(val menu: Menu) : MenuOperation
+		class Add(val menu: () -> Menu) : MenuOperation {
+			override fun apply(menus: LinkedHashSet<Menu>) {
+				menus.add(menu())
+			}
+		}
+
+		class Remove(val menu: Menu) : MenuOperation {
+			override fun apply(menus: LinkedHashSet<Menu>) {
+				menus.remove(menu)
+			}
+		}
 	}
 
 	/**
@@ -94,8 +114,15 @@ abstract class Screen {
 		}
 	}
 
-	internal fun render(renderSystem: RenderSystem) {
+	internal open fun update(renderSystem: RenderSystem, screenManager: ScreenManager) {};
+
+	internal fun render(renderSystem: RenderSystem, screenManager: ScreenManager) {
+		componentQueue.forEach { it.apply(components) }
+		componentQueue.clear()
+		menuQueue.forEach { it.apply(menus) }
+		menuQueue.clear()
 		components.forEach { it.render(renderSystem) }
+		update(renderSystem, screenManager)
 	}
 
 	/**

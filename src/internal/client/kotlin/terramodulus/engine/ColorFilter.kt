@@ -5,8 +5,20 @@
 
 package terramodulus.engine
 
+import terramodulus.engine.ferricia.Mui.editAlphaFilter
+import terramodulus.engine.ferricia.Mui.filterAlphaFilter
+
 @OptIn(ExperimentalUnsignedTypes::class)
 sealed class ColorFilter(handles: ULongArray) {
 	internal val handle: ULong = handles[0]
 	internal val wideHandle: ULong = handles[1]
+}
+
+@OptIn(ExperimentalUnsignedTypes::class)
+class AlphaFilter(alpha: Float) : ColorFilter(filterAlphaFilter(alpha)) {
+	var alpha = alpha
+		set(value) {
+			editAlphaFilter(handle, value)
+			field = value
+		}
 }

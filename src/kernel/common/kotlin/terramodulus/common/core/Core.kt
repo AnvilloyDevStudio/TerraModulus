@@ -11,6 +11,7 @@ import terramodulus.util.exception.Error
 import terramodulus.util.exception.Fault
 import terramodulus.util.exception.UnhandledExceptionFault
 import terramodulus.util.exception.triggerGlobalCrash
+import terramodulus.util.logging.initLogging
 import terramodulus.util.logging.logger
 import java.io.Closeable
 import java.io.File
@@ -20,7 +21,10 @@ import java.nio.channels.FileLock
 import java.nio.file.Files
 import java.nio.file.Path
 
-private val logger = logger {}
+private val logger = run {
+	initLogging()
+	logger {}
+}
 
 /**
  * This should only be used by `terramodulus.core.Main` in the beginning of `main` function.
