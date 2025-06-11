@@ -6,12 +6,23 @@
 package terramodulus.mui.gms.impl
 
 import terramodulus.mui.gfx.GuiSprite
+import terramodulus.mui.gfx.RectangleI
+import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Component
 
-class SpriteComponent : Component() {
-	private val sprite = GuiSprite()
+class SpriteComponent(override var rect: RectangleI, texture: UInt) : Component() {
+	private val sprite = GuiSprite(rect, texture)
+	private var tick = 0;
+	private val alpha = sprite.alpha(0F);
 
-	override fun render() {
-		TODO("Not yet implemented")
+	init {
+		sprite.add(sprite.smartScaling(800, 480))
+		sprite.add(alpha)
+	}
+
+	override fun render(renderSystem: RenderSystem) {
+		sprite.render(renderSystem)
+		tick = (tick + 1) % 50
+		alpha.alpha = tick / 50F
 	}
 }

@@ -8,6 +8,6 @@ package terramodulus.engine
 import terramodulus.engine.ferricia.Mui.newSimpleLineGeom
 
 class SimpleLineGeom(x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) :
-	GeoDrawable(newSimpleLineGeom(arrayOf(x0, y0, x1, y1, r, g, b, a))) {
+	GeoDrawable(newSimpleLineGeom(intArrayOf(x0, y0, x1, y1, r, g, b, a))) {
 
 }

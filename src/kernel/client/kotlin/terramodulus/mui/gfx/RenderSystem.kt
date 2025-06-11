@@ -6,6 +6,8 @@
 package terramodulus.mui.gfx
 
 import terramodulus.engine.Canvas
+import terramodulus.engine.GeoDrawable
+import terramodulus.engine.TexDrawable
 import java.io.File
 
 private fun getPathOfResource(path: String): String {
@@ -13,11 +15,27 @@ private fun getPathOfResource(path: String): String {
 }
 
 class RenderSystem internal constructor(private val canvas: Canvas) {
-	private val texture = canvas.loadImage(getPathOfResource("/test.png"))
-	private val shader = canvas.loadShaders(
+	internal val handle: Handle = HandleImpl()
+	private val texShaders = canvas.loadTexShaders(
 		getPathOfResource("/gms_tex.vsh"),
 		getPathOfResource("/gms_tex.fsh")
 	)
+	private val geoShaders = canvas.loadGeoShaders(
+		getPathOfResource("/gms_geo.vsh"),
+		getPathOfResource("/gms_geo.fsh")
+	)
+
+	sealed interface Handle {
+		fun loadTexture(path: String): UInt
+	}
+
+	private inner class HandleImpl : Handle {
+		override fun loadTexture(path: String) = canvas.loadImage(getPathOfResource(path))
+	}
+
+	internal fun renderGuiTex(drawable: TexDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)
+
+	internal fun renderGuiGeo(drawable: GeoDrawable) = canvas.renderGuiGeo(drawable, texShaders)
 
 	internal fun render() {
 

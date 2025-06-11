@@ -23,7 +23,7 @@ internal class GuiManager internal constructor() : Closeable {
 	private val window = Window()
 	val renderSystem = RenderSystem(window.canvas)
 	val inputSystem = InputSystem()
-	val screenManager = ScreenManager()
+	val screenManager = ScreenManager(renderSystem.handle)
 
 	internal fun showWindow() = window.show()
 
@@ -221,7 +221,7 @@ internal class GuiManager internal constructor() : Closeable {
 				}
 				is MuiEvent.WindowPixelSizeChanged -> {
 					logger.debug { "Window pixel size changed to ${event.width}x${event.height}." }
-					window.resizeGLViewport()
+					window.canvas.resizeGLViewport()
 					logger.debug { "Window viewport resized." }
 				}
 				is MuiEvent.WindowResized -> {
@@ -235,7 +235,8 @@ internal class GuiManager internal constructor() : Closeable {
 				}
 			}
 		}
-		renderSystem.render()
+		window.canvas.clear()
+		screenManager.render(renderSystem)
 		window.swap()
 	}
 

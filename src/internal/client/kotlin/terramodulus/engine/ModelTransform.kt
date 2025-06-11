@@ -5,5 +5,8 @@
 
 package terramodulus.engine
 
-sealed class ModelTransform(internal val handle: ULong) {
+@OptIn(ExperimentalUnsignedTypes::class)
+sealed class ModelTransform(handles: ULongArray) {
+	internal val handle: ULong = handles[0]
+	internal val wideHandle: ULong = handles[1]
 }

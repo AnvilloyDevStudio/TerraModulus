@@ -5,10 +5,11 @@
 
 package terramodulus.mui.gms
 
-import java.awt.Rectangle
+import terramodulus.mui.gfx.RectangleI
+import terramodulus.mui.gfx.RenderSystem
 
 abstract class Component {
-	abstract var rect: Rectangle
+	abstract var rect: RectangleI
 
-	abstract fun render()
+	abstract fun render(renderSystem: RenderSystem)
 }

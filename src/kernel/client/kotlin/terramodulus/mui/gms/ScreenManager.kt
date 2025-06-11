@@ -5,15 +5,16 @@
 
 package terramodulus.mui.gms
 
+import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.impl.LaunchingScreen
 
-class ScreenManager internal constructor() {
+class ScreenManager internal constructor(private val renderSystemHandle: RenderSystem.Handle) {
 	private val screens = ArrayDeque<Screen>()
 	private val screenQueue = ArrayDeque<ScreenOperation>()
 	private val handle: Handle = HandleImpl()
 
 	init {
-		screens.add(LaunchingScreen())
+		screens.add(LaunchingScreen(renderSystemHandle))
 	}
 
 	private sealed interface ScreenOperation {
@@ -28,7 +29,7 @@ class ScreenManager internal constructor() {
 		/**
 		 * Opens the `screen`
 		 */
-		class Open(val screen: () -> Screen) : ScreenOperation
+		class Open(val screen: (RenderSystem.Handle) -> Screen) : ScreenOperation
 
 		/**
 		 * Exits until reaching the `screen` then remains on the `screen`
@@ -38,7 +39,7 @@ class ScreenManager internal constructor() {
 		/**
 		 * Clears [screens] then opens the `screen`
 		 */
-		class Reset(val screen: () -> Screen) : ScreenOperation
+		class Reset(val screen: (RenderSystem.Handle) -> Screen) : ScreenOperation
 	}
 
 	sealed interface Handle {
@@ -50,7 +51,7 @@ class ScreenManager internal constructor() {
 		/**
 		 * @see ScreenOperation.Open
 		 */
-		fun open(screen: () -> Screen)
+		fun open(screen: (RenderSystem.Handle) -> Screen)
 
 		/**
 		 * @see ScreenOperation.ExitTo
@@ -60,7 +61,7 @@ class ScreenManager internal constructor() {
 		/**
 		 * @see ScreenOperation.Reset
 		 */
-		fun reset(screen: () -> Screen)
+		fun reset(screen: (RenderSystem.Handle) -> Screen)
 	}
 
 	private inner class HandleImpl : Handle {
@@ -74,7 +75,7 @@ class ScreenManager internal constructor() {
 		/**
 		 * @see ScreenOperation.Open
 		 */
-		override fun open(screen: () -> Screen) {
+		override fun open(screen: (RenderSystem.Handle) -> Screen) {
 			screenQueue.add(ScreenOperation.Open(screen))
 		}
 
@@ -88,8 +89,12 @@ class ScreenManager internal constructor() {
 		/**
 		 * @see ScreenOperation.Reset
 		 */
-		override fun reset(screen: () -> Screen) {
+		override fun reset(screen: (RenderSystem.Handle) -> Screen) {
 			screenQueue.add(ScreenOperation.Reset(screen))
 		}
+	}
+
+	internal fun render(renderSystem: RenderSystem) {
+		screens.forEach { it.render(renderSystem) }
 	}
 }

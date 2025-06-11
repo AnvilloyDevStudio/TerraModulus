@@ -5,13 +5,6 @@
 
 package terramodulus.mui.gfx
 
-sealed interface Vector2<T: Number> {
-	val x: T
-	val y: T
-
-	operator fun plus(other: Vector2<T>): Vector2<T>
-}
-
 data class Vector2I(val x: Int, val y: Int) {
 	fun plus(other: Vector2I) = Vector2I(x + other.x, y + other.y)
 }

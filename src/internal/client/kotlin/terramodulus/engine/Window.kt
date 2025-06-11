@@ -27,8 +27,6 @@ class Window : Closeable {
 
 	fun swap() = swapWindow(windowHandle)
 
-	fun resizeGLViewport() = resizeGLViewport(windowHandle)
-
 	fun pollEvents() = sdlPoll(sdlHandle)
 
 	override fun close() {

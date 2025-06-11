@@ -4,7 +4,6 @@ attribute vec2 pos;
 attribute vec2 coord;
 
 varying vec2 texCoord;
-varying mat4 texFilter;
 
 uniform mat4 model;
 uniform mat4 projection;

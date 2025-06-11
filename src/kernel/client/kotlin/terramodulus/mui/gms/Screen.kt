@@ -5,6 +5,7 @@
 
 package terramodulus.mui.gms
 
+import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.event.ScreenEvent
 import java.util.ArrayDeque
 
@@ -91,6 +92,10 @@ abstract class Screen {
 		override fun removeMenu(menu: Menu) {
 			menuQueue.add(MenuOperation.Remove(menu))
 		}
+	}
+
+	internal fun render(renderSystem: RenderSystem) {
+		components.forEach { it.render(renderSystem) }
 	}
 
 	/**

@@ -5,5 +5,8 @@
 
 package terramodulus.engine
 
-sealed class ColorFilter {
+@OptIn(ExperimentalUnsignedTypes::class)
+sealed class ColorFilter(handles: ULongArray) {
+	internal val handle: ULong = handles[0]
+	internal val wideHandle: ULong = handles[1]
 }
