@@ -55,6 +55,15 @@ class ScreenManager internal constructor(private val renderSystemHandle: RenderS
 		}
 
 		/**
+		 * Opens the `screen` before the `target` screen
+		 */
+		class OpenBefore(val screen: (RenderSystem.Handle) -> Screen, val target: Screen) : ScreenOperation {
+			override fun apply(handle: RenderSystem.Handle, screens: ArrayDeque<Screen>) {
+				screens.add(screens.lastIndexOf(target), screen(handle))
+			}
+		}
+
+		/**
 		 * Exits until reaching the `screen` then remains on the `screen`
 		 */
 		class ExitTo(val screen: Screen) : ScreenOperation {
@@ -96,6 +105,12 @@ class ScreenManager internal constructor(private val renderSystemHandle: RenderS
 		fun open(screen: (RenderSystem.Handle) -> Screen)
 
 		/**
+		 * It is not recommended to use this in general scenarios.
+		 * @see ScreenOperation.OpenBefore
+		 */
+		fun openBefore(screen: (RenderSystem.Handle) -> Screen, target: Screen)
+
+		/**
 		 * @see ScreenOperation.ExitTo
 		 */
 		fun exitTo(screen: Screen)
@@ -107,30 +122,22 @@ class ScreenManager internal constructor(private val renderSystemHandle: RenderS
 	}
 
 	private inner class HandleImpl : Handle {
-		/**
-		 * @see ScreenOperation.Exit
-		 */
 		override fun exit(n: Int) {
 			screenQueue.add(ScreenOperation.Exit(n))
 		}
 
-		/**
-		 * @see ScreenOperation.Open
-		 */
 		override fun open(screen: (RenderSystem.Handle) -> Screen) {
 			screenQueue.add(ScreenOperation.Open(screen))
 		}
 
-		/**
-		 * @see ScreenOperation.ExitTo
-		 */
+		override fun openBefore(screen: (RenderSystem.Handle) -> Screen, target: Screen) {
+			screenQueue.add(ScreenOperation.OpenBefore(screen, target))
+		}
+
 		override fun exitTo(screen: Screen) {
 			screenQueue.add(ScreenOperation.ExitTo(screen))
 		}
 
-		/**
-		 * @see ScreenOperation.Reset
-		 */
 		override fun reset(screen: (RenderSystem.Handle) -> Screen) {
 			screenQueue.add(ScreenOperation.Reset(screen))
 		}

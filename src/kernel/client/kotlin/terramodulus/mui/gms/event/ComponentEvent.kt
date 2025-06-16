@@ -5,7 +5,5 @@
 
 package terramodulus.mui.gms.event
 
-sealed interface ScreenEvent {
-	data object Open : ScreenEvent
-	data object Close : ScreenEvent
+sealed interface ComponentEvent {
 }

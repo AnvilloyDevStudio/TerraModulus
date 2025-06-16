@@ -5,12 +5,11 @@
 
 package terramodulus.mui.gms.impl
 
-import terramodulus.mui.gfx.GuiSprite
 import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Component
 
-class SpriteComponent(val sprite: GuiSprite) : Component() {
+class PositioningComponent : Component() {
 	override fun render(renderSystem: RenderSystem) {
-		sprite.render(renderSystem)
+		TODO("Not yet implemented")
 	}
 }

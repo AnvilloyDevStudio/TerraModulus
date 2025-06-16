@@ -5,9 +5,11 @@
 
 package terramodulus.mui.gms
 
+import terramodulus.mui.gms.event.MenuEvent
 import java.util.ArrayDeque
 
-abstract class Menu {
+abstract class Menu : Container {
+	private val listeners = HashMap<Class<out MenuEvent>, LinkedHashSet<(MenuEvent) -> Unit>>()
 	private val components = LinkedHashSet<Component>()
 	private val componentQueue = ArrayDeque<ComponentOperation>()
 	val handle: Handle = HandleImpl()
@@ -30,6 +32,19 @@ abstract class Menu {
 	 */
 	protected fun removeComponent(component: Component) {
 		components.remove(component)
+	}
+
+	fun <T: MenuEvent> addListener(e: Class<T>, l: (T) -> Unit) {
+		@Suppress("UNCHECKED_CAST")
+		listeners.computeIfAbsent(e) { LinkedHashSet() }.add(l as (MenuEvent) -> Unit)
+	}
+
+	fun <T: MenuEvent> removeListener(e: Class<T>, l: (T) -> Unit) {
+		listeners[e]?.remove(l)
+	}
+
+	internal fun dispatchEvent(event: MenuEvent) {
+		listeners[event.javaClass]?.forEach { it(event) }
 	}
 
 	sealed interface Handle {

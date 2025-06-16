@@ -8,7 +8,6 @@ package terramodulus.mui.gms.impl
 import terramodulus.mui.gfx.AlphaFilter
 import terramodulus.mui.gfx.Dimension2I
 import terramodulus.mui.gfx.FullScaling
-import terramodulus.mui.gfx.GuiLine
 import terramodulus.mui.gfx.GuiRect
 import terramodulus.mui.gfx.RectangleI
 import terramodulus.mui.gfx.RenderSystem
@@ -25,20 +24,19 @@ private const val ANI_DURATION = .75F // in second
 private const val PAUSE_DURATION = 1 // in second
 
 internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() {
-	private var alpha = 0F
 	private var stage = 0
 	private var last = System.currentTimeMillis() // timestamp in milliseconds
-	private var alphaFilter = AlphaFilter(alpha)
+	private var alphaFilter = AlphaFilter(0F)
 
 	init {
-		GeomComponent(GuiRect(0, 0, 800, 480, 37, 198, 196, 255), RectangleI(0, 0, 0, 0)).apply {
+		GeomComponent(GuiRect(0, 0, 800, 480, 37, 198, 196, 255)).apply {
 			geom.add(alphaFilter)
 			geom.add(FullScaling(REF_SIZE))
 			addComponent(this)
 		}
-		SpriteComponent(RectangleI(0, 0, 400, 100), renderSystemHandle.loadTexture("/logo.png")).apply {
+		SpriteComponent(RectangleI(0, 0, 300, 300), renderSystemHandle.loadTexture("/studio_logo.png")).apply {
 			sprite.add(alphaFilter)
-			sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 400, 100))
+			sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 300, 300))
 			addComponent(this)
 		}
 	}
@@ -50,11 +48,9 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 			0 -> if (elapsed >= ANI_DURATION) {
 				stage = 1
 				last = current
-				alpha = 1F
-				alphaFilter.alpha = alpha
+				alphaFilter.alpha = 1F
 			} else {
-				alpha = elapsed / ANI_DURATION
-				alphaFilter.alpha = alpha
+				alphaFilter.alpha = elapsed / ANI_DURATION
 			}
 
 			1 -> if (elapsed >= PAUSE_DURATION) {
@@ -65,11 +61,9 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 			2 -> if (elapsed >= ANI_DURATION) {
 				stage = 3
 				last = current
-				alpha = 0F
-				alphaFilter.alpha = alpha
+				alphaFilter.alpha = 0F
 			} else {
-				alpha = 1 - elapsed / ANI_DURATION
-				alphaFilter.alpha = alpha
+				alphaFilter.alpha = 1 - elapsed / ANI_DURATION
 			}
 
 			3 -> screenManager.handle.reset(::ResourceLoadingScreen)

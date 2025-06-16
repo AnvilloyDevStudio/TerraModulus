@@ -6,11 +6,10 @@
 package terramodulus.mui.gms.impl
 
 import terramodulus.mui.gfx.GuiGeometry
-import terramodulus.mui.gfx.RectangleI
 import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Component
 
-class GeomComponent(val geom: GuiGeometry, override var rect: RectangleI) : Component() {
+class GeomComponent(val geom: GuiGeometry) : Component() {
 	override fun render(renderSystem: RenderSystem) {
 		geom.render(renderSystem)
 	}

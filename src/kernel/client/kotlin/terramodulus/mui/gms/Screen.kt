@@ -9,25 +9,25 @@ import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.event.ScreenEvent
 import java.util.ArrayDeque
 
-abstract class Screen {
+abstract class Screen : Container {
 	private val listeners = HashMap<Class<out ScreenEvent>, LinkedHashSet<(ScreenEvent) -> Unit>>()
 	private val menus = LinkedHashSet<Menu>()
-	private val components = LinkedHashSet<Component>()
+	private val components = ArrayList<Component>()
 	private val componentQueue = ArrayDeque<ComponentOperation>()
 	private val menuQueue = ArrayDeque<MenuOperation>()
 	val handle: Handle = HandleImpl()
 
 	private sealed interface ComponentOperation {
-		fun apply(components: LinkedHashSet<Component>)
+		fun apply(components: ArrayList<Component>)
 
 		class Add(val component: () -> Component) : ComponentOperation {
-			override fun apply(components: LinkedHashSet<Component>) {
+			override fun apply(components: ArrayList<Component>) {
 				components.add(component())
 			}
 		}
 
 		class Remove(val component: Component) : ComponentOperation {
-			override fun apply(components: LinkedHashSet<Component>) {
+			override fun apply(components: ArrayList<Component>) {
 				components.remove(component)
 			}
 		}
@@ -84,6 +84,10 @@ abstract class Screen {
 
 	fun <T: ScreenEvent> removeListener(e: Class<T>, l: (T) -> Unit) {
 		listeners[e]?.remove(l)
+	}
+
+	internal fun dispatchEvent(event: ScreenEvent) {
+		listeners[event.javaClass]?.forEach { it(event) }
 	}
 
 	sealed interface Handle {

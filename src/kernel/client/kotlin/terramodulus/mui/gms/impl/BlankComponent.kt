@@ -5,12 +5,12 @@
 
 package terramodulus.mui.gms.impl
 
-import terramodulus.mui.gfx.GuiSprite
 import terramodulus.mui.gfx.RenderSystem
 import terramodulus.mui.gms.Component
 
-class SpriteComponent(val sprite: GuiSprite) : Component() {
-	override fun render(renderSystem: RenderSystem) {
-		sprite.render(renderSystem)
-	}
+/**
+ * This can act as a placeholder [Component] in a [Layout][terramodulus.mui.gms.Layout].
+ */
+class BlankComponent : Component() {
+	override fun render(renderSystem: RenderSystem) {}
 }
