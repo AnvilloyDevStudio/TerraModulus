@@ -5,6 +5,6 @@
 
 package net.terramodulus.mui.gfx
 
-typealias ColorFilter = terramodulus.engine.ColorFilter
+typealias ColorFilter = net.terramodulus.engine.ColorFilter
 
-typealias AlphaFilter = terramodulus.engine.AlphaFilter
+typealias AlphaFilter = net.terramodulus.engine.AlphaFilter

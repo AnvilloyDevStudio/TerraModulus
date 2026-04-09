@@ -5,10 +5,10 @@
 
 package net.terramodulus.mui.gfx
 
-typealias ModelTransform = terramodulus.engine.ModelTransform
+typealias ModelTransform = net.terramodulus.engine.ModelTransform
 
-typealias SmartScaling = terramodulus.engine.SmartScaling
+typealias SmartScaling = net.terramodulus.engine.SmartScaling
 
-typealias FullScaling = terramodulus.engine.FullScaling
+typealias FullScaling = net.terramodulus.engine.FullScaling
 
 fun FullScaling(rect: Dimension2I) = FullScaling(rect.width, rect.height)

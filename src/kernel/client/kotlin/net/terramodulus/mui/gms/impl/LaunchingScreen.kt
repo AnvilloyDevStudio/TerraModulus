@@ -9,6 +9,7 @@ import net.terramodulus.mui.gfx.AlphaFilter
 import net.terramodulus.mui.gfx.Dimension2I
 import net.terramodulus.mui.gfx.FullScaling
 import net.terramodulus.mui.gfx.GuiRect
+import net.terramodulus.mui.gfx.GuiSprite
 import net.terramodulus.mui.gfx.RectangleI
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gfx.SmartScaling
@@ -17,7 +18,7 @@ import net.terramodulus.mui.gms.ScreenManager
 
 private val REF_SIZE = Dimension2I(800, 480)
 
-private val BG_COLOR = floatArrayOf(.145F, .776F, 0.768F)
+private val BG_COLOR = floatArrayOf(.145F, .776F, .768F)
 
 private const val ANI_DURATION = .75F // in second
 
@@ -34,7 +35,10 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 			geom.add(FullScaling(REF_SIZE))
 			addComponent(this)
 		}
-		SpriteComponent(RectangleI(0, 0, 300, 300), renderSystemHandle.loadTexture("/studio_logo.png")).apply {
+		SpriteComponent(GuiSprite(
+			RectangleI(0, 0, 300, 300),
+			renderSystemHandle.loadTexture("/studio_logo.png"),
+		)).apply {
 			sprite.add(alphaFilter)
 			sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 300, 300))
 			addComponent(this)
