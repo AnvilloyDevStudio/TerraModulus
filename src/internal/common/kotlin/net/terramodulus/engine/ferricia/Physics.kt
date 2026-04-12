@@ -29,20 +29,27 @@ internal object Physics {
 	 * @return PhyRawGeomPlaceable pointer
 	 */
 	@JvmName("newWorldPhyGeomBox")
-	external fun newWorldPhyGeomBox(handle: ULong, lengths: Array<Double>): ULong
+	external fun newWorldPhyGeomBox(handle: ULong, lengths: DoubleArray): ULong
+
+	/**
+	 * @param handle PhyWorld pointer
+	 * @return PhyRawGeomPlaceable pointer
+	 */
+	@JvmName("newWorldPhyGeomSphere")
+	external fun newWorldPhyGeomSphere(handle: ULong, radius: Double): ULong
 
 	/**
 	 * @param handle PhyRawGeomPlaceable pointer
 	 * @param pos x, y, z position
 	 */
 	@JvmName("setPhyRawGeomPlaceablePosition")
-	external fun setPhyRawGeomPlaceablePosition(handle: ULong, pos: Array<Double>)
+	external fun setPhyRawGeomPlaceablePosition(handle: ULong, pos: DoubleArray)
 
 	/**
 	 * @param handle PhyRawGeomPlaceable pointer
 	 * @return x, y, z position
 	 */
 	@JvmName("getPhyRawGeomPlaceablePosition")
-	external fun getPhyRawGeomPlaceablePosition(handle: ULong): Array<Double>
+	external fun getPhyRawGeomPlaceablePosition(handle: ULong): DoubleArray
 
 }

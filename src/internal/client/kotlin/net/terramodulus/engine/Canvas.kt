@@ -24,28 +24,38 @@ import java.io.Closeable
  * This manages GL viewport in the SDL window and rendering in the viewport.
  */
 class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
-	private val canvasHandle = initCanvasHandle(windowHandle)
+	internal val handle = initCanvasHandle(windowHandle)
 	val glVersion = getGLVersion(windowHandle)
+	internal var camera3D: Camera3D? = null;
 
 	fun clear() = clearCanvas()
 
 	fun setClearColor(r: Float, g: Float, b: Float, a: Float) = setCanvasClearColor(r, g, b, a)
 
-	fun resizeGLViewport() = Mui.resizeGLViewport(windowHandle, canvasHandle)
+	fun resizeGLViewport() = if (camera3D == null) {
+		Mui.resizeGLViewport(windowHandle, handle)
+	} else {
+		Mui.resizeGLViewportCamera(windowHandle, handle, camera3D!!.handle)
+	}
 
-	fun loadImage(path: String) = loadImageToCanvas(canvasHandle, path)
+	fun createCamera(pos: FloatArray): Camera3D {
+		camera3D = Camera3D(this, pos)
+		return camera3D!!
+	}
+
+	fun loadImage(path: String) = loadImageToCanvas(handle, path)
 
 	fun loadGeoShaders(vsh: String, fsh: String) = geoShaders(vsh, fsh)
 
 	fun loadTexShaders(vsh: String, fsh: String) = texShaders(vsh, fsh)
 
 	fun renderGuiGeo(drawable: GeomDrawable, programHandle: ULong) =
-		drawGuiGeo(canvasHandle, drawable.handle, programHandle)
+		drawGuiGeo(handle, drawable.handle, programHandle)
 
 	fun renderGuiTex(drawable: MeshDrawable, programHandle: ULong, textureHandle: UInt) =
-		drawGuiTex(canvasHandle, drawable.handle, programHandle, textureHandle)
+		drawGuiTex(handle, drawable.handle, programHandle, textureHandle)
 
 	override fun close() {
-		dropCanvasHandle(canvasHandle)
+		dropCanvasHandle(handle)
 	}
 }

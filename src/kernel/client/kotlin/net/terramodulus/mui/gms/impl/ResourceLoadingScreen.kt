@@ -9,9 +9,11 @@ import net.terramodulus.mui.gfx.AlphaFilter
 import net.terramodulus.mui.gfx.Dimension2I
 import net.terramodulus.mui.gfx.FullScaling
 import net.terramodulus.mui.gfx.GuiRect
+import net.terramodulus.mui.gfx.GuiSprite
 import net.terramodulus.mui.gfx.RectangleI
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gfx.SmartScaling
+import net.terramodulus.mui.gfx.Vector3F
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
 
@@ -35,7 +37,7 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 			addComponent(this)
 		}
 		val smartScaling = SmartScaling.both(REF_SIZE.width, REF_SIZE.height, CONTENT_SIZE.width, CONTENT_SIZE.height)
-		SpriteComponent(RectangleI(0, 100, 400, 100), renderSystemHandle.loadTexture("/game_logo.png")).apply {
+		SpriteComponent(GuiSprite(RectangleI(0, 100, 400, 100), renderSystemHandle.loadTexture("/game_logo.png"))).apply {
 			sprite.add(alphaFilter)
 			sprite.add(smartScaling)
 			addComponent(this)
@@ -70,7 +72,8 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 			}
 
 			1 -> {
-
+				stage = 2
+				// TODO when there is something to load, stay at this stage until ready
 			}
 
 			2 -> if (elapsed >= ANI_DURATION) {
@@ -81,7 +84,8 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 				alphaFilter.alpha = 1 - elapsed / ANI_DURATION
 			}
 
-			3 -> screenManager.handle.openBefore(::TitleScreen, this)
+// 			3 -> screenManager.handle.openBefore(::TitleScreen, this)
+			3 -> screenManager.handle.reset(renderSystem.newGameplayScreen(Vector3F(0F, 0F, 0F)))
 		}
 	}
 

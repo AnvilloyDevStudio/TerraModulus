@@ -5,6 +5,7 @@
 
 package net.terramodulus.mui
 
+import net.terramodulus.core.TerraModulus
 import net.terramodulus.engine.MuiEvent
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.gfx.RenderSystem
@@ -12,16 +13,15 @@ import net.terramodulus.mui.gms.ScreenManager
 import net.terramodulus.mui.input.InputSystem
 import net.terramodulus.util.logging.logger
 import java.io.Closeable
-import java.io.File
 
 private val logger = logger {}
 
 /**
  * Graphical User Interface (GUI) Manager
  */
-internal class GuiManager internal constructor() : Closeable {
+internal class GuiManager internal constructor(core: TerraModulus) : Closeable {
 	private val window = Window()
-	val renderSystem = RenderSystem(window.canvas)
+	val renderSystem = RenderSystem(core, window.canvas)
 	val inputSystem = InputSystem()
 	val screenManager = ScreenManager(renderSystem.handle)
 

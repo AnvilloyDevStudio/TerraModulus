@@ -43,13 +43,13 @@ fun setupInit() {
 	initEngine()
 }
 
-fun run(game: AbstractTerraModulus) {
+fun run(instance: AbstractTerraModulus) {
 	try {
-		game.run()
+		instance.run()
 	} catch (e: Throwable) {
-		triggerGlobalCrash(UnhandledExceptionFault.scoped("game.run()", e))
+		triggerGlobalCrash(UnhandledExceptionFault.scoped("instance.run()", e))
 	} finally {
-	    game.close()
+	    instance.close()
 	}
 }
 

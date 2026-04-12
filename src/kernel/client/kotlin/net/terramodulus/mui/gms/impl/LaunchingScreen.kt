@@ -36,11 +36,11 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 			addComponent(this)
 		}
 		SpriteComponent(GuiSprite(
-			RectangleI(0, 0, 300, 300),
+			RectangleI(0, 0, 512, 128),
 			renderSystemHandle.loadTexture("/studio_logo.png"),
 		)).apply {
 			sprite.add(alphaFilter)
-			sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 300, 300))
+			sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 512, 128))
 			addComponent(this)
 		}
 	}
@@ -59,6 +59,7 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 
 			1 -> if (elapsed >= PAUSE_DURATION) {
 				stage = 2
+				Thread.sleep(2000)
 				last = current
 			}
 

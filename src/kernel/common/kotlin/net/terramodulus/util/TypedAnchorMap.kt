@@ -33,13 +33,22 @@ open class TypedAnchorMap<T : Any> private constructor(private val map: MutableM
 		}
 	}
 
+	/** Use [getTyped] instead. */
+	@Deprecated("avoid this function")
+	override fun get(key: Key<*>): Any? = map[key]
+
 	@Suppress("UNCHECKED_CAST") // impossible, as constrained by #put
-	fun <V: T> get(key: Key<V>) = map[key] as T?
+	fun <V: T> getTyped(key: Key<V>) = map[key] as T?
 
 	@Suppress("UNCHECKED_CAST") // impossible, as constrained by #put
 	fun <V: T> getOrDefault(key: Key<V>, defaultValue: V) = super.getOrDefault(key, defaultValue) as T?
 
-	fun <V: T> put(key: Key<V>, value: V) = map.put(key, value)
+	/** Use [putTyped] instead. */
+	@Suppress("UNCHECKED_CAST")
+	@Deprecated("avoid this function")
+	override fun put(key: Key<*>, value: Any?): Any? = map.put(key, value)
+
+	fun <V: T> putTyped(key: Key<V>, value: V) = map.put(key, value)
 
 	override fun putAll(from: Map<out Key<*>, Any?>) = throw UnsupportedOperationException()
 

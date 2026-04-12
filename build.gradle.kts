@@ -54,6 +54,14 @@ project(":kernel") {
             }
         }
     }
+
+    arrayOf("client", "server").forEach {
+        project(it) {
+            dependencies {
+                implementation(project(":internal:common"))
+            }
+        }
+    }
 }
 
 project(":kernel:common") {
@@ -94,7 +102,7 @@ project(":internal:common").dependencies {
 
 configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     application {
-        mainClass = "terramodulus.core.MainKt"
+        mainClass = "net.terramodulus.core.MainKt"
     }
 }
 

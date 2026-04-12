@@ -7,9 +7,11 @@ package net.terramodulus.core
 
 import net.terramodulus.common.core.AbstractTerraModulus
 import net.terramodulus.mui.GuiManager
+import net.terramodulus.void.World
 
 class TerraModulus internal constructor() : AbstractTerraModulus() {
-	private val guiManager = GuiManager()
+	private val guiManager = GuiManager(this)
+	internal var world: World? = null
 
 	override var tps: Int
 		get() = TODO("Not yet implemented")

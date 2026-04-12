@@ -7,7 +7,6 @@ package net.terramodulus.engine.ferricia
 
 import net.terramodulus.engine.MuiEvent
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal object Mui {
 	/**
 	 * @return SDL handle pointer
@@ -52,6 +51,12 @@ internal object Mui {
 	 */
 	@JvmName("resizeGLViewport")
 	external fun resizeGLViewport(windowHandle: ULong, canvasHandle: ULong)
+
+	/**
+	 * @param windowHandle window handle pointer
+	 */
+	@JvmName("resizeGLViewportCamera")
+	external fun resizeGLViewportCamera(windowHandle: ULong, canvasHandle: ULong, cameraHandle: ULong)
 
 	/**
 	 * @param windowHandle window handle pointer
@@ -110,14 +115,14 @@ internal object Mui {
 
 	/**
 	 * @param data `[x0, y0, x1, y1, r, g, b, a]`
-	 * @return SimpleLineGeom handle pointer
+	 * @return SimpleLineGeom as DrawableSet handle pointer
 	 */
 	@JvmName("newSimpleLineGeom")
 	external fun newSimpleLineGeom(data: IntArray): ULong
 
 	/**
 	 * @param data `[x0, y0, x1, y1, r, g, b, a]`
-	 * @return SimpleRectGeom handle pointer
+	 * @return SimpleRectGeom as DrawableSet handle pointer
 	 */
 	@JvmName("newSimpleRectGeom")
 	external fun newSimpleRectGeom(data: IntArray): ULong
@@ -128,6 +133,13 @@ internal object Mui {
 	 */
 	@JvmName("newSpriteMesh")
 	external fun newSpriteMesh(data: IntArray): ULong
+
+	/**
+	 * @param handle DrawableSet handle pointer
+	 * @param data must check Ferricia code for the exact implementation
+	 */
+	@JvmName("setGeomPos")
+	external fun setGeomPos(handle: ULong, data: FloatArray)
 
 	/**
 	 * @param data `[w, h, param, w, h]`
