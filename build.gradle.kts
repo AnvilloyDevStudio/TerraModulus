@@ -7,10 +7,6 @@ plugins {
     application
 }
 
-configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
-    apply(plugin = "application")
-}
-
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
