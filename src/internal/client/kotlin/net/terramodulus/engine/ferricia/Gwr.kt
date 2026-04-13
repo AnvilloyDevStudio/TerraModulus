@@ -30,6 +30,13 @@ internal object Gwr {
 	external fun refreshCameraPos(cameraHandle: ULong, data: FloatArray)
 
 	/**
+	 * @param cameraHandle Camera3D handle pointer
+	 * @param data zoom level
+	 */
+	@JvmName("setCameraZoomLevel")
+	external fun setCameraZoomLevel(cameraHandle: ULong, data: Float)
+
+	/**
 	 * @param width cube's width, in `(0,2]`
 	 * @param data `[r, g, b, a]`
 	 * @return DrawableWorldObj handle pointer

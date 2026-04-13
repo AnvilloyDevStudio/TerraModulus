@@ -9,7 +9,6 @@ import net.terramodulus.engine.PhyEnv
 import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
 import java.io.Closeable
-import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
@@ -47,16 +46,16 @@ class World(commander: Ymir) : Closeable {
 		// Main Character
 		list.add(commander.wrapChar(createGeomSphere(.5)))
 		// Test Objects
-		for (z in -5..5) {
-			println(z)
-			for (x in 1..10) {
-				for (y in 1..10) {
+		for (y in -3..3) {
+			println(y)
+			for (x in 1..20) {
+				for (z in 1..20) {
 					for (xs in booleanArrayOf(false, true)) {
-						for (ys in booleanArrayOf(false, true)) {
+						for (zs in booleanArrayOf(false, true)) {
 							val xx = (if (xs) x else -x).toDouble();
-							val yy = (if (ys) y else -y).toDouble();
-							if (z == 0 || Random.nextInt(abs(z)) == 0) {
-								list.add(commander.wrapCube(createCube(xx, yy, z.toDouble()), xx, yy, z.toDouble()))
+							val zz = (if (zs) z else -z).toDouble();
+							if (y == 0 || Random.nextInt(abs(y) * 10 + 10) == 0) {
+								list.add(commander.wrapCube(createCube(xx, y.toDouble(), zz), xx, y.toDouble(), zz))
 							}
 						}
 					}

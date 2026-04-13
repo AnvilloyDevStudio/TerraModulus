@@ -78,8 +78,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		}
 
 		override fun wrapChar(phyGeom: PhyGeom): VoidGeom {
-			val color = randomColor()
-			val drawable = SimpleMesh3dGeomSphere(1F, color[0], color[1], color[2], color[3])
+			val drawable = SimpleMesh3dGeomSphere(.5F, 255, 255, 255, 255)
 			drawable.updateModel(0F, 1F, 0F, .5F, .5F, .5F, 1.0, .0, .0, .0)
 			return VoidGeom(phyGeom, drawable)
 		}
