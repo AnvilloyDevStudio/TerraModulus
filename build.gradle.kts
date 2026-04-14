@@ -97,6 +97,8 @@ project(":internal:common").dependencies {
 }
 
 configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
+    apply(plugin = "application")
+
     application {
         mainClass = "net.terramodulus.core.MainKt"
     }
