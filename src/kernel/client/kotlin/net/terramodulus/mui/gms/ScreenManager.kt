@@ -7,6 +7,7 @@ package net.terramodulus.mui.gms
 
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gms.impl.LaunchingScreen
+import net.terramodulus.mui.input.InputSystem
 
 class ScreenManager internal constructor(private val renderSystemHandle: RenderSystem.Handle) {
 	/**
@@ -143,9 +144,9 @@ class ScreenManager internal constructor(private val renderSystemHandle: RenderS
 		}
 	}
 
-// 	internal fun update() {
-// 		screens.forEach { it.update() }
-// 	}
+	internal fun update(renderSystem: RenderSystem, inputSystem: InputSystem) {
+		screens.forEach { it.update(renderSystem, this, inputSystem) }
+	}
 
 	internal fun render(renderSystem: RenderSystem) {
 		screenQueue.forEach { it.apply(renderSystemHandle, screens) }

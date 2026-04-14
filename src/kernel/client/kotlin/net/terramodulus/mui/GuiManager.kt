@@ -39,6 +39,7 @@ internal class GuiManager internal constructor(core: TerraModulus) : Closeable {
 	 * This includes input ticking and canvas rendering.
 	 */
 	internal fun updateCanvas() {
+		val keyEvents = ArrayList<InputSystem.KeyEvent>()
 		window.pollEvents().forEach { event ->
 			when (event) {
 				is MuiEvent.DisplayAdded -> {
@@ -124,9 +125,11 @@ internal class GuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 				is MuiEvent.KeyboardKeyDown -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` down." }
+					keyEvents.add(InputSystem.KeyEvent.Down(InputSystem.KeyId(event.key)))
 				}
 				is MuiEvent.KeyboardKeyUp -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` up." }
+					keyEvents.add(InputSystem.KeyEvent.Up(InputSystem.KeyId(event.key)))
 				}
 				MuiEvent.KeyboardRemoved -> {
 					logger.debug { "Keyboard removed." }
@@ -237,6 +240,8 @@ internal class GuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 			}
 		}
+		inputSystem.update(keyEvents)
+		screenManager.update(renderSystem, inputSystem)
 		window.canvas.clear()
 		screenManager.render(renderSystem)
 		window.swap()

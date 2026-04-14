@@ -8,6 +8,7 @@ package net.terramodulus.mui.gms
 import net.terramodulus.mui.gfx.ManagedRect
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gms.event.ScreenEvent
+import net.terramodulus.mui.input.InputSystem
 import java.util.ArrayDeque
 
 abstract class Screen : Container {
@@ -121,7 +122,7 @@ abstract class Screen : Container {
 		}
 	}
 
-	internal open fun update(renderSystem: RenderSystem, screenManager: ScreenManager) {};
+	internal open fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {};
 
 	internal fun render(renderSystem: RenderSystem, screenManager: ScreenManager) {
 		componentQueue.forEach { it.apply(components) }
@@ -129,7 +130,6 @@ abstract class Screen : Container {
 		menuQueue.forEach { it.apply(menus) }
 		menuQueue.clear()
 		components.forEach { it.render(renderSystem) }
-		update(renderSystem, screenManager)
 	}
 
 	/**

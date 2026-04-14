@@ -25,6 +25,55 @@ internal object Physics {
 
 	/**
 	 * @param handle PhyWorld pointer
+	 */
+	@JvmName("tickPhyWorld")
+	external fun tickPhyWorld(handle: ULong)
+
+	/**
+	 * @param mass total mass value
+	 * @param radius radius of sphere
+	 * @return OdeMass pointer
+	 */
+	@JvmName("newMassSphereTotal")
+	external fun newMassSphereTotal(mass: Double, radius: Double): ULong
+
+	/**
+	 * @param handle PhyWorld pointer
+	 * @param massHandle OdeMass pointer; this is consumed and dropped
+	 * @return PhyBody pointer
+	 */
+	@JvmName("newPhyBody")
+	external fun newPhyBody(handle: ULong, massHandle: ULong): ULong
+
+	/**
+	 * @param handle PhyBody pointer
+	 * @param geomHandle PhyRawGeomPlaceable pointer
+	 */
+	@JvmName("addPhyBodyGeom")
+	external fun addPhyBodyGeom(handle: ULong, geomHandle: ULong)
+
+	/**
+	 * @param handle PhyBody pointer; OdeBody must be valid
+	 * @param data [x, y, z]
+	 */
+	@JvmName("setPhyBodyPos")
+	external fun setPhyBodyPos(handle: ULong, data: DoubleArray)
+
+	/**
+	 * @param handle PhyBody pointer; OdeBody must be valid
+	 * @param data [x, y, z]
+	 */
+	@JvmName("setPhyBodyLinearVel")
+	external fun setPhyBodyLinearVel(handle: ULong, data: DoubleArray)
+
+	/**
+	 * @param handle PhyBody pointer; OdeBody must be valid
+	 */
+	@JvmName("getPhyBodyPos")
+	external fun getPhyBodyPos(handle: ULong): DoubleArray
+
+	/**
+	 * @param handle PhyWorld pointer
 	 * @param lengths x, y, z lengths
 	 * @return PhyRawGeomPlaceable pointer
 	 */

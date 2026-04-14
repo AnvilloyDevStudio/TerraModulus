@@ -15,6 +15,7 @@ import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gfx.SmartScaling
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
+import net.terramodulus.mui.input.InputSystem
 
 private val REF_SIZE = Dimension2I(800, 480)
 
@@ -45,7 +46,7 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 		}
 	}
 
-	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager) {
+	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
 		val current = System.currentTimeMillis()
 		val elapsed = (current - last) / 1000F // elapsed time for this stage
 		when (stage) {

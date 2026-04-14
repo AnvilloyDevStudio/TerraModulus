@@ -43,6 +43,10 @@ data class Vector3D(val x: Double, val y: Double, val z: Double) {
 	}
 
 	operator fun plus(other: Vector3D) = Vector3D(x + other.x, y + other.y, z + other.z)
+
+	operator fun times(factor: Int) = Vector3D(x * factor, y * factor, z * factor)
+	operator fun times(factor: Float) = Vector3D(x * factor, y * factor, z * factor)
+	operator fun times(factor: Double) = Vector3D(x * factor, y * factor, z * factor)
 }
 
 data class Vector3F(val x: Float, val y: Float, val z: Float) {

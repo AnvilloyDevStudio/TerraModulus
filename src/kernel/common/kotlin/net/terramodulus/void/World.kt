@@ -5,49 +5,69 @@
 
 package net.terramodulus.void
 
+import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyEnv
 import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
+import net.terramodulus.engine.Vec3D
 import java.io.Closeable
 import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 class World(commander: Ymir) : Closeable {
 	private val env = PhyEnv()
 	private val world = env.createWorld()
 
-	val objects = HashMap<Uuid, VoidGeom>()
+	val objects = HashMap<ObjId, VoidGeom>()
 
 	init {
-		randomCubes(commander).forEach { objects[Uuid.random()] = it }
+		// Spawn point
+		objects[ObjId.randomUnique(objects)] = commander.wrapCube(createCube(.0, .0, .0), .0, .0, .0)
+		// Main Character
+
+		objects[ObjId.randomUnique(objects)] = commander.wrapChar(
+			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply { addGeom(createGeomSphere(.5)) }
+		)
+		// Test Objects
+		randomCubes(commander).forEach { objects[ObjId.randomUnique(objects)] = it }
+		// Running in parallel
+		Thread {
+			while(true) {
+				tick()
+				Thread.sleep(1000 / 20)
+			}
+		}.start()
 	}
 
 	interface Ymir {
 		fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom
 
 		/** Always at (0, 1, 0) */
-		fun wrapChar(phyGeom: PhyGeom): VoidGeom
+		fun wrapChar(phyBody: PhyBody): VoidGeom
 	}
 
 	/** A wrapper containing rendering context, with a geom of dimensions of 1mx1mx1m */
 	interface VoidGeom {
-		val phyGeom: PhyGeom
-
 		fun render()
+
+		val pos: Vec3D
+	}
+
+	interface EnvVoidGeom : VoidGeom {
+		val phyGeom: PhyGeom
+	}
+
+	interface PlayerVoidGeom : VoidGeom {
+		val phyBody: PhyBody
 	}
 
 	private fun randomCubes(commander: Ymir): ArrayList<VoidGeom> {
 		val list = ArrayList<VoidGeom>()
-		// Spawn point
-		list.add(commander.wrapCube(createCube(.0, .0, .0), .0, .0, .0))
-		// Main Character
-		list.add(commander.wrapChar(createGeomSphere(.5)))
-		// Test Objects
+		var i = 0
 		for (y in -3..3) {
-			println(y)
+			println("Generating: ${++i}/7")
 			for (x in 1..20) {
 				for (z in 1..20) {
 					for (xs in booleanArrayOf(false, true)) {
@@ -73,6 +93,8 @@ class World(commander: Ymir) : Closeable {
 
 	internal fun createGeomBox(x: Double, y: Double, z: Double) = world.createGeomBox(doubleArrayOf(x, y, z))
 	internal fun createGeomSphere(radius: Double) = world.createGeomSphere(radius)
+
+	fun tick() = world.tick()
 
 	override fun close() {
 		env.close()

@@ -7,19 +7,25 @@ package net.terramodulus.mui.gms.impl
 
 import net.terramodulus.core.TerraModulus
 import net.terramodulus.engine.Camera3D
+import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyGeom
+import net.terramodulus.engine.Quat
+import net.terramodulus.engine.Rgba
 import net.terramodulus.engine.SimpleMesh3dGeomCube
 import net.terramodulus.engine.SimpleMesh3dGeomSphere
+import net.terramodulus.engine.Vec3D
+import net.terramodulus.engine.Vec3F
 import net.terramodulus.engine.WorldObjDrawable
-import net.terramodulus.mui.gfx.GuiGeometry
-import net.terramodulus.mui.gfx.GuiLine
+import net.terramodulus.mui.gfx.Direction6C
 import net.terramodulus.mui.gfx.RenderSystem
+import net.terramodulus.mui.gfx.Vector3D
 import net.terramodulus.mui.gms.Component
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
+import net.terramodulus.mui.input.InputSystem
 import net.terramodulus.void.World
 import java.io.File
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.PI
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -27,9 +33,12 @@ private fun getPathOfResource(path: String): String {
 	return File(object {}.javaClass.getResource(path)!!.toURI()).absolutePath
 }
 
-private val RED = intArrayOf(255, 0, 0, 255)
-private val GREEN = intArrayOf(0, 255, 0, 255)
-private val BLUE = intArrayOf(0, 0, 255, 255)
+private val WHITE = Rgba(255, 255, 255, 255)
+private val RED = Rgba(255, 0, 0, 255)
+private val GREEN = Rgba(0, 255, 0, 255)
+private val BLUE = Rgba(0, 0, 255, 255)
+private val STD_SCALE = Vec3F(.5F, .5F, .5F)
+private val IDENT_ROT = Quat(1.0, .0, .0, .0)
 
 @OptIn(ExperimentalUuidApi::class)
 internal class GameplayScreen(private val core: TerraModulus, private val camera: Camera3D, renderSystemHandle: RenderSystem.Handle) : Screen() {
@@ -37,6 +46,8 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		getPathOfResource("/gwr_geo.vsh"),
 		getPathOfResource("/gwr_geo.fsh"),
 	)
+
+	private lateinit var player: PlayerVoidGeom
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
@@ -63,12 +74,16 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 	}
 
 	private inner class Ymir : World.Ymir {
-		override fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom {
-			val color = randomColor()
-			val drawable = SimpleMesh3dGeomCube(1F, color[0], color[1], color[2], color[3])
-			drawable.updateModel(x.toFloat(), y.toFloat(), z.toFloat(), .5F, .5F, .5F, 1.0, .0, .0, .0)
-			return VoidGeom(phyGeom, drawable)
-		}
+		override fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom = EnvVoidGeom(phyGeom,
+			SimpleMesh3dGeomCube(
+				2F,
+				randomColor(),
+				Vec3F(x.toFloat(), y.toFloat(), z.toFloat()),
+				STD_SCALE,
+				IDENT_ROT,
+			),
+			Vec3D(x, y, z)
+		)
 
 		private fun randomColor() = when (Random.nextInt(3)) {
 			0 -> RED
@@ -77,27 +92,76 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 			else -> throw AssertionError("Invalid color")
 		}
 
-		override fun wrapChar(phyGeom: PhyGeom): VoidGeom {
-			val drawable = SimpleMesh3dGeomSphere(.5F, 255, 255, 255, 255)
-			drawable.updateModel(0F, 1F, 0F, .5F, .5F, .5F, 1.0, .0, .0, .0)
-			return VoidGeom(phyGeom, drawable)
+		override fun wrapChar(phyBody: PhyBody): VoidGeom {
+			player = PlayerVoidGeom(phyBody,
+				SimpleMesh3dGeomSphere(1F, WHITE, Vec3F(0F, 1F, 0F), STD_SCALE, IDENT_ROT)
+			)
+			return player
 		}
 	}
 
-	private inner class VoidGeom(override val phyGeom: PhyGeom, val drawable: WorldObjDrawable) : World.VoidGeom {
+	private abstract inner class VoidGeom(val drawable: WorldObjDrawable) : World.VoidGeom {
 		override fun render() {
 			renderGwrGeo(drawable)
 		}
 	}
 
-	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager) {
+	private inner class EnvVoidGeom(override val phyGeom: PhyGeom, drawable: WorldObjDrawable, override val pos: Vec3D) :
+		VoidGeom(drawable), World.EnvVoidGeom
 
+	private inner class PlayerVoidGeom(override val phyBody: PhyBody, drawable: WorldObjDrawable) :
+		VoidGeom(drawable), World.PlayerVoidGeom {
+		// There should be max speed/accerlation, so this is likely not needed in actual implementation.
+		// However, for demonstration purpose, this is simplified to just changing velocities.
+		fun changeVelocity(vel: Vector3D) = phyBody.setLinearVel(vel * PI)
+
+		override fun render() {
+			val pos = doubleArrayToVec3F(phyBody.getPos())
+			drawable.setPos(pos)
+			camera.refreshPos(pos.toArray())
+			super.render()
+		}
+
+		override val pos: Vec3D
+			get() = doubleArrayToVec3D(phyBody.getPos())
+	}
+
+	private fun PhyBody.setLinearVel(vel: Vector3D) {
+		setLinearVel(Vec3D(vel.x, vel.y, vel.z))
+	}
+
+	private fun doubleArrayToVec3F(pos: DoubleArray) = Vec3F(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat())
+	private fun doubleArrayToVec3D(pos: DoubleArray) = Vec3D(pos[0], pos[1], pos[2])
+
+	private fun Direction6C.toKey() = when (this) {
+		Direction6C.North -> InputSystem.Keys.W
+		Direction6C.South -> InputSystem.Keys.S
+		Direction6C.West -> InputSystem.Keys.A
+		Direction6C.East -> InputSystem.Keys.D
+		Direction6C.Up -> InputSystem.Keys.Space
+		Direction6C.Down -> InputSystem.Keys.LShift
+	}
+
+	private fun Direction6C.toVelocity() = when (this) {
+		Direction6C.North -> Vector3D(.0, .0, -1.0)
+		Direction6C.South -> Vector3D(.0, .0, 1.0)
+		Direction6C.West -> Vector3D(-1.0, .0, .0)
+		Direction6C.East -> Vector3D(1.0, .0, .0)
+		Direction6C.Up -> Vector3D(.0, 1.0, .0)
+		Direction6C.Down -> Vector3D(.0, -1.0, .0)
+	}
+
+	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
+		val velocities = ArrayList<Vector3D>()
+		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) velocities.add(it.toVelocity()) }
+		player.changeVelocity(velocities.fold(Vector3D.ZERO, Vector3D::plus))
 	}
 
 	private inner class GameplayRenderer : Component() {
-		@OptIn(ExperimentalUuidApi::class)
 		override fun render(renderSystem: RenderSystem) {
-			core.world?.objects?.values?.forEach { it.render() }
+			if (core.world != null) core.world!!.objects.values.sortedWith(
+				compareBy<World.VoidGeom> { it.pos.y }.thenBy { it.pos.z }
+			).forEach { it.render() }
 		}
 	}
 

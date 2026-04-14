@@ -9,7 +9,7 @@ import net.terramodulus.engine.ferricia.Physics.newWorldPhyGeomBox
 import net.terramodulus.engine.ferricia.Physics.newWorldPhyGeomSphere
 import net.terramodulus.engine.ferricia.Physics.setPhyRawGeomPlaceablePosition
 
-sealed class PhyGeom(protected val handle: ULong) {
+sealed class PhyGeom(internal val handle: ULong) {
 	fun setPosition(pos: DoubleArray) = setPhyRawGeomPlaceablePosition(handle, pos)
 }
 

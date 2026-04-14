@@ -8,6 +8,7 @@ package net.terramodulus.mui.gms
 import net.terramodulus.mui.gfx.ManagedRect
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gms.event.ComponentEvent
+import net.terramodulus.mui.input.InputSystem
 
 /**
  * [Component] can only be contained by only one [Container].
@@ -37,5 +38,9 @@ abstract class Component {
 
 	internal fun dispatchEvent(event: ComponentEvent) {
 		listeners[event.javaClass]?.forEach { it(event) }
+	}
+
+	fun update(inputSystem: InputSystem) {
+		TODO()
 	}
 }
