@@ -13,6 +13,7 @@ import net.terramodulus.engine.Vec3D
 import java.io.Closeable
 import kotlin.math.abs
 import kotlin.random.Random
+import kotlin.random.nextInt
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -26,7 +27,6 @@ class World(commander: Ymir) : Closeable {
 		// Spawn point
 		objects[ObjId.randomUnique(objects)] = commander.wrapCube(createCube(.0, .0, .0), .0, .0, .0)
 		// Main Character
-
 		objects[ObjId.randomUnique(objects)] = commander.wrapChar(
 			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply { addGeom(createGeomSphere(.5)) }
 		)
@@ -36,7 +36,7 @@ class World(commander: Ymir) : Closeable {
 		Thread {
 			while(true) {
 				tick()
-				Thread.sleep(1000 / 20)
+				Thread.sleep(1000 / 20) // in 20 Hz
 			}
 		}.start()
 	}
@@ -63,20 +63,47 @@ class World(commander: Ymir) : Closeable {
 		val phyBody: PhyBody
 	}
 
+	// Source: https://en.wikipedia.org/wiki/Maze_generation_algorithm
 	private fun randomCubes(commander: Ymir): ArrayList<VoidGeom> {
 		val list = ArrayList<VoidGeom>()
 		var i = 0
-		for (y in -3..3) {
-			println("Generating: ${++i}/7")
-			for (x in 1..20) {
-				for (z in 1..20) {
-					for (xs in booleanArrayOf(false, true)) {
-						for (zs in booleanArrayOf(false, true)) {
-							val xx = (if (xs) x else -x).toDouble();
-							val zz = (if (zs) z else -z).toDouble();
-							if (y == 0 || Random.nextInt(abs(y) * 10 + 10) == 0) {
-								list.add(commander.wrapCube(createCube(xx, y.toDouble(), zz), xx, y.toDouble(), zz))
+		val total = 10 * 10 * 2 * 2
+		val interval = 5.0
+		val max = 5 * 5 * 5 // 125 for each set
+		val directions = arrayOf(
+			Vec3D(1.0, 0.0, 0.0),
+			Vec3D(-1.0, 0.0, 0.0),
+			Vec3D(0.0, 1.0, 0.0),
+			Vec3D(0.0, -1.0, 0.0),
+			Vec3D(0.0, 0.0, 1.0),
+			Vec3D(0.0, 0.0, -1.0),
+		)
+		for (x in 1..10) {
+			for (z in 1..10) {
+				for (xs in booleanArrayOf(false, true)) {
+					for (zs in booleanArrayOf(false, true)) {
+						println("Generating: ${++i}/$total")
+						val xx = (if (xs) x else -x).toDouble() * interval;
+						val zz = (if (zs) z else -z).toDouble() * interval;
+						val origin = Vec3D(xx, Random.nextInt(-3..3).toDouble(), zz);
+						val visited = mutableSetOf(Vec3D(0.0, 0.0, 0.0))
+						val heads = ArrayDeque<Vec3D>()
+						heads.addLast(Vec3D(0.0, 0.0, 0.0))
+						while (!heads.isEmpty()) {
+							val head = heads.removeFirst()
+							for (d in directions) {
+								val cur = head + d
+								if (Random.nextInt(max) > visited.size && cur !in visited) {
+									visited.add(cur)
+									if (Random.nextInt(max) > visited.size) {
+										heads.addLast(cur)
+									}
+								}
 							}
+						}
+						for (p in visited) {
+							val pt = origin + p
+							list.add(commander.wrapCube(createCube(pt.x, pt.y, pt.z), pt.x, pt.y, pt.z))
 						}
 					}
 				}
@@ -84,6 +111,8 @@ class World(commander: Ymir) : Closeable {
 		}
 		return list
 	}
+
+	private operator fun Vec3D.plus(other: Vec3D): Vec3D = Vec3D(x + other.x, y + other.y, z + other.z)
 
 	private fun createCube(x: Double, y: Double, z: Double): PhyGeomBox {
 		val cube = createGeomBox(1.0, 1.0, 1.0)
