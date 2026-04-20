@@ -6,15 +6,12 @@
 package net.terramodulus.mui.gfx
 
 import net.terramodulus.core.TerraModulus
+import net.terramodulus.core.getPathOfResource
 import net.terramodulus.engine.Canvas
 import net.terramodulus.engine.GeomDrawable
 import net.terramodulus.engine.MeshDrawable
 import net.terramodulus.mui.gms.impl.GameplayScreen
 import java.io.File
-
-private fun getPathOfResource(path: String): String {
-	return File(object {}.javaClass.getResource(path)!!.toURI()).absolutePath
-}
 
 class RenderSystem internal constructor(private val core: TerraModulus, private val canvas: Canvas) {
 	val handle: Handle = HandleImpl()

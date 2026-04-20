@@ -5,5 +5,11 @@
 
 package net.terramodulus.core
 
+import java.io.File
+
 const val NAME = "TerraModulus"
 const val VERSION = "0.1.0" // TODO placeholder
+
+fun getPathOfResource(path: String): String {
+	return File(object {}.javaClass.getResource(path)!!.toURI()).absolutePath
+}

@@ -62,7 +62,7 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 
 	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
 		val current = System.currentTimeMillis()
-		val elapsed = (current - last) / 1000F // elapsed time for this stage
+		val elapsed = (current - last) / 1000F // elapsed time in second at this stage
 		when (stage) {
 			0 -> if (elapsed >= ANI_DURATION) {
 				stage = 1
@@ -72,8 +72,9 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 				alphaFilter.alpha = elapsed / ANI_DURATION
 			}
 
-			1 -> {
+			1 -> if (elapsed >= ANI_DURATION) {
 				stage = 2
+				last = current
 				// TODO when there is something to load, stay at this stage until ready
 			}
 

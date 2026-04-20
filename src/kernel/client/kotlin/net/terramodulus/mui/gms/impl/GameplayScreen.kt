@@ -6,6 +6,7 @@
 package net.terramodulus.mui.gms.impl
 
 import net.terramodulus.core.TerraModulus
+import net.terramodulus.core.getPathOfResource
 import net.terramodulus.engine.Camera3D
 import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyGeom
@@ -29,10 +30,6 @@ import kotlin.math.PI
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 
-private fun getPathOfResource(path: String): String {
-	return File(object {}.javaClass.getResource(path)!!.toURI()).absolutePath
-}
-
 private val WHITE = Rgba(255, 255, 255, 255)
 private val RED = Rgba(255, 0, 0, 255)
 private val GREEN = Rgba(0, 255, 0, 255)
@@ -40,7 +37,6 @@ private val BLUE = Rgba(0, 0, 255, 255)
 private val STD_SCALE = Vec3F(.5F, .5F, .5F)
 private val IDENT_ROT = Quat(1.0, .0, .0, .0)
 
-@OptIn(ExperimentalUuidApi::class)
 internal class GameplayScreen(private val core: TerraModulus, private val camera: Camera3D, renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private val geoShaders = camera.loadGeoShaders(
 		getPathOfResource("/gwr_geo.vsh"),
