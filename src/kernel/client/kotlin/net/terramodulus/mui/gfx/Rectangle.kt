@@ -35,7 +35,7 @@ data class RectangleI(
 				maxY = y0;
 				minY = y1;
 			}
-			return RectangleI(minX, maxX, minY, maxY)
+			return RectangleI(minX, minY, maxX - minX, maxY - minY)
 		}
 	}
 

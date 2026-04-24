@@ -17,6 +17,9 @@ import net.terramodulus.mui.gfx.Vector3F
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
 import net.terramodulus.mui.input.InputSystem
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.properties.Delegates
 
 private val REF_SIZE = Dimension2I(800, 480)
 
@@ -25,14 +28,16 @@ private val CONTENT_SIZE = Dimension2I(400, 200)
 private val BG_COLOR = floatArrayOf(.145F, .776F, 0.768F)
 
 private const val ANI_DURATION = 1F // in second
+private const val PAUSE_DURATION = 2F // in second
 
 class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private var stage = 0
 	private var last = System.currentTimeMillis() // timestamp in milliseconds
 	private var alphaFilter = AlphaFilter(0F)
+	private val progressBar = ProgressBar()
 
 	init {
-		GeomComponent(GuiRect(0, 0, 800, 480, 37, 198, 196, 255)).apply {
+		GeomComponent(GuiRect(0, 0, 800, 480, 0, 255, 213, 255)).apply {
 			geom.add(alphaFilter)
 			geom.add(FullScaling(REF_SIZE))
 			addComponent(this)
@@ -48,16 +53,26 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 			geom.add(smartScaling)
 			addComponent(this)
 		}
-		GeomComponent(GuiRect(5, 5, 390, 30, 37, 198, 196, 255)).apply {
+		GeomComponent(GuiRect(5, 5, 395, 35, 0, 255, 213, 255)).apply {
 			geom.add(alphaFilter)
 			geom.add(smartScaling)
 			addComponent(this)
 		}
-		GeomComponent(GuiRect(8, 8, 384, 24, 240, 240, 240, 255)).apply {
+		GeomComponent(progressBar.rect).apply {
 			geom.add(alphaFilter)
 			geom.add(smartScaling)
 			addComponent(this)
 		}
+	}
+
+	private class ProgressBar {
+		val rectDim = RectangleI.withPoints(7, 7, 393, 33)
+		val length = rectDim.width
+		var progress: Float by Delegates.observable(0f) { _, _, _ ->
+			println("Progress: ${progress * length}")
+			rect.setPos(7, 7, rectDim.x + (progress * length).toInt(), 33)
+		}
+		val rect = GuiRect(7, 7, 7, 33, 240, 240, 240, 255)
 	}
 
 	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
@@ -72,10 +87,13 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 				alphaFilter.alpha = elapsed / ANI_DURATION
 			}
 
-			1 -> if (elapsed >= ANI_DURATION) {
-				stage = 2
-				last = current
+			1 -> {
 				// TODO when there is something to load, stay at this stage until ready
+				progressBar.progress = min(elapsed / PAUSE_DURATION, 1F)
+				if (progressBar.progress >= 1F) {
+					stage = 2
+					last = current
+				}
 			}
 
 			2 -> if (elapsed >= ANI_DURATION) {
@@ -87,7 +105,7 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 			}
 
 // 			3 -> screenManager.handle.openBefore(::TitleScreen, this)
-			3 -> screenManager.handle.reset(renderSystem.newGameplayScreen(Vector3F(0F, 0F, 0F)))
+			3 -> screenManager.handle.reset(renderSystem.newGameplayScreen(Vector3F.ZERO))
 		}
 	}
 

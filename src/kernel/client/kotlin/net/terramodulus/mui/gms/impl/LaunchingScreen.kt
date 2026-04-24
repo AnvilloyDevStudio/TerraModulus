@@ -23,7 +23,7 @@ private val BG_COLOR = floatArrayOf(.145F, .776F, .768F)
 
 private const val ANI_DURATION = .75F // in second
 
-private const val PAUSE_DURATION = 1 // in second
+private const val PAUSE_DURATION = 2 // in second
 
 internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private var stage = 0
@@ -60,7 +60,6 @@ internal class LaunchingScreen(renderSystemHandle: RenderSystem.Handle) : Screen
 
 			1 -> if (elapsed >= PAUSE_DURATION) {
 				stage = 2
-				Thread.sleep(2000)
 				last = current
 			}
 
