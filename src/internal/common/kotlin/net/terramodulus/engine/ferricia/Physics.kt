@@ -31,6 +31,13 @@ internal object Physics {
 
 	/**
 	 * @param handle PhyCollisionManager pointer
+	 * @param friction Coulomb friction coefficient, mu
+	 */
+	@JvmName("setPhyCollisionManagerFriction")
+	external fun setPhyCollisionManagerFriction(handle: ULong, friction: Double)
+
+	/**
+	 * @param handle PhyCollisionManager pointer
 	 * @param spaceHandle OdeSpace pointer
 	 */
 	@JvmName("omitPhyCollisionManagerSpace")
@@ -42,6 +49,13 @@ internal object Physics {
 	 */
 	@JvmName("newPhyWorld")
 	external fun newPhyWorld(handle: ULong): ULong
+
+	/**
+	 * @param handle PhyWorld pointer
+	 * @param gravity `[x, y, z]`
+	 */
+	@JvmName("setPhyWorldGravity")
+	external fun setPhyWorldGravity(handle: ULong, gravity: DoubleArray)
 
 	/**
 	 * @param handle PhyWorld pointer
@@ -93,6 +107,13 @@ internal object Physics {
 	 */
 	@JvmName("setPhyBodyLinearVel")
 	external fun setPhyBodyLinearVel(handle: ULong, data: DoubleArray)
+
+	/**
+	 * @param handle PhyBody pointer; OdeBody must be valid
+	 * @param mode whether the World's gravity influences
+	 */
+	@JvmName("setPhyBodyGravityMode")
+	external fun setPhyBodyGravityMode(handle: ULong, mode: Boolean)
 
 	/**
 	 * @param handle PhyBody pointer; OdeBody must be valid

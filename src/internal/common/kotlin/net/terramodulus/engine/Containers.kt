@@ -11,6 +11,8 @@ data class Quat(val w: Double, val i: Double, val j: Double, val k: Double) {
 
 data class Vec3D(val x: Double, val y: Double, val z: Double) {
 	companion object {
+		val ZERO = Vec3D(0.0, 0.0, 0.0)
+
 		/**
 		 * @param array array containing 3 double values
 		 */

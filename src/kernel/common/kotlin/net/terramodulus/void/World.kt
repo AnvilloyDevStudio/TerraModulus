@@ -11,6 +11,7 @@ import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
 import net.terramodulus.engine.Vec3D
 import java.io.Closeable
+import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -18,12 +19,29 @@ class World(commander: Ymir) : Closeable {
 	private val env = PhyEnv()
 	private val world = env.createWorld()
 
+	var gravity: Vec3D by world::gravity
+	var frictionMode: FrictionMode by Delegates.observable(FrictionMode.Infinite) { _, _, new ->
+		when (new) {
+			FrictionMode.Zero -> world.setFriction(0.0)
+			FrictionMode.Limited -> world.setFriction(friction)
+			FrictionMode.Infinite -> world.setFriction(Double.POSITIVE_INFINITY)
+		}
+	}
+	var friction: Double by Delegates.observable(1.0) { _, _, new ->
+		if (frictionMode == FrictionMode.Limited) world.setFriction(new)
+	}
+
+	enum class FrictionMode {
+		Zero, Limited, Infinite
+	}
+
 	val objects = HashMap<ObjId, VoidGeom>()
 	val mainSpace = world.newSpace()
 	// Floor at y=-100
 	val floor = world.createGeomPlane(doubleArrayOf(0.0, 1.0, 0.0, -100.0))
 
 	init {
+		gravity = Vec3D(0.0, -9.81, 0.0)
 		floor.setBits(1u, 1u.inv())
 		world.omitSpace(mainSpace)
 		// Spawn point
@@ -32,7 +50,7 @@ class World(commander: Ymir) : Closeable {
 		objects[ObjId.randomUnique(objects)] = commander.wrapChar(
 			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply {
 				addGeom(createGeomSphere(.5))
-				setPos(Vec3D(0.0, 1.0, 0.0))
+				pos = Vec3D(0.0, 1.0, 0.0)
 			}
 		)
 		// Test Objects

@@ -11,6 +11,7 @@ import net.terramodulus.engine.ferricia.Gwr.newCamera
 import net.terramodulus.engine.ferricia.Gwr.refreshCameraPos
 import net.terramodulus.engine.ferricia.Gwr.setCameraZoomLevel
 import java.io.Closeable
+import kotlin.properties.Delegates
 
 class Camera3D internal constructor(private val canvas: Canvas, pos: FloatArray) : Closeable {
 	internal val handle = newCamera(canvas.handle, pos)
@@ -19,7 +20,9 @@ class Camera3D internal constructor(private val canvas: Canvas, pos: FloatArray)
 
 	fun refreshPos(pos: FloatArray) = refreshCameraPos(handle, pos)
 
-	fun setZoomLevel(zoomLevel: Float) = setCameraZoomLevel(handle, zoomLevel)
+	var zoomLevel: Float by Delegates.observable(1F) { _, _, new ->
+		setCameraZoomLevel(handle, new)
+	}
 
 	fun renderGwrGeo(drawable: WorldObjDrawable, programHandle: ULong) =
 		drawGwrObj(canvas.handle, handle, drawable.handle, programHandle)

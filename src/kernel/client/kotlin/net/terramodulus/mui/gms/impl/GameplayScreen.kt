@@ -24,6 +24,7 @@ import net.terramodulus.mui.gms.Component
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
 import net.terramodulus.mui.input.InputSystem
+import net.terramodulus.util.logging.logger
 import net.terramodulus.void.World
 import kotlin.math.PI
 import kotlin.math.sqrt
@@ -39,6 +40,14 @@ private const val MASS = 1.0
 private const val MAX_SPEED = PI * PI // reachable by autonomous movement
 private const val MAX_ACC = PI * PI // without other forces, reaching MAX_SPEED in one second
 private const val MOVE_EPSILON = .1 // smallest acc to apply
+private const val MIN_GRAVITY = 1.0
+private const val MAX_GRAVITY = 20.0
+private const val MIN_FRICTION = 1.0 / 16.0
+private const val MAX_FRICTION = 64.0
+private const val MIN_ZOOM = 1.0 / 4.0
+private const val MAX_ZOOM = 4
+
+private val logger = logger {}
 
 internal class GameplayScreen(private val core: TerraModulus, private val camera: Camera3D, renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private val geoShaders = camera.loadGeoShaders(
@@ -113,7 +122,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		fun move(dir: Vector3D) {
 			if (dir == Vector3D.ZERO) return // avoid math errors and computations
 			val dir = Vec3D(dir.x, dir.y, dir.z).normalize()
-			val curVel = doubleArrayToVec3D(phyBody.getLinearVel())
+			val curVel = phyBody.linearVel
 			// Let d be the unit vector of autonomous movement target direction,
 			//     v_c be the current velocity of body,
 			//     v_p be the scalar projection of v_c on d.
@@ -132,14 +141,13 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		}
 
 		override fun render() {
-			val pos = doubleArrayToVec3F(phyBody.getPos())
+			val pos = phyBody.pos.toVec3F()
 			drawable.setPos(pos)
 			camera.refreshPos(pos.toArray())
 			super.render()
 		}
 
-		override val pos: Vec3D
-			get() = doubleArrayToVec3D(phyBody.getPos())
+		override var pos: Vec3D by phyBody::pos
 	}
 
 	private fun Vec3D.normalize(): Vec3D {
@@ -148,6 +156,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 	}
 
 	private operator fun Vec3D.times(d: Double) = Vec3D(x * d, y * d, z * d)
+	private operator fun Vec3D.div(d: Double) = Vec3D(x / d, y / d, z / d)
 	private operator fun Vec3D.minus(other: Vec3D) = Vec3D(x - other.x, y - other.y, z - other.z)
 	// dot product
 	private operator fun Vec3D.times(other: Vec3D) = x * other.x + y * other.y + z * other.z
@@ -157,12 +166,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 	// magnitude or length
 	private fun Vec3D.mag() = sqrt(squared())
 
-	private fun PhyBody.setLinearVel(vel: Vector3D) {
-		setLinearVel(Vec3D(vel.x, vel.y, vel.z))
-	}
-
-	private fun doubleArrayToVec3F(pos: DoubleArray) = Vec3F(pos[0].toFloat(), pos[1].toFloat(), pos[2].toFloat())
-	private fun doubleArrayToVec3D(pos: DoubleArray) = Vec3D(pos[0], pos[1], pos[2])
+	private fun Vec3D.toVec3F() = Vec3F(x.toFloat(), y.toFloat(), z.toFloat())
 
 	private fun Direction6C.toKey() = when (this) {
 		Direction6C.North -> InputSystem.Keys.W
@@ -182,7 +186,141 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		Direction6C.Down -> Vector3D(.0, -1.0, .0)
 	}
 
+	private fun Vec3D.display() = "[$x, $y, $z]"
+
 	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
+		// Those keys are not related to GUI, so they are fine to be here.
+		if (inputSystem.condition { Q.justDown() }) {
+			// Query position of sphere
+			logger.info { "Position: ${player.pos.display()}" }
+		}
+		if (inputSystem.condition { R.justDown() }) {
+			// Query velocity of sphere
+			// Note: Acceleration is hard to be queried as force is zeroed after each world step
+			logger.info { "Velocity: ${player.phyBody.linearVel.display()}" }
+		}
+		if (inputSystem.condition { U.justDown() }) {
+			// Query gravity of world and gravity mode of (influence to) sphere
+			logger.info { "Gravity: ${core.world!!.gravity.display()}; influence: ${player.phyBody.gravityMode}" }
+		}
+		if (inputSystem.condition { I.justDown() }) {
+			// Toggle gravity mode of (influence to) sphere
+			player.phyBody.gravityMode = !player.phyBody.gravityMode
+			logger.info { "Gravity influence toggled: ${player.phyBody.gravityMode}" }
+		}
+		if (inputSystem.condition { O.justDown() }) {
+			// Increase world gravity
+			if (-core.world!!.gravity.y < MAX_GRAVITY) {
+				core.world!!.gravity *= 2.0
+				logger.info {
+					"Gravity increased: ${core.world!!.gravity.display()}".let {
+						if (!player.phyBody.gravityMode) "$it (ineffective)" else it
+					}
+				}
+			} else {
+				logger.info {
+					"Gravity maximized: ${core.world!!.gravity.display()}".let {
+						if (!player.phyBody.gravityMode) "$it (ineffective)" else it
+					}
+				}
+			}
+		}
+		if (inputSystem.condition { P.justDown() }) {
+			// Decrease world gravity
+			if (-core.world!!.gravity.y > MIN_GRAVITY) {
+				core.world!!.gravity /= 2.0
+				logger.info {
+					"Gravity decreased: ${core.world!!.gravity.display()}".let {
+						if (!player.phyBody.gravityMode) "$it (ineffective)" else it
+					}
+				}
+			} else {
+				logger.info {
+					"Gravity minimized: ${core.world!!.gravity.display()}".let {
+						if (!player.phyBody.gravityMode) "$it (ineffective)" else it
+					}
+				}
+			}
+		}
+		if (inputSystem.condition { J.justDown() }) {
+			// Query friction states
+			logger.info { "Friction: ${core.world!!.friction}; mode: ${core.world!!.frictionMode}" }
+		}
+		if (inputSystem.condition { K.justDown() }) {
+			// Toggle friction mode
+			core.world!!.frictionMode = World.FrictionMode.entries[
+				(core.world!!.frictionMode.ordinal + 1) % World.FrictionMode.entries.size
+			]
+			logger.info {
+				"Friction mode toggled: ${core.world!!.frictionMode}".let {
+					if (core.world!!.frictionMode == World.FrictionMode.Limited) "$it ; friction: ${core.world!!.friction}" else it
+				}
+			}
+		}
+		if (inputSystem.condition { L.justDown() }) {
+			// Increase friction (for Limited mode)
+			if (core.world!!.friction < MAX_FRICTION) {
+				core.world!!.friction *= 2
+				logger.info {
+					"Friction increased: ${core.world!!.friction}".let {
+						if (core.world!!.frictionMode != World.FrictionMode.Limited) "$it (ineffective)" else it
+					}
+				}
+			} else {
+				logger.info {
+					"Friction maximized: ${core.world!!.friction}".let {
+						if (core.world!!.frictionMode != World.FrictionMode.Limited) "$it (ineffective)" else it
+					}
+				}
+			}
+		}
+		if (inputSystem.condition { M.justDown() }) {
+			// Decrease friction (for Limited mode)
+			if (core.world!!.friction > MIN_FRICTION) {
+				core.world!!.friction /= 2
+				logger.info {
+					"Friction decreased: ${core.world!!.friction}".let {
+						if (core.world!!.frictionMode != World.FrictionMode.Limited) "$it (ineffective)" else it
+					}
+				}
+			} else {
+				logger.info {
+					"Friction minimized: ${core.world!!.friction}".let {
+						if (core.world!!.frictionMode != World.FrictionMode.Limited) "$it (ineffective)" else it
+					}
+				}
+			}
+		}
+		if (inputSystem.condition { N.justDown() }) {
+			// Reset velocity of sphere to zero
+			player.phyBody.linearVel = Vec3D.ZERO
+			logger.info { "Reset velocity to zero" }
+		}
+		// This is problematic and difficult to be resolved.
+// 		if (inputSystem.condition { Z.justDown() }) {
+// 			// Reset position of sphere to spawn point
+// 			player.pos = Vec3D(0.0, 1.0, 0.0)
+// 			logger.info { "Reset position to spawn point" }
+// 		}
+		if (inputSystem.condition { Equals.justDown() }) {
+			// Zoom in camera
+			if (camera.zoomLevel < MAX_ZOOM) {
+				camera.zoomLevel *= 2
+				logger.info { "Zoomed in: ${camera.zoomLevel}" }
+			} else {
+				logger.info { "Zoom maximized: ${camera.zoomLevel}" }
+			}
+		}
+		if (inputSystem.condition { Minus.justDown() }) {
+			// Zoom out camera
+			if (camera.zoomLevel > MIN_ZOOM) {
+				camera.zoomLevel /= 2
+				logger.info { "Zoomed out: ${camera.zoomLevel}" }
+			} else {
+				logger.info { "Zoom minimized: ${camera.zoomLevel}" }
+			}
+		}
+
 		val dirs = ArrayList<Vector3D>()
 		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
 		player.move(dirs.fold(Vector3D.ZERO, Vector3D::plus))

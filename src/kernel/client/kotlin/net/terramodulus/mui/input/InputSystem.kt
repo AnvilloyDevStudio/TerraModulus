@@ -38,6 +38,8 @@ class InputSystem internal constructor() {
 		Y(KeyId(24u)),
 		Z(KeyId(25u)),
 		Space(KeyId(40u)),
+		Minus(KeyId(41u)),
+		Equals(KeyId(42u)),
 		LShift(KeyId(205u)),
 		;
 		fun down() = KeyPredicate.Down(id)
@@ -84,6 +86,7 @@ class InputSystem internal constructor() {
 
 	private val keysScope = KeysScope()
 
+	// This class may be programmatically generated
 	inner class KeysScope internal constructor() {
 		val A = Keys.A
 		val B = Keys.B
@@ -112,6 +115,8 @@ class InputSystem internal constructor() {
 		val Y = Keys.Y
 		val Z = Keys.Z
 		val Space = Keys.Space
+		val Minus = Keys.Minus
+		val Equals = Keys.Equals
 		val LShift = Keys.LShift
 	}
 
