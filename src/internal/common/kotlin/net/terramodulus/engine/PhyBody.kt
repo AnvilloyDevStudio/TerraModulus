@@ -5,7 +5,9 @@
 
 package net.terramodulus.engine
 
+import net.terramodulus.engine.ferricia.Physics.addPhyBodyForce
 import net.terramodulus.engine.ferricia.Physics.addPhyBodyGeom
+import net.terramodulus.engine.ferricia.Physics.getPhyBodyLinearVel
 import net.terramodulus.engine.ferricia.Physics.getPhyBodyPos
 import net.terramodulus.engine.ferricia.Physics.newMassSphereTotal
 import net.terramodulus.engine.ferricia.Physics.newPhyBody
@@ -25,4 +27,8 @@ class PhyBody internal constructor(worldHandle: ULong, mass: Mass) {
 	fun setLinearVel(vel: Vec3D) = setPhyBodyLinearVel(handle, vel.toArray())
 
 	fun getPos() = getPhyBodyPos(handle)
+
+	fun getLinearVel() = getPhyBodyLinearVel(handle)
+
+	fun addForce(force: Vec3D) = addPhyBodyForce(handle, force.toArray())
 }

@@ -25,10 +25,9 @@ import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
 import net.terramodulus.mui.input.InputSystem
 import net.terramodulus.void.World
-import java.io.File
 import kotlin.math.PI
+import kotlin.math.sqrt
 import kotlin.random.Random
-import kotlin.uuid.ExperimentalUuidApi
 
 private val WHITE = Rgba(255, 255, 255, 255)
 private val RED = Rgba(255, 0, 0, 255)
@@ -36,6 +35,10 @@ private val GREEN = Rgba(0, 255, 0, 255)
 private val BLUE = Rgba(0, 0, 255, 255)
 private val STD_SCALE = Vec3F(.5F, .5F, .5F)
 private val IDENT_ROT = Quat(1.0, .0, .0, .0)
+private const val MASS = 1.0
+private const val MAX_SPEED = PI * PI // reachable by autonomous movement
+private const val MAX_ACC = PI * PI // without other forces, reaching MAX_SPEED in one second
+private const val MOVE_EPSILON = .1 // smallest acc to apply
 
 internal class GameplayScreen(private val core: TerraModulus, private val camera: Camera3D, renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private val geoShaders = camera.loadGeoShaders(
@@ -107,9 +110,26 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 
 	private inner class PlayerVoidGeom(override val phyBody: PhyBody, drawable: WorldObjDrawable) :
 		VoidGeom(drawable), World.PlayerVoidGeom {
-		// There should be max speed/accerlation, so this is likely not needed in actual implementation.
-		// However, for demonstration purpose, this is simplified to just changing velocities.
-		fun changeVelocity(vel: Vector3D) = phyBody.setLinearVel(vel * PI)
+		fun move(dir: Vector3D) {
+			if (dir == Vector3D.ZERO) return // avoid math errors and computations
+			val dir = Vec3D(dir.x, dir.y, dir.z).normalize()
+			val curVel = doubleArrayToVec3D(phyBody.getLinearVel())
+			// Let d be the unit vector of autonomous movement target direction,
+			//     v_c be the current velocity of body,
+			//     v_p be the scalar projection of v_c on d.
+			// v_p = v_c * d, may be negative
+			// Autonomous acceleration is made only if v_p < MAX_SPEED.
+			val projVel = curVel * dir
+			if (projVel < MAX_SPEED) {
+				// Let v_d be the delta velocity in direction of d,
+				//     a_d be the delta acceleration to be made.
+				// v_t = MAX_SPEED - v_p, must be positive
+				// a_d = dir * clamp(v_t / 1 s, EPSILON, MAX)
+				val deltaVel = MAX_SPEED - projVel
+				val deltaAcc = dir * deltaVel.coerceIn(MOVE_EPSILON, MAX_ACC)
+				phyBody.addForce(deltaAcc * MASS)
+			}
+		}
 
 		override fun render() {
 			val pos = doubleArrayToVec3F(phyBody.getPos())
@@ -121,6 +141,21 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		override val pos: Vec3D
 			get() = doubleArrayToVec3D(phyBody.getPos())
 	}
+
+	private fun Vec3D.normalize(): Vec3D {
+		val mag = mag()
+		return Vec3D(x / mag, y / mag, z / mag)
+	}
+
+	private operator fun Vec3D.times(d: Double) = Vec3D(x * d, y * d, z * d)
+	private operator fun Vec3D.minus(other: Vec3D) = Vec3D(x - other.x, y - other.y, z - other.z)
+	// dot product
+	private operator fun Vec3D.times(other: Vec3D) = x * other.x + y * other.y + z * other.z
+
+	// dot product with itself
+	private fun Vec3D.squared() = x * x + y * y + z * z
+	// magnitude or length
+	private fun Vec3D.mag() = sqrt(squared())
 
 	private fun PhyBody.setLinearVel(vel: Vector3D) {
 		setLinearVel(Vec3D(vel.x, vel.y, vel.z))
@@ -138,7 +173,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		Direction6C.Down -> InputSystem.Keys.LShift
 	}
 
-	private fun Direction6C.toVelocity() = when (this) {
+	private fun Direction6C.toVector() = when (this) {
 		Direction6C.North -> Vector3D(.0, .0, -1.0)
 		Direction6C.South -> Vector3D(.0, .0, 1.0)
 		Direction6C.West -> Vector3D(-1.0, .0, .0)
@@ -148,9 +183,9 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 	}
 
 	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
-		val velocities = ArrayList<Vector3D>()
-		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) velocities.add(it.toVelocity()) }
-		player.changeVelocity(velocities.fold(Vector3D.ZERO, Vector3D::plus))
+		val dirs = ArrayList<Vector3D>()
+		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
+		player.move(dirs.fold(Vector3D.ZERO, Vector3D::plus))
 	}
 
 	private inner class GameplayRenderer : Component() {

@@ -11,24 +11,29 @@ import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
 import net.terramodulus.engine.Vec3D
 import java.io.Closeable
-import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.random.nextInt
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class World(commander: Ymir) : Closeable {
 	private val env = PhyEnv()
 	private val world = env.createWorld()
 
 	val objects = HashMap<ObjId, VoidGeom>()
+	val mainSpace = world.newSpace()
+	// Floor at y=-100
+	val floor = world.createGeomPlane(doubleArrayOf(0.0, 1.0, 0.0, -100.0))
 
 	init {
+		floor.setBits(1u, 1u.inv())
+		world.omitSpace(mainSpace)
 		// Spawn point
 		objects[ObjId.randomUnique(objects)] = commander.wrapCube(createCube(.0, .0, .0), .0, .0, .0)
 		// Main Character
 		objects[ObjId.randomUnique(objects)] = commander.wrapChar(
-			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply { addGeom(createGeomSphere(.5)) }
+			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply {
+				addGeom(createGeomSphere(.5))
+				setPos(Vec3D(0.0, 1.0, 0.0))
+			}
 		)
 		// Test Objects
 		randomCubes(commander).forEach { objects[ObjId.randomUnique(objects)] = it }
@@ -83,9 +88,9 @@ class World(commander: Ymir) : Closeable {
 				for (xs in booleanArrayOf(false, true)) {
 					for (zs in booleanArrayOf(false, true)) {
 						println("Generating: ${++i}/$total")
-						val xx = (if (xs) x else -x).toDouble() * interval;
-						val zz = (if (zs) z else -z).toDouble() * interval;
-						val origin = Vec3D(xx, Random.nextInt(-3..3).toDouble(), zz);
+						val xx = (if (xs) x else -x).toDouble() * interval
+						val zz = (if (zs) z else -z).toDouble() * interval
+						val origin = Vec3D(xx, Random.nextInt(-3..3).toDouble(), zz)
 						val visited = mutableSetOf(Vec3D(0.0, 0.0, 0.0))
 						val heads = ArrayDeque<Vec3D>()
 						heads.addLast(Vec3D(0.0, 0.0, 0.0))
@@ -117,10 +122,11 @@ class World(commander: Ymir) : Closeable {
 	private fun createCube(x: Double, y: Double, z: Double): PhyGeomBox {
 		val cube = createGeomBox(1.0, 1.0, 1.0)
 		cube.setPosition(doubleArrayOf(x, y, z))
+		cube.setBits(1u, 1u.inv())
 		return cube
 	}
 
-	internal fun createGeomBox(x: Double, y: Double, z: Double) = world.createGeomBox(doubleArrayOf(x, y, z))
+	internal fun createGeomBox(x: Double, y: Double, z: Double) = mainSpace.createGeomBox(doubleArrayOf(x, y, z))
 	internal fun createGeomSphere(radius: Double) = world.createGeomSphere(radius)
 
 	fun tick() = world.tick()
