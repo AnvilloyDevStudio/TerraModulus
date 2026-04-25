@@ -6,22 +6,22 @@
 package net.terramodulus.mui.gfx
 
 import net.terramodulus.core.TerraModulus
-import net.terramodulus.core.getPathOfResource
+import net.terramodulus.core.getResourceAsBytes
+import net.terramodulus.core.getResourceAsString
 import net.terramodulus.engine.Canvas
 import net.terramodulus.engine.GeomDrawable
 import net.terramodulus.engine.MeshDrawable
 import net.terramodulus.mui.gms.impl.GameplayScreen
-import java.io.File
 
 class RenderSystem internal constructor(private val core: TerraModulus, private val canvas: Canvas) {
 	val handle: Handle = HandleImpl()
 	private val texShaders = canvas.loadTexShaders(
-		getPathOfResource("/gms_tex.vsh"),
-		getPathOfResource("/gms_tex.fsh")
+		getResourceAsString("/gms_tex.vsh"),
+		getResourceAsString("/gms_tex.fsh")
 	)
 	private val geoShaders = canvas.loadGeoShaders(
-		getPathOfResource("/gms_geo.vsh"),
-		getPathOfResource("/gms_geo.fsh")
+		getResourceAsString("/gms_geo.vsh"),
+		getResourceAsString("/gms_geo.fsh")
 	)
 	val targetFps = 1000;
 
@@ -32,7 +32,7 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 	}
 
 	private inner class HandleImpl : Handle {
-		override fun loadTexture(path: String) = canvas.loadImage(getPathOfResource(path))
+		override fun loadTexture(path: String) = canvas.loadImage(getResourceAsBytes(path))
 
 		override fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float) {
 			canvas.setClearColor(red, green, blue, alpha)

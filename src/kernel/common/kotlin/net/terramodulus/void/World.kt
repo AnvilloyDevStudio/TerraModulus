@@ -10,10 +10,13 @@ import net.terramodulus.engine.PhyEnv
 import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
 import net.terramodulus.engine.Vec3D
+import net.terramodulus.util.logging.logger
 import java.io.Closeable
 import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.random.nextInt
+
+private val logger = logger {}
 
 class World(commander: Ymir) : Closeable {
 	private val env = PhyEnv()
@@ -105,7 +108,7 @@ class World(commander: Ymir) : Closeable {
 			for (z in 1..10) {
 				for (xs in booleanArrayOf(false, true)) {
 					for (zs in booleanArrayOf(false, true)) {
-						println("Generating: ${++i}/$total")
+						logger.info { "Generating: ${++i}/$total" }
 						val xx = (if (xs) x else -x).toDouble() * interval
 						val zz = (if (zs) z else -z).toDouble() * interval
 						val origin = Vec3D(xx, Random.nextInt(-3..3).toDouble(), zz)

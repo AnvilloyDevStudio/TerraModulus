@@ -6,6 +6,8 @@
 package net.terramodulus.common.core
 
 import joptsimple.OptionException
+import net.terramodulus.core.NAME
+import net.terramodulus.core.VERSION
 import net.terramodulus.engine.initEngine
 import net.terramodulus.util.exception.Error
 import net.terramodulus.util.exception.Fault
@@ -44,6 +46,7 @@ fun setupInit() {
 }
 
 fun run(instance: AbstractTerraModulus) {
+	logger.info { "==== $NAME $VERSION ====" }
 	try {
 		instance.run()
 	} catch (e: Throwable) {

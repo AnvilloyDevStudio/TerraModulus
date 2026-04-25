@@ -43,7 +43,7 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 		return camera3D!!
 	}
 
-	fun loadImage(path: String) = loadImageToCanvas(handle, path)
+	fun loadImage(data: ByteArray) = loadImageToCanvas(handle, data)
 
 	fun loadGeoShaders(vsh: String, fsh: String) = geoShaders(vsh, fsh)
 

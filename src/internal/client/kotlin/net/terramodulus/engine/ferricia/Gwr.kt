@@ -7,8 +7,8 @@ package net.terramodulus.engine.ferricia
 
 internal object Gwr {
 	/**
-	 * @param vsh path to vector shader
-	 * @param fsh path to fragment shader
+	 * @param vsh source code of vector shader
+	 * @param fsh source code of fragment shader
 	 * @return GWR Geo Shader Program handle pointer
 	 */
 	@JvmName("geoShaders")

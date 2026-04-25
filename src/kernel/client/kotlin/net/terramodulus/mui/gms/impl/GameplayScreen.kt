@@ -6,7 +6,7 @@
 package net.terramodulus.mui.gms.impl
 
 import net.terramodulus.core.TerraModulus
-import net.terramodulus.core.getPathOfResource
+import net.terramodulus.core.getResourceAsString
 import net.terramodulus.engine.Camera3D
 import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyGeom
@@ -51,8 +51,8 @@ private val logger = logger {}
 
 internal class GameplayScreen(private val core: TerraModulus, private val camera: Camera3D, renderSystemHandle: RenderSystem.Handle) : Screen() {
 	private val geoShaders = camera.loadGeoShaders(
-		getPathOfResource("/gwr_geo.vsh"),
-		getPathOfResource("/gwr_geo.fsh"),
+		getResourceAsString("/gwr_geo.vsh"),
+		getResourceAsString("/gwr_geo.fsh"),
 	)
 
 	private lateinit var player: PlayerVoidGeom

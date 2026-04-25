@@ -10,7 +10,7 @@ plugins {
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
-    version = "0.1.0"
+    version = "0.0.1"
 
     repositories {
         mavenCentral()
@@ -96,6 +96,13 @@ project(":internal:common").dependencies {
     implementation("net.java.dev.jna:jna-platform:5.17.0")
 }
 
+project(":kernel:client").tasks.named<Jar>("jar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    listOf(project(":internal:common"), project(":internal:client"), project(":kernel:common")).forEach {
+        from(it.sourceSets.main.get().output)
+    }
+}
+
 configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     apply(plugin = "application")
 
@@ -109,32 +116,65 @@ enum class Target {
 }
 
 /** Build Ferricia Engine with Cargo */
-fun Exec.configureCargoBuild(target: Target) {
+tasks.register<Exec>("cargoBuildClient") {
     workingDir = rootProject.file("ferricia")
     commandLine("cargo", "build")
     if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
     args("-F")
-    when (target) {
-        Target.CLIENT -> args("client")
-        Target.SERVER -> args("server")
-    }
+    args("client")
+}
+tasks.register<Exec>("cargoBuildServer") {
+    workingDir = rootProject.file("ferricia")
+    commandLine("cargo", "build")
+    if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
+    args("-F")
+    args("server")
 }
 
 tasks.register<Exec>("runClient") {
     group = "application"
     description = "Run client"
-    finalizedBy(":kernel:client:run")
-    configureCargoBuild(Target.CLIENT)
+    dependsOn("cargoBuildClient")
+    dependsOn(":kernel:client:run")
 }
-
+project(":kernel:client").tasks.named("run").get().mustRunAfter(tasks.named("cargoBuildClient"))
 tasks.register<Exec>("runServer") {
     group = "application"
     description = "Run server"
-    finalizedBy(":kernel:server:run")
-    configureCargoBuild(Target.SERVER)
+    dependsOn("cargoBuildServer")
+    dependsOn(":kernel:server:run")
 }
+project(":kernel:server").tasks.named("run").get().mustRunAfter(tasks.named("cargoBuildServer"))
 
 configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
+    distributions {
+        main {
+            contents {
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                into("lib") {
+                    from(
+                        "$rootDir/ferricia/target/debug/ferricia.dll",
+                        "$rootDir/ferricia/target/debug/oded.dll",
+                        "$rootDir/ferricia/target/debug/OpenAL32.dll",
+                        "$rootDir/ferricia/target/debug/SDL3.dll",
+                    )
+                }
+            }
+        }
+    }
+
+    tasks.named<CreateStartScripts>("startScripts") {
+        defaultJvmOpts = listOf("-Djava.library.path=../lib")
+    }
+
+    tasks.withType<Tar> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
+    tasks.withType<Zip> {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
     tasks.named<JavaExec>("run") {
         jvmArgs("-Djava.library.path=${rootProject.file("ferricia/target/${
             if (project.hasProperty("release")) "release" else "debug"

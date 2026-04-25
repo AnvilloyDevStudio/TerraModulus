@@ -69,7 +69,6 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 		val rectDim = RectangleI.withPoints(7, 7, 393, 33)
 		val length = rectDim.width
 		var progress: Float by Delegates.observable(0f) { _, _, _ ->
-			println("Progress: ${progress * length}")
 			rect.setPos(7, 7, rectDim.x + (progress * length).toInt(), 33)
 		}
 		val rect = GuiRect(7, 7, 7, 33, 240, 240, 240, 255)

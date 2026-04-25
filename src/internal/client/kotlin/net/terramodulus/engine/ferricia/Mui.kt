@@ -85,11 +85,11 @@ internal object Mui {
 
 	/**
 	 * @param canvasHandle Canvas handle pointer
-	 * @param path path to RGB image
+	 * @param data bytes of RGB image
 	 * @return Texture ID
 	 */
 	@JvmName("loadImageToCanvas")
-	external fun loadImageToCanvas(canvasHandle: ULong, path: String): UInt
+	external fun loadImageToCanvas(canvasHandle: ULong, data: ByteArray): UInt
 
 	@JvmName("clearCanvas")
 	external fun clearCanvas()
@@ -98,16 +98,16 @@ internal object Mui {
 	external fun setCanvasClearColor(r: Float, g: Float, b: Float, a: Float)
 
 	/**
-	 * @param vsh path to vector shader
-	 * @param fsh path to fragment shader
+	 * @param vsh source code of vector shader
+	 * @param fsh source code of fragment shader
 	 * @return Geo Shader Program handle pointer
 	 */
 	@JvmName("geoShaders")
 	external fun geoShaders(vsh: String, fsh: String): ULong
 
 	/**
-	 * @param vsh path to vector shader
-	 * @param fsh path to fragment shader
+	 * @param vsh source code of vector shader
+	 * @param fsh source code of fragment shader
 	 * @return Tex Shader Program handle pointer
 	 */
 	@JvmName("texShaders")
