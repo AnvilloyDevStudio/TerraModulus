@@ -4,16 +4,21 @@
 
 This branch is a fork of [Minicraft+](https://github.com/MinicraftPlus/minicraft-plus-revived)
 (at [`58460dd`](https://github.com/MinicraftPlus/minicraft-plus-revived/commit/58460ddf4860423a915289d96152150cc09238f6)),
-with several changes conducted.
+with several changes conducted. This was primarily served for the report initiated by [EFP 2](https://efp.terramodulus.net/efp/efp002),
+as [EFP 3](https://efp.terramodulus.net/efp/efp003), for future development of current TerraModulus, in various aspects.
+However, it is free to browse and experience past unmerged features previously aimed in Minicraft+.
 
 ## Information
 
 Active development is in the [main branch](https://github.com/AnvilloyDevStudio/TerraModulus/tree/main). Early Stage has been ended at
 [`b2a8b103`](https://github.com/AnvilloyDevStudio/TerraModulus/commit/b2a8b103afe7c9122d8b40b1d2f20dc7fcc98d5c)
-in this branch. Only very early development changes would be made here, and referred to the main branch.
+in this branch. Only very early development changes would be made here, and referred by the main branch.
 No any open contribution related to this is allowed, but you may fork and/or build this source code yourself.
+Note that at the moment, the build always fails that conflicts and errors are remain unresolved, but resolution is not yet done.
 
-### Early Stage
+### Changes
+
+Several features from Minicraft+ were removed and disabled via [#81](https://github.com/bitsusei/TerraModulus/pull/81) for the reasons that TerraModulus would not rely on those features, and those features were actually broken or unsupported.
 
 Save directory will be kept under `/playminicraft/mods`, but named as `TerraModulus` instead of `Minicraft_Plus`.
 Mainly it is the migration of my pull requests from Minicraft+ to here.
