@@ -15,6 +15,9 @@ import java.io.Closeable
 import kotlin.properties.Delegates
 import kotlin.random.Random
 import kotlin.random.nextInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 
 private val logger = logger {}
 
@@ -60,9 +63,20 @@ class World(commander: Ymir) : Closeable {
 		randomCubes(commander).forEach { objects[ObjId.randomUnique(objects)] = it }
 		// Running in parallel
 		Thread {
+			val timeSource = TimeSource.Monotonic
+			val interval = 1.seconds / 20 // 20 Hz
+			var lastMark = timeSource.markNow()
 			while(true) {
+				// uncalculated ticks are not accumulated at this stage, *skipped* instead
 				tick()
-				Thread.sleep(1000 / 20) // in 20 Hz
+				val now = timeSource.markNow()
+				// remaining time after elapsed time used to maintain stable interval
+				val rem = interval - (now - lastMark)
+				if (rem > Duration.ZERO) { // sleeps the remaining time only when it is positive
+					Thread.sleep(rem.inWholeMilliseconds)
+				}
+				// makes sure timing does not include slept time
+				lastMark = timeSource.markNow()
 			}
 		}.start()
 	}
