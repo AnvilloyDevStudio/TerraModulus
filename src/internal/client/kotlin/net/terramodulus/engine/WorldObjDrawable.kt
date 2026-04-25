@@ -9,22 +9,22 @@ import net.terramodulus.engine.ferricia.Gwr.newMeshGeomCube
 import net.terramodulus.engine.ferricia.Gwr.newMeshGeomSphere
 import net.terramodulus.engine.ferricia.Gwr.updateWorldObjModel
 
-sealed class WorldObjDrawable(internal val handle: ULong, private var pos: Vec3F, private var scale: Vec3F, private var rot: Quat) {
-	fun updateModel(px: Float, py: Float, pz: Float, sx: Float, sy: Float, sz: Float, w: Double, i: Double, j: Double, k: Double) =
-		updateWorldObjModel(handle, floatArrayOf(px, py, pz, sx, sy, sz), doubleArrayOf(w, i, j, k))
-	fun updateModel(pos: Vec3F, scale: Vec3F, rot: Quat) =
+sealed class WorldObjDrawable(internal val handle: ULong, private var pos: Vec3D, private var scale: Vec3D, private var rot: Quat) {
+	fun updateModel(px: Double, py: Double, pz: Double, sx: Double, sy: Double, sz: Double, w: Double, i: Double, j: Double, k: Double) =
+		updateWorldObjModel(handle, doubleArrayOf(px, py, pz, w, i, j, k, sx, sy, sz))
+	fun updateModel(pos: Vec3D, scale: Vec3D, rot: Quat) =
 		updateModel(pos.x, pos.y, pos.z, scale.x, scale.y, scale.z, rot.w, rot.i, rot.j, rot.k)
 
 	init {
 		updateModel(pos, scale, rot)
 	}
 
-	fun setPos(value: Vec3F) {
+	fun setPos(value: Vec3D) {
 		pos = value
 		updateModel(pos, scale, rot)
 	}
 
-	fun setScale(value: Vec3F) {
+	fun setScale(value: Vec3D) {
 		scale = value
 		updateModel(pos, scale, rot)
 	}
@@ -35,8 +35,8 @@ sealed class WorldObjDrawable(internal val handle: ULong, private var pos: Vec3F
 	}
 }
 
-class SimpleMesh3dGeomCube(width: Float, rgba: Rgba, pos: Vec3F, scale: Vec3F, rot: Quat) :
+class SimpleMesh3dGeomCube(width: Float, rgba: Rgba, pos: Vec3D, scale: Vec3D, rot: Quat) :
 	WorldObjDrawable(newMeshGeomCube(width, rgba.toArray()), pos, scale, rot)
 
-class SimpleMesh3dGeomSphere(radius: Float, rgba: Rgba, pos: Vec3F, scale: Vec3F, rot: Quat) :
+class SimpleMesh3dGeomSphere(radius: Float, rgba: Rgba, pos: Vec3D, scale: Vec3D, rot: Quat) :
 	WorldObjDrawable(newMeshGeomSphere(radius, rgba.toArray()), pos, scale, rot)

@@ -54,11 +54,10 @@ internal object Gwr {
 
 	/**
 	 * @param objHandle DrawableWorldObj handle pointer
-	 * @param data1 `[px, py, pz, sx, sy, sz]`; position and scaling
-	 * @param data2 `[w, i, j, k]`; quaternion
+	 * @param data `[px, py, pz, w, i, j, k, sx, sy, sz]`; position, quaternion and scaling
 	 */
 	@JvmName("updateWorldObjModel")
-	external fun updateWorldObjModel(objHandle: ULong, data1: FloatArray, data2: DoubleArray)
+	external fun updateWorldObjModel(objHandle: ULong, data: DoubleArray)
 
 	/**
 	 * @param canvasHandle Canvas handle pointer

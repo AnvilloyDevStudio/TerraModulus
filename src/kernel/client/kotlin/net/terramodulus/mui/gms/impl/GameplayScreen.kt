@@ -34,7 +34,7 @@ private val WHITE = Rgba(255, 255, 255, 255)
 private val RED = Rgba(255, 0, 0, 255)
 private val GREEN = Rgba(0, 255, 0, 255)
 private val BLUE = Rgba(0, 0, 255, 255)
-private val STD_SCALE = Vec3F(.5F, .5F, .5F)
+private val STD_SCALE = Vec3D(.5, .5, .5)
 private val IDENT_ROT = Quat(1.0, .0, .0, .0)
 private const val MASS = 1.0
 private const val MAX_SPEED = PI * PI // reachable by autonomous movement
@@ -86,7 +86,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 			SimpleMesh3dGeomCube(
 				2F,
 				randomColor(),
-				Vec3F(x.toFloat(), y.toFloat(), z.toFloat()),
+				Vec3D(x, y, z),
 				STD_SCALE,
 				IDENT_ROT,
 			),
@@ -102,7 +102,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 
 		override fun wrapChar(phyBody: PhyBody): VoidGeom {
 			player = PlayerVoidGeom(phyBody,
-				SimpleMesh3dGeomSphere(1F, WHITE, Vec3F(0F, 1F, 0F), STD_SCALE, IDENT_ROT)
+				SimpleMesh3dGeomSphere(1F, WHITE, Vec3D(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
 			)
 			return player
 		}
@@ -141,9 +141,8 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		}
 
 		override fun render() {
-			val pos = phyBody.pos.toVec3F()
-			drawable.setPos(pos)
-			camera.refreshPos(pos.toArray())
+			drawable.setPos(phyBody.pos)
+			camera.refreshPos(phyBody.pos.toVec3F().toArray())
 			super.render()
 		}
 
