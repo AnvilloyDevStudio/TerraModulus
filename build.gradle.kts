@@ -112,34 +112,50 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     }
 }
 
-enum class Target {
-    CLIENT, SERVER;
-}
-
 /** Build Ferricia Engine with Cargo */
 tasks.register<Exec>("cargoBuildClient") {
+    onlyIf {
+        !gradle.taskGraph.hasTask(":kernel:server:jar")
+    }
     workingDir = rootProject.file("ferricia")
     commandLine("cargo", "build")
     if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
-    args("-F")
-    args("client")
+    args("-F", "client")
 }
 tasks.register<Exec>("cargoBuildServer") {
+    onlyIf {
+        !gradle.taskGraph.hasTask(":kernel:client:jar")
+    }
     workingDir = rootProject.file("ferricia")
     commandLine("cargo", "build")
     if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
-    args("-F")
-    args("server")
+    args("-F", "server")
+}
+project(":kernel:client").tasks.named("jar") { dependsOn(tasks.named("cargoBuildClient")) }
+project(":kernel:server").tasks.named("jar") { dependsOn(tasks.named("cargoBuildServer")) }
+
+tasks.register("buildClient") {
+    group = "build"
+    description = "Build client"
+    dependsOn(":kernel:client:build")
+}
+tasks.register("buildServer") {
+    group = "build"
+    description = "Build server"
+    dependsOn(":kernel:server:build")
 }
 
-tasks.register<Exec>("runClient") {
+tasks.named("run") {
+    enabled = false
+}
+tasks.register("runClient") {
     group = "application"
     description = "Run client"
     dependsOn("cargoBuildClient")
     dependsOn(":kernel:client:run")
 }
 project(":kernel:client").tasks.named("run").get().mustRunAfter(tasks.named("cargoBuildClient"))
-tasks.register<Exec>("runServer") {
+tasks.register("runServer") {
     group = "application"
     description = "Run server"
     dependsOn("cargoBuildServer")
@@ -153,14 +169,15 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
             contents {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 into("lib") {
+                    val dir = if (project.hasProperty("release")) "release" else "debug"
                     if (OperatingSystem.current().isWindows) from(
-                        "$rootDir/ferricia/target/debug/ferricia.dll",
-                        "$rootDir/ferricia/target/debug/oded.dll",
-                        "$rootDir/ferricia/target/debug/OpenAL32.dll",
-                        "$rootDir/ferricia/target/debug/SDL3.dll",
+                        "$rootDir/ferricia/target/$dir/ferricia.dll",
+                        "$rootDir/ferricia/target/$dir/oded.dll",
+                        "$rootDir/ferricia/target/$dir/OpenAL32.dll",
+                        "$rootDir/ferricia/target/$dir/SDL3.dll",
                     ) else { // suppose UNIX
                         // other libs should be installed on user's end directly
-                        from("$rootDir/ferricia/target/debug/libferricia.so")
+                        from("$rootDir/ferricia/target/$dir/libferricia.so")
                     }
                 }
             }
