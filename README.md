@@ -1,37 +1,33 @@
 [![](https://dcbadge.limes.pink/api/server/https://discord.com/invite/87DF72RqHu?style=flat)](https://discord.com/invite/87DF72RqHu)
 
-# TerraModulus
+# TerraModulus Orryx
 
-TerraModulus is a modularized top-down 3D sandbox survival game, conceptually inspired by [*Minicraft+*](https://github.com/MinicraftPlus/minicraft-plus-revived).
-Currently, it is still in very early development stage, you may follow this repository or its Discord server (invite link on badge) for updates!
+**TerraModulus Orryx** is a modularized top-down 3D pixel game framework platform, conceptually inspired by
+[*Minicraft+*](https://github.com/MinicraftPlus/minicraft-plus-revived) and [MiniMods](https://github.com/bitsusei/MiniMods).
+Currently, it is still in (pre-)Alpha development stage, you may follow this repository and TerraModulus Discord server (invite link on badge) for updates!
 
 ## Status
 
-Migration is still in progress:
-- including all issues, labels, pull requests;
+Management and development direction migration is still in progress:
+- all issues;
 - project management; and,
 - development roadmap
 
-Currently, it is in the *[Early Stage](#early-stage)* and the next one the *[Engine Rewrite Stage](#engine-rewrite-stage)*, yet no outside/open contributions (pull requests) would be accepted,
+Currently, it is in the *[Alpha Stage](#alpha-stage)*, yet no outside/open contributions (pull requests) would be accepted,
 but anyone is still welcome for opinions, suggestions and discussions. Also, before the completion of the stages,
 no other feature requests and bug reports would be accepted, unless there is any extra feature suggestion accepted.
 
-Most plans at the moment are still not publicly visible, but would be revealed upon the progress; most issues migrated
-are related to the mentioned 2 stages.
-
-Yet, no plan to release snapshots during development in the 2 stages.
+Most plans at the moment are still not publicly visible, but would be revealed upon the progress.
 
 ## Project Direction
 
-This project aims to be a enhanced version over the original Minicraft, built with much more flexible and customizable features,
-along with some more functionalities. Although this started based on Minicraft+ Revived, but will be moved away from it, so
-some content added by Minicraft+ would be removed and the entire project will be reworked and rewritten thoroughly.
+This project aims to be a high flexible and modular game platform with supported features that may resemble or
+realize several gameplay styles, even actual games with similar gameplay features. The aimed styles were built upon
+the ones from Minicraft, but not limited to it. One of the objectives is also to simplify development process of new
+games with similar elements like a lot of pixel 2D games from sandbox survival to role-playing adventure contain.
 
-This will support a lot of flexible APIs, plugins/modding utilities, built-in mod loader, advanced resource packs/data packs,
-more than Minicraft+. So, this may be said to be *the successor of MiniMods*. In addition, all the resources would be overhauled,
-so to build up modernization and move away from copyright concerns.
-
-Eventually, this project will become a sole project besides Minicraft+, but might be still related to the Minicraft community.
+This will support a lot of flexible APIs, modding utilities, built-in mod loader, advanced resource packs and data packs,
+with high customization abilities. So, this may be said to be *the successor of **MiniMods***.
 
 ## History
 
@@ -43,45 +39,33 @@ At the end of 2024, due to my personal updates to the project management made wh
 (said to be "*dictating the project*"). By the conflicts, I finally decided to split and migrate my (then and future) works from them to
 a new project for further development because of the incompatibilities of philosophies, this project has then been created.
 
+This project aimed to be an enhanced version as a sole project besides Minicraft+, over the original Minicraft,
+built with more flexible and customizable features, along with some more functionalities.
+This started based on Minicraft+ Revived as Relictus, and moved away from Minicraft+, planned to rewrite and overhaul
+entirely, mainly based on the codebase derived from it. However, several plans were changed in mind that this project
+could actually go further and more generalized, as entirely purely a platform rather than being a game with extensions.
+Therefore, a lot of plans in the past have changed and rebased on new goals and directions.
+
 ## Development Progress
 
-Main development would only be conducted by me in these stages. All main changes will be made into pull requests for tracking.
+Main development during Alpha Stage would be conducted by the lead in these stages,
+possibly with other developers or participants joining during progression.
+All main changes will be made into pull requests for tracking.
 
 Contributing guidelines will be drafted and made in the future for open contributions later.
 
 ### Early Stage
 
-See branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/relictus).
+See branch [relictus](https://github.com/bitsusei/TerraModulus/tree/relictus).
 
-### Engine Rewrite Stage
+### Alpha Stage
 
-At this stage, branch [relictus](https://github.com/AnvilloyDevStudio/TerraModulus/tree/relictus) would be taken as reference.
+See [EFP 11](https://efp.terramodulus.net/preview?trial=efp011&source=github&raw=bitsusei/TerraModulus-EFPs/refs/heads/efp011/efp/efp011/main.xml) for details.
 
-Tasks (*To Be Replanned*):
-- [Feature Removals & Deactivations](https://github.com/AnvilloyDevStudio/TerraModulus/issues/63)
-- [Crash Report System](https://github.com/AnvilloyDevStudio/TerraModulus/issues/33)
-  - Part 1: Basic system
-  - Part 2: Usages and Applications (part of class reorganizing)
-- Basic Codebase Optimization and Review
-  - Part 1: Methods, Fields and Validation
-  - Part 2: Registry and Settings
-  - Part 3: Class categorizing and JSON
-  - Part 4: Logging and Crash report system Part 2
-  - Part 5: Performance optimizations and Display capacity
-- Rework resource pack system
-	- Music customization support
-	- Categorizing tile types, item types and entity types
-- Rewrite save system
-	- Rewrite armor system + clothing system (also #507; #382 + #295)
-	- Rewrite sleeping mechanism
-	- Rewrite world generation
-	- Rewrite light system
-- Rewrite rendering system with LWJGL
-- *More to be added*
+During **Alpha Stage**, Alpha versions would be released, with plans mentioned in the EFP.
+Notably, no meaningful Application Public Interface (API) would be implemented during this stage,
+while purely demonstrative contents would be showcased instead. Those contents may not be available in Beta Stage.
 
 ## License
 
-This repository is licensed under LGPLv3.
-
-Complementary license in [`LICENSE`](/LICENSE), a copy of LGPL in [`LICENSE-LGPL`](/LICENSE-LGPL) and a copy of GPL in
-[`LICENSE-GPL`](/LICENSE-GPL).
+This repository is licensed under LGPLv3 with a copy of it in [`LICENSE-LGPL`](/LICENSE).
