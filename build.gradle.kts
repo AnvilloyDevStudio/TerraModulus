@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     kotlin("jvm") version "2.1.20"
@@ -152,12 +153,15 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
             contents {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 into("lib") {
-                    from(
+                    if (OperatingSystem.current().isWindows) from(
                         "$rootDir/ferricia/target/debug/ferricia.dll",
                         "$rootDir/ferricia/target/debug/oded.dll",
                         "$rootDir/ferricia/target/debug/OpenAL32.dll",
                         "$rootDir/ferricia/target/debug/SDL3.dll",
-                    )
+                    ) else { // suppose UNIX
+                        // other libs should be installed on user's end directly
+                        from("$rootDir/ferricia/target/debug/libferricia.so")
+                    }
                 }
             }
         }
