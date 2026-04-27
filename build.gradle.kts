@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.3.21"
     kotlin("plugin.serialization") version "2.1.20"
     id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
     application
