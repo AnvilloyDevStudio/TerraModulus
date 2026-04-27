@@ -63,7 +63,7 @@ project(":kernel") {
 
 project(":kernel:common") {
     dependencies {
-        api("org.jetbrains:annotations:26.0.2")
+        api("org.jetbrains:annotations:26.1.0")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         api("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
         api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
