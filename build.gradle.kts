@@ -66,7 +66,7 @@ project(":kernel:common") {
         api("org.jetbrains:annotations:26.1.0")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         api("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
-        api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+        api("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
         api("org.jetbrains.kotlinx:multik-core:0.2.3")
         api("org.jetbrains.kotlinx:multik-default:0.2.3")
         api(kotlin("reflect"))
