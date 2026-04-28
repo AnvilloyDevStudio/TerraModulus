@@ -65,7 +65,7 @@ project(":kernel:common") {
     dependencies {
         api("org.jetbrains:annotations:26.1.0")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-        api("org.jetbrains.kotlinx:kotlinx-io-core:0.7.0")
+        api("org.jetbrains.kotlinx:kotlinx-io-core:0.9.0")
         api("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
         api("org.jetbrains.kotlinx:multik-core:0.2.3")
         api("org.jetbrains.kotlinx:multik-default:0.2.3")
