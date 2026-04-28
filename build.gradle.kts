@@ -123,7 +123,8 @@ tasks.register<Exec>("cargoBuildClient") {
     onlyIf {
         !gradle.taskGraph.hasTask(":kernel:server:jar")
     }
-    workingDir = rootProject.file("ferricia")
+    notCompatibleWithConfigurationCache("complicated")
+    workingDir = layout.projectDirectory.dir("ferricia").asFile
     commandLine("cargo", "build")
     if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
     args("-F", "client")
@@ -132,7 +133,8 @@ tasks.register<Exec>("cargoBuildServer") {
     onlyIf {
         !gradle.taskGraph.hasTask(":kernel:client:jar")
     }
-    workingDir = rootProject.file("ferricia")
+    notCompatibleWithConfigurationCache("complicated")
+    workingDir = layout.projectDirectory.dir("ferricia").asFile
     commandLine("cargo", "build")
     if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
     args("-F", "server")
