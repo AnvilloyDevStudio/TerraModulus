@@ -16,3 +16,5 @@ rootProject.children.forEach {
     it.projectDir = File(settingsDir, "src/${it.name}")
     include("${it.name}:common", "${it.name}:client", "${it.name}:server")
 }
+
+includeBuild("vector-math")

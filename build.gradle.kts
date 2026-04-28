@@ -61,6 +61,12 @@ project(":kernel") {
     }
 }
 
+configure(listOf(project(":internal:common"), project(":kernel:common"))) {
+    dependencies {
+        api("com.cout970:kotlin-vector-math:0.1.0")
+    }
+}
+
 project(":kernel:common") {
     dependencies {
         api("org.jetbrains:annotations:26.1.0")
