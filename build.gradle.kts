@@ -72,7 +72,7 @@ project(":kernel:common") {
         api(kotlin("reflect"))
         api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
         implementation("com.github.oshi:oshi-core:6.8.0")
-        api("com.google.errorprone:error_prone_annotations:2.38.0")
+        api("com.google.errorprone:error_prone_annotations:2.49.0")
         implementation("org.apache.logging.log4j:log4j-core:2.24.3")
         implementation("org.apache.logging.log4j:log4j-api:2.24.3")
         implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3")
