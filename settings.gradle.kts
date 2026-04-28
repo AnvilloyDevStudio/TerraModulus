@@ -17,4 +17,8 @@ rootProject.children.forEach {
     include("${it.name}:common", "${it.name}:client", "${it.name}:server")
 }
 
-includeBuild("vector-math")
+includeBuild("vector-math") {
+    dependencySubstitution {
+        substitute(module("com.cout970:kotlin-vector-math")).using(project(":"))
+    }
+}
