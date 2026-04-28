@@ -5,11 +5,13 @@
 
 package net.terramodulus.void
 
+import com.cout970.math.vec3.ImmVec3d
+import com.cout970.math.vec3.Vec3d
+import com.cout970.math.vec3.plus
 import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyEnv
 import net.terramodulus.engine.PhyGeom
 import net.terramodulus.engine.PhyGeomBox
-import net.terramodulus.engine.Vec3D
 import net.terramodulus.util.logging.logger
 import java.io.Closeable
 import kotlin.properties.Delegates
@@ -25,7 +27,7 @@ class World(commander: Ymir) : Closeable {
 	private val env = PhyEnv()
 	private val world = env.createWorld()
 
-	var gravity: Vec3D by world::gravity
+	var gravity: Vec3d by world::gravity
 	var frictionMode: FrictionMode by Delegates.observable(FrictionMode.Infinite) { _, _, new ->
 		when (new) {
 			FrictionMode.Zero -> world.setFriction(0.0)
@@ -47,7 +49,7 @@ class World(commander: Ymir) : Closeable {
 	val floor = world.createGeomPlane(doubleArrayOf(0.0, 1.0, 0.0, -100.0))
 
 	init {
-		gravity = Vec3D(0.0, -9.81, 0.0)
+		gravity = ImmVec3d(0.0, -9.81, 0.0)
 		floor.setBits(1u, 1u.inv())
 		world.omitSpace(mainSpace)
 		// Spawn point
@@ -56,7 +58,7 @@ class World(commander: Ymir) : Closeable {
 		objects[ObjId.randomUnique(objects)] = commander.wrapChar(
 			world.newBody(PhyBody.Mass.SphereTotal(1.0, .5)).apply {
 				addGeom(createGeomSphere(.5))
-				pos = Vec3D(0.0, 1.0, 0.0)
+				pos = ImmVec3d(0.0, 1.0, 0.0)
 			}
 		)
 		// Test Objects
@@ -92,7 +94,7 @@ class World(commander: Ymir) : Closeable {
 	interface VoidGeom {
 		fun render()
 
-		val pos: Vec3D
+		val pos: Vec3d
 	}
 
 	interface EnvVoidGeom : VoidGeom {
@@ -111,12 +113,12 @@ class World(commander: Ymir) : Closeable {
 		val interval = 5.0
 		val max = 5 * 5 * 5 // 125 for each set
 		val directions = arrayOf(
-			Vec3D(1.0, 0.0, 0.0),
-			Vec3D(-1.0, 0.0, 0.0),
-			Vec3D(0.0, 1.0, 0.0),
-			Vec3D(0.0, -1.0, 0.0),
-			Vec3D(0.0, 0.0, 1.0),
-			Vec3D(0.0, 0.0, -1.0),
+			ImmVec3d(1.0, 0.0, 0.0),
+			ImmVec3d(-1.0, 0.0, 0.0),
+			ImmVec3d(0.0, 1.0, 0.0),
+			ImmVec3d(0.0, -1.0, 0.0),
+			ImmVec3d(0.0, 0.0, 1.0),
+			ImmVec3d(0.0, 0.0, -1.0),
 		)
 		for (x in 1..10) {
 			for (z in 1..10) {
@@ -125,10 +127,10 @@ class World(commander: Ymir) : Closeable {
 						logger.info { "Generating: ${++i}/$total" }
 						val xx = (if (xs) x else -x).toDouble() * interval
 						val zz = (if (zs) z else -z).toDouble() * interval
-						val origin = Vec3D(xx, Random.nextInt(-3..3).toDouble(), zz)
-						val visited = mutableSetOf(Vec3D(0.0, 0.0, 0.0))
-						val heads = ArrayDeque<Vec3D>()
-						heads.addLast(Vec3D(0.0, 0.0, 0.0))
+						val origin = ImmVec3d(xx, Random.nextInt(-3..3).toDouble(), zz)
+						val visited = mutableSetOf(ImmVec3d(0.0, 0.0, 0.0))
+						val heads = ArrayDeque<Vec3d>()
+						heads.addLast(ImmVec3d(0.0, 0.0, 0.0))
 						while (!heads.isEmpty()) {
 							val head = heads.removeFirst()
 							for (d in directions) {
@@ -151,8 +153,6 @@ class World(commander: Ymir) : Closeable {
 		}
 		return list
 	}
-
-	private operator fun Vec3D.plus(other: Vec3D): Vec3D = Vec3D(x + other.x, y + other.y, z + other.z)
 
 	private fun createCube(x: Double, y: Double, z: Double): PhyGeomBox {
 		val cube = createGeomBox(1.0, 1.0, 1.0)

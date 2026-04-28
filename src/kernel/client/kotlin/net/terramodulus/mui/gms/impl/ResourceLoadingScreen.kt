@@ -5,19 +5,19 @@
 
 package net.terramodulus.mui.gms.impl
 
+import net.terramodulus.engine.common.ZeroImmVec3f
 import net.terramodulus.mui.gfx.AlphaFilter
 import net.terramodulus.mui.gfx.Dimension2I
 import net.terramodulus.mui.gfx.FullScaling
 import net.terramodulus.mui.gfx.GuiRect
 import net.terramodulus.mui.gfx.GuiSprite
+import net.terramodulus.mui.gfx.Rectangle
 import net.terramodulus.mui.gfx.RectangleI
 import net.terramodulus.mui.gfx.RenderSystem
 import net.terramodulus.mui.gfx.SmartScaling
-import net.terramodulus.mui.gfx.Vector3F
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
 import net.terramodulus.mui.input.InputSystem
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.properties.Delegates
 
@@ -66,7 +66,7 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 	}
 
 	private class ProgressBar {
-		val rectDim = RectangleI.withPoints(7, 7, 393, 33)
+		val rectDim = Rectangle.withPoints(7, 7, 393, 33)
 		val length = rectDim.width
 		var progress: Float by Delegates.observable(0f) { _, _, _ ->
 			rect.setPos(7, 7, rectDim.x + (progress * length).toInt(), 33)
@@ -104,7 +104,7 @@ class ResourceLoadingScreen(renderSystemHandle: RenderSystem.Handle) : Screen() 
 			}
 
 // 			3 -> screenManager.handle.openBefore(::TitleScreen, this)
-			3 -> screenManager.handle.reset(renderSystem.newGameplayScreen(Vector3F.ZERO))
+			3 -> screenManager.handle.reset(renderSystem.newGameplayScreen(ZeroImmVec3f))
 		}
 	}
 

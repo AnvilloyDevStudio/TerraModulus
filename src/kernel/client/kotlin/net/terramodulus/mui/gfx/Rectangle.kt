@@ -5,15 +5,17 @@
 
 package net.terramodulus.mui.gfx
 
-/**
- * Rectangle in a coordinate system with (0, 0) on the bottom left.
- * The anchor of the rectangle is the bottom-left corner.
- */
-data class RectangleI(
-	val x: Int,
-	val y: Int,
-	val width: Int,
-	val height: Int
+import com.cout970.math.vec2.ImmVec2f
+import com.cout970.math.vec2.ImmVec2i
+import com.cout970.math.vec2.Vec2
+import com.cout970.math.vec2.Vec2f
+import com.cout970.math.vec2.Vec2i
+
+sealed class Rectangle<T: Rectangle<T, N, V, D>, N: Number, V: Vec2, D>(
+	open val x: N,
+	open val y: N,
+	open val width: N,
+	open val height: N,
 ) {
 	companion object {
 		fun withPoints(x0: Int, y0: Int, x1: Int, y1: Int): RectangleI {
@@ -37,48 +39,7 @@ data class RectangleI(
 			}
 			return RectangleI(minX, minY, maxX - minX, maxY - minY)
 		}
-	}
 
-	val size get() = Dimension2I(width, height)
-
-	fun anchor(pos: Anchor5) = when (pos) {
-		Anchor5.TopLeft -> Vector2I(x, y + width)
-		Anchor5.TopRight -> Vector2I(x + width, y + height)
-		Anchor5.BottomLeft -> Vector2I(x, y)
-		Anchor5.BottomRight -> Vector2I(x + width, y)
-		Anchor5.Center -> Vector2I(x + width / 2, y + height / 2)
-	}
-
-	fun translateBy(pos: Vector2I) = RectangleI(x + pos.x, y + pos.y, width, height)
-
-	fun translateBy(x: Int, y: Int) = RectangleI(this.x + x, this.y + y, width, height)
-
-	fun translateByY(y: Int) = RectangleI(x, this.y + y, width, height)
-
-	fun translateByX(x: Int) = RectangleI(this.x + x, y, width, height)
-
-	fun translateToY(y: Int) = RectangleI(x, y, width, height)
-
-	fun translateToX(x: Int) = RectangleI(x, y, width, height)
-
-	fun translateTo(pos: Vector2I) = RectangleI(pos.x, pos.y, width, height)
-
-	fun translateTo(x: Int, y: Int) = RectangleI(x, y, width, height)
-
-	fun toFloat() = RectangleF(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
-}
-
-/**
- * Rectangle in a coordinate system with (0, 0) on the bottom left.
- * The anchor of the rectangle is the bottom-left corner.
- */
-data class RectangleF(
-	val x: Float,
-	val y: Float,
-	val width: Float,
-	val height: Float
-) {
-	companion object {
 		fun withPoints(x0: Float, y0: Float, x1: Float, y1: Float): RectangleF {
 			val minX: Float;
 			val maxX: Float;
@@ -102,29 +63,92 @@ data class RectangleF(
 		}
 	}
 
-	val size get() = Dimension2F(width, height)
+	protected abstract fun constructor(x: N, y: N, width: N, height: N): T
+	protected abstract fun vec2(x: N, y: N): V
+	protected abstract operator fun N.plus(other: N): N
+	protected abstract operator fun N.div(other: Int): N
+	protected abstract val V.x: N
+	protected abstract val V.y: N
+
+	abstract val size: D
 
 	fun anchor(pos: Anchor5) = when (pos) {
-		Anchor5.TopLeft -> Vector2F(x, y + width)
-		Anchor5.TopRight -> Vector2F(x + width, y + height)
-		Anchor5.BottomLeft -> Vector2F(x, y)
-		Anchor5.BottomRight -> Vector2F(x + width, y)
-		Anchor5.Center -> Vector2F(x + width / 2, y + height / 2)
+		Anchor5.TopLeft -> vec2(x, y + width)
+		Anchor5.TopRight -> vec2(x + width, y + height)
+		Anchor5.BottomLeft -> vec2(x, y)
+		Anchor5.BottomRight -> vec2(x + width, y)
+		Anchor5.Center -> vec2(x + width / 2, y + height / 2)
 	}
 
-	fun translateBy(pos: Vector2F) = RectangleF(x + pos.x, y + pos.y, width, height)
+	fun translateBy(pos: V) = constructor(x + pos.x, y + pos.y, width, height)
 
-	fun translateBy(x: Float, y: Float) = RectangleF(this.x + x, this.y + y, width, height)
+	fun translateBy(x: N, y: N) = constructor(this.x + x, this.y + y, width, height)
 
-	fun translateByY(y: Float) = RectangleF(x, this.y + y, width, height)
+	fun translateByY(y: N) = constructor(x, this.y + y, width, height)
 
-	fun translateByX(x: Float) = RectangleF(this.x + x, y, width, height)
+	fun translateByX(x: N) = constructor(this.x + x, y, width, height)
 
-	fun translateToY(y: Float) = RectangleF(x, y, width, height)
+	fun translateToY(y: N) = constructor(x, y, width, height)
 
-	fun translateToX(x: Float) = RectangleF(x, y, width, height)
+	fun translateToX(x: N) = constructor(x, y, width, height)
 
-	fun translateTo(pos: Vector2F) = RectangleF(pos.x, pos.y, width, height)
+	fun translateTo(pos: V) = constructor(pos.x, pos.y, width, height)
 
-	fun translateTo(x: Float, y: Float) = RectangleF(x, y, width, height)
+	fun translateTo(x: N, y: N) = constructor(x, y, width, height)
+
+	abstract fun toFloat(): RectangleF
+}
+
+/**
+ * Rectangle in a coordinate system with (0, 0) on the bottom left.
+ * The anchor of the rectangle is the bottom-left corner.
+ */
+data class RectangleI(
+	override val x: Int,
+	override val y: Int,
+	override val width: Int,
+	override val height: Int
+) : Rectangle<RectangleI, Int, Vec2i, Dimension2I>(x, y, width, height) {
+	override fun constructor(x: Int, y: Int, width: Int, height: Int) = RectangleI(x, y, width, height)
+
+	override fun vec2(x: Int, y: Int) = ImmVec2i(x, y)
+
+	override fun Int.plus(other: Int) = this + other
+
+	override fun Int.div(other: Int) = this / other
+
+	override val Vec2i.x: Int by ::x
+	override val Vec2i.y: Int by ::y
+	override val size = Dimension2I(width, height)
+
+	override fun toFloat() = RectangleF(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+}
+
+/**
+ * Rectangle in a coordinate system with (0, 0) on the bottom left.
+ * The anchor of the rectangle is the bottom-left corner.
+ */
+data class RectangleF(
+	override val x: Float,
+	override val y: Float,
+	override val width: Float,
+	override val height: Float
+) : Rectangle<RectangleF, Float, Vec2f, Dimension2F>(x, y, width, height) {
+	override fun constructor(
+		x: Float,
+		y: Float,
+		width: Float,
+		height: Float
+	) = RectangleF(x, y, width, height)
+
+	override fun vec2(x: Float, y: Float) = ImmVec2f(x, y)
+
+	override fun Float.plus(other: Float) = this + other
+
+	override fun Float.div(other: Int) = this / other
+
+	override val Vec2f.x: Float by ::x
+	override val Vec2f.y: Float by ::y
+	override val size = Dimension2F(width, height)
+	override fun toFloat() = this
 }

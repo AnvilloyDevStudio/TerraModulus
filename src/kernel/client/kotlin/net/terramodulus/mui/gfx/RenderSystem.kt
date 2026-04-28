@@ -5,6 +5,7 @@
 
 package net.terramodulus.mui.gfx
 
+import com.cout970.math.vec3.Vec3f
 import net.terramodulus.core.TerraModulus
 import net.terramodulus.core.getResourceAsBytes
 import net.terramodulus.core.getResourceAsString
@@ -39,7 +40,7 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 		}
 	}
 
-	internal fun newGameplayScreen(pos: Vector3F) =
+	internal fun newGameplayScreen(pos: Vec3f) =
 		{ it: Handle -> GameplayScreen(core, canvas.createCamera(floatArrayOf(pos.x, pos.y, pos.z)), it) }
 
 	internal fun renderGuiTex(drawable: MeshDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)

@@ -5,21 +5,28 @@
 
 package net.terramodulus.mui.gms.impl
 
+import com.cout970.math.quaternion.ImmQuatd
+import com.cout970.math.vec3.ImmVec3d
+import com.cout970.math.vec3.Vec3d
+import com.cout970.math.vec3.Vec3f
+import com.cout970.math.vec3.div
+import com.cout970.math.vec3.dot
+import com.cout970.math.vec3.normalized
+import com.cout970.math.vec3.plus
+import com.cout970.math.vec3.times
+import com.cout970.math.vec3.toImmVec3f
+import com.cout970.math.vec4.ImmVec4i
 import net.terramodulus.core.TerraModulus
 import net.terramodulus.core.getResourceAsString
 import net.terramodulus.engine.Camera3D
 import net.terramodulus.engine.PhyBody
 import net.terramodulus.engine.PhyGeom
-import net.terramodulus.engine.Quat
-import net.terramodulus.engine.Rgba
 import net.terramodulus.engine.SimpleMesh3dGeomCube
 import net.terramodulus.engine.SimpleMesh3dGeomSphere
-import net.terramodulus.engine.Vec3D
-import net.terramodulus.engine.Vec3F
 import net.terramodulus.engine.WorldObjDrawable
+import net.terramodulus.engine.common.ZeroImmVec3d
 import net.terramodulus.mui.gfx.Direction6C
 import net.terramodulus.mui.gfx.RenderSystem
-import net.terramodulus.mui.gfx.Vector3D
 import net.terramodulus.mui.gms.Component
 import net.terramodulus.mui.gms.Screen
 import net.terramodulus.mui.gms.ScreenManager
@@ -27,15 +34,14 @@ import net.terramodulus.mui.input.InputSystem
 import net.terramodulus.util.logging.logger
 import net.terramodulus.void.World
 import kotlin.math.PI
-import kotlin.math.sqrt
 import kotlin.random.Random
 
-private val WHITE = Rgba(255, 255, 255, 255)
-private val RED = Rgba(255, 0, 0, 255)
-private val GREEN = Rgba(0, 255, 0, 255)
-private val BLUE = Rgba(0, 0, 255, 255)
-private val STD_SCALE = Vec3D(.5, .5, .5)
-private val IDENT_ROT = Quat(1.0, .0, .0, .0)
+private val WHITE = ImmVec4i(255, 255, 255, 255)
+private val RED = ImmVec4i(255, 0, 0, 255)
+private val GREEN = ImmVec4i(0, 255, 0, 255)
+private val BLUE = ImmVec4i(0, 0, 255, 255)
+private val STD_SCALE = ImmVec3d(.5, .5, .5)
+private val IDENT_ROT = ImmQuatd(1.0, .0, .0, .0)
 private const val MASS = 1.0
 private const val MAX_SPEED = PI * PI // reachable by autonomous movement
 private const val MAX_ACC = PI * PI // without other forces, reaching MAX_SPEED in one second
@@ -86,11 +92,11 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 			SimpleMesh3dGeomCube(
 				2F,
 				randomColor(),
-				Vec3D(x, y, z),
+				ImmVec3d(x, y, z),
 				STD_SCALE,
 				IDENT_ROT,
 			),
-			Vec3D(x, y, z)
+			ImmVec3d(x, y, z)
 		)
 
 		private fun randomColor() = when (Random.nextInt(3)) {
@@ -102,7 +108,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 
 		override fun wrapChar(phyBody: PhyBody): VoidGeom {
 			player = PlayerVoidGeom(phyBody,
-				SimpleMesh3dGeomSphere(1F, WHITE, Vec3D(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
+				SimpleMesh3dGeomSphere(1F, WHITE, ImmVec3d(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
 			)
 			return player
 		}
@@ -114,21 +120,21 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		}
 	}
 
-	private inner class EnvVoidGeom(override val phyGeom: PhyGeom, drawable: WorldObjDrawable, override val pos: Vec3D) :
+	private inner class EnvVoidGeom(override val phyGeom: PhyGeom, drawable: WorldObjDrawable, override val pos: Vec3d) :
 		VoidGeom(drawable), World.EnvVoidGeom
 
 	private inner class PlayerVoidGeom(override val phyBody: PhyBody, drawable: WorldObjDrawable) :
 		VoidGeom(drawable), World.PlayerVoidGeom {
-		fun move(dir: Vector3D) {
-			if (dir == Vector3D.ZERO) return // avoid math errors and computations
-			val dir = Vec3D(dir.x, dir.y, dir.z).normalize()
+		fun move(dir: Vec3d) {
+			if (dir == ZeroImmVec3d) return // avoid math errors and computations
+			val dir = ImmVec3d(dir.x, dir.y, dir.z).normalized()
 			val curVel = phyBody.linearVel
 			// Let d be the unit vector of autonomous movement target direction,
 			//     v_c be the current velocity of body,
 			//     v_p be the scalar projection of v_c on d.
 			// v_p = v_c * d, may be negative
 			// Autonomous acceleration is made only if v_p < MAX_SPEED.
-			val projVel = curVel * dir
+			val projVel = curVel dot dir
 			if (projVel < MAX_SPEED) {
 				// Let v_d be the delta velocity in direction of d,
 				//     a_d be the delta acceleration to be made.
@@ -142,30 +148,14 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 
 		override fun render() {
 			drawable.setPos(phyBody.pos)
-			camera.refreshPos(phyBody.pos.toVec3F().toArray())
+			camera.refreshPos(phyBody.pos.toImmVec3f().toArray())
 			super.render()
 		}
 
-		override var pos: Vec3D by phyBody::pos
+		override var pos: Vec3d by phyBody::pos
 	}
 
-	private fun Vec3D.normalize(): Vec3D {
-		val mag = mag()
-		return Vec3D(x / mag, y / mag, z / mag)
-	}
-
-	private operator fun Vec3D.times(d: Double) = Vec3D(x * d, y * d, z * d)
-	private operator fun Vec3D.div(d: Double) = Vec3D(x / d, y / d, z / d)
-	private operator fun Vec3D.minus(other: Vec3D) = Vec3D(x - other.x, y - other.y, z - other.z)
-	// dot product
-	private operator fun Vec3D.times(other: Vec3D) = x * other.x + y * other.y + z * other.z
-
-	// dot product with itself
-	private fun Vec3D.squared() = x * x + y * y + z * z
-	// magnitude or length
-	private fun Vec3D.mag() = sqrt(squared())
-
-	private fun Vec3D.toVec3F() = Vec3F(x.toFloat(), y.toFloat(), z.toFloat())
+	private fun Vec3f.toArray() = floatArrayOf(x, y, z)
 
 	private fun Direction6C.toKey() = when (this) {
 		Direction6C.North -> InputSystem.Keys.W
@@ -177,15 +167,15 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 	}
 
 	private fun Direction6C.toVector() = when (this) {
-		Direction6C.North -> Vector3D(.0, .0, -1.0)
-		Direction6C.South -> Vector3D(.0, .0, 1.0)
-		Direction6C.West -> Vector3D(-1.0, .0, .0)
-		Direction6C.East -> Vector3D(1.0, .0, .0)
-		Direction6C.Up -> Vector3D(.0, 1.0, .0)
-		Direction6C.Down -> Vector3D(.0, -1.0, .0)
+		Direction6C.North -> ImmVec3d(.0, .0, -1.0)
+		Direction6C.South -> ImmVec3d(.0, .0, 1.0)
+		Direction6C.West -> ImmVec3d(-1.0, .0, .0)
+		Direction6C.East -> ImmVec3d(1.0, .0, .0)
+		Direction6C.Up -> ImmVec3d(.0, 1.0, .0)
+		Direction6C.Down -> ImmVec3d(.0, -1.0, .0)
 	}
 
-	private fun Vec3D.display() = "[$x, $y, $z]"
+	private fun Vec3d.display() = "[$x, $y, $z]"
 
 	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
 		// Those keys are not related to GUI, so they are fine to be here.
@@ -292,7 +282,7 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 		}
 		if (inputSystem.condition { N.justDown() }) {
 			// Reset velocity of sphere to zero
-			player.phyBody.linearVel = Vec3D.ZERO
+			player.phyBody.linearVel = ZeroImmVec3d
 			logger.info { "Reset velocity to zero" }
 		}
 		// This is problematic and difficult to be resolved.
@@ -320,9 +310,9 @@ internal class GameplayScreen(private val core: TerraModulus, private val camera
 			}
 		}
 
-		val dirs = ArrayList<Vector3D>()
+		val dirs = ArrayList<Vec3d>()
 		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
-		player.move(dirs.fold(Vector3D.ZERO, Vector3D::plus))
+		player.move(dirs.fold(ZeroImmVec3d, Vec3d::plus))
 	}
 
 	private inner class GameplayRenderer : Component() {
