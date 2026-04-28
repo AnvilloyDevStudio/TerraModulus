@@ -93,8 +93,8 @@ project(":kernel:server").dependencies {
 }
 
 project(":internal:common").dependencies {
-    implementation("net.java.dev.jna:jna:5.17.0")
-    implementation("net.java.dev.jna:jna-platform:5.17.0")
+    implementation("net.java.dev.jna:jna:5.18.1")
+    implementation("net.java.dev.jna:jna-platform:5.18.1")
 }
 
 project(":kernel:client").tasks.named<Jar>("jar") {
