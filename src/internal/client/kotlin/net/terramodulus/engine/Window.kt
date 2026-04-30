@@ -18,10 +18,23 @@ import java.io.Closeable
 /**
  * Manages the SDL window instance and the underlying GL context.
  */
-class Window : Closeable {
+class Window(
+	width: UInt,
+	height: UInt,
+) : Closeable {
+	var width = width
+		private set
+	var height = height
+		private set
 	private val sdlHandle = initSdlHandle()
-	private val windowHandle = initWindowHandle(sdlHandle)
+	private val windowHandle = initWindowHandle(sdlHandle) // TODO pass dimensions
 	val canvas = Canvas(windowHandle)
+
+	fun sizeChanged(width: UInt, height: UInt) {
+		this.width = width
+		this.height = height
+		canvas.resizeGLViewport()
+	}
 
 	fun show() = showWindow(windowHandle)
 

@@ -32,7 +32,7 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 
 	fun setClearColor(r: Float, g: Float, b: Float, a: Float) = setCanvasClearColor(r, g, b, a)
 
-	fun resizeGLViewport() = if (camera3D == null) {
+	internal fun resizeGLViewport() = if (camera3D == null) {
 		Mui.resizeGLViewport(windowHandle, handle)
 	} else {
 		Mui.resizeGLViewportCamera(windowHandle, handle, camera3D!!.handle)
