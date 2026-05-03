@@ -5,21 +5,56 @@ plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.serialization") version "2.1.20"
     id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
+    id("io.github.arc-blroth.cargo-wrapper") version "1.0.0" apply false
+//    id("fr.stardustenterprises.rust.wrapper") version "3.2.4" apply false
     application
 }
 
-allprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
+version = "0.0.1"
 
-    version = "0.0.1"
+repositories {
+    mavenCentral()
+}
 
-    repositories {
-        mavenCentral()
+project(":ferricia") {
+    // Candidates: fr.stardustenterprises.rust.wrapper
+    apply(plugin = "io.github.arc-blroth.cargo-wrapper")
+
+    if (providers.gradleProperty("release").isPresent) configure<ai.arcblroth.cargo.CargoExtension> {
+        profile = "release" // use `-Prelease=true`
+    }
+    // somehow, .cargo extension is unusable
+    configure<ai.arcblroth.cargo.CargoExtension> {
+        outputs = mapOf("" to System.mapLibraryName("ferricia"))
+    }
+    configurations {
+        create("client") {
+            configure<ai.arcblroth.cargo.CargoExtension> {
+                arguments = listOf("-F", "client")
+            }
+        }
+        create("server") {
+            configure<ai.arcblroth.cargo.CargoExtension> {
+                arguments = listOf("-F", "server")
+            }
+        }
+    }
+    artifacts {
+        add("client", tasks.named("build"))
+        add("server", tasks.named("build"))
     }
 }
 
 configure(listOf(project(":kernel"), project(":internal"))) {
     configure(listOf(project("common"), project("client"), project("server"))) {
+        apply(plugin = "org.jetbrains.kotlin.jvm")
+
+        version = rootProject.version
+
+        repositories {
+            mavenCentral()
+        }
+
         sourceSets.main {
             kotlin.srcDir("kotlin")
             resources.srcDir("resources")
@@ -58,6 +93,17 @@ project(":kernel") {
                 implementation(project(":internal:common"))
             }
         }
+    }
+}
+
+project(":kernel:client") {
+    dependencies {
+        implementation(project(":ferricia", "client"))
+    }
+}
+project(":kernel:server") {
+    dependencies {
+        implementation(project(":ferricia", "server"))
     }
 }
 
@@ -118,30 +164,6 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     }
 }
 
-/** Build Ferricia Engine with Cargo */
-tasks.register<Exec>("cargoBuildClient") {
-    onlyIf {
-        !gradle.taskGraph.hasTask(":kernel:server:jar")
-    }
-    notCompatibleWithConfigurationCache("complicated")
-    workingDir = layout.projectDirectory.dir("ferricia").asFile
-    commandLine("cargo", "build")
-    if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
-    args("-F", "client")
-}
-tasks.register<Exec>("cargoBuildServer") {
-    onlyIf {
-        !gradle.taskGraph.hasTask(":kernel:client:jar")
-    }
-    notCompatibleWithConfigurationCache("complicated")
-    workingDir = layout.projectDirectory.dir("ferricia").asFile
-    commandLine("cargo", "build")
-    if (project.hasProperty("release")) args("--release") // use `-Prelease=true`
-    args("-F", "server")
-}
-project(":kernel:client").tasks.named("jar") { dependsOn(tasks.named("cargoBuildClient")) }
-project(":kernel:server").tasks.named("jar") { dependsOn(tasks.named("cargoBuildServer")) }
-
 tasks.register("buildClient") {
     group = "build"
     description = "Build client"
@@ -159,17 +181,13 @@ tasks.named("run") {
 tasks.register("runClient") {
     group = "application"
     description = "Run client"
-    dependsOn("cargoBuildClient")
     dependsOn(":kernel:client:run")
 }
-project(":kernel:client").tasks.named("run").get().mustRunAfter(tasks.named("cargoBuildClient"))
 tasks.register("runServer") {
     group = "application"
     description = "Run server"
-    dependsOn("cargoBuildServer")
     dependsOn(":kernel:server:run")
 }
-project(":kernel:server").tasks.named("run").get().mustRunAfter(tasks.named("cargoBuildServer"))
 
 configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     distributions {
@@ -178,15 +196,12 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 into("lib") {
                     val dir = if (project.hasProperty("release")) "release" else "debug"
+                    from("$rootDir/ferricia/target/$dir/${System.mapLibraryName("ferricia")}")
                     if (OperatingSystem.current().isWindows) from(
-                        "$rootDir/ferricia/target/$dir/ferricia.dll",
                         "$rootDir/ferricia/target/$dir/oded.dll",
                         "$rootDir/ferricia/target/$dir/OpenAL32.dll",
                         "$rootDir/ferricia/target/$dir/SDL3.dll",
-                    ) else { // suppose UNIX
-                        // other libs should be installed on user's end directly
-                        from("$rootDir/ferricia/target/$dir/libferricia.so")
-                    }
+                    ) // for UNIX, other libs should have been installed on user's end directly
                 }
             }
         }
