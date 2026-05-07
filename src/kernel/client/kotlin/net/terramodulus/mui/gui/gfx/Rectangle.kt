@@ -61,11 +61,26 @@ sealed class Rectangle<T: Rectangle<T, N, V, D>, N: Number, V: Vec2, D>(
 			}
 			return RectangleF(minX, maxX, minY, maxY)
 		}
+
+		fun withDirection(x: Int, y: Int, width: Int, height: Int, dir: Direction4AD) = when (dir) {
+			Direction4AD.QuadOne -> RectangleI(x, y, width, height)
+			Direction4AD.QuadTwo -> RectangleI(x - width, y, width, height)
+			Direction4AD.QuadThree -> RectangleI(x - width, y - height, width, height)
+			Direction4AD.QuadFour -> RectangleI(x, y - height, width, height)
+		}
+
+		fun withDirection(x: Float, y: Float, width: Float, height: Float, dir: Direction4AD) = when (dir) {
+			Direction4AD.QuadOne -> RectangleF(x, y, width, height)
+			Direction4AD.QuadTwo -> RectangleF(x - width, y, width, height)
+			Direction4AD.QuadThree -> RectangleF(x - width, y - height, width, height)
+			Direction4AD.QuadFour -> RectangleF(x, y - height, width, height)
+		}
 	}
 
 	protected abstract fun constructor(x: N, y: N, width: N, height: N): T
 	protected abstract fun vec2(x: N, y: N): V
 	protected abstract operator fun N.plus(other: N): N
+	protected abstract operator fun N.minus(other: N): N
 	protected abstract operator fun N.div(other: Int): N
 	protected abstract val V.x: N
 	protected abstract val V.y: N
@@ -95,6 +110,22 @@ sealed class Rectangle<T: Rectangle<T, N, V, D>, N: Number, V: Vec2, D>(
 	fun translateTo(pos: V) = constructor(pos.x, pos.y, width, height)
 
 	fun translateTo(x: N, y: N) = constructor(x, y, width, height)
+
+	/** Inflates the [Rectangle] with the [Insets] */
+	operator fun plus(other: Insets<N>) = constructor(
+		x - other.left,
+		y - other.bottom,
+		width + other.left + other.right,
+		height + other.bottom + other.top,
+	)
+
+	/** Deflates the [Rectangle] with the [Insets] */
+	operator fun minus(other: Insets<N>) = constructor(
+		x + other.left,
+		y + other.bottom,
+		width - other.left - other.right,
+		height - other.bottom - other.top,
+	)
 
 	abstract fun toFloat(): RectangleF
 }

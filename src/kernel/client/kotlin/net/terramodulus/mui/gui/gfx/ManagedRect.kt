@@ -15,9 +15,15 @@ abstract class ManagedRect {
 
 	protected val observers = LinkedHashSet<(RectangleF) -> Unit>()
 
+	internal abstract fun setValue(rect: RectangleF)
+
 	class Normal(rect: RectangleF) : ManagedRect() {
 		override var value: RectangleF by observable(rect) { _, _, newValue -> observers.forEach { it(newValue) } }
 			internal set
+
+		override fun setValue(rect: RectangleF) {
+			value = rect
+		}
 	}
 
 	internal fun observe(observer: (RectangleF) -> Unit) {

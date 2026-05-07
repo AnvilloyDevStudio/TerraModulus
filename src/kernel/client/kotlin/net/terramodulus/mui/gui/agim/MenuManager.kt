@@ -51,6 +51,6 @@ class MenuManager internal constructor() {
 	}
 
 	internal fun render(renderSystem: RenderSystem, screenManager: ScreenManager) {
-		menus.forEach { it.render() }
+		menus.forEach { it.render(renderSystem) }
 	}
 }

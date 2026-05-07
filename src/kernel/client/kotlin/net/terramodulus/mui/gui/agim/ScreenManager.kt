@@ -44,7 +44,7 @@ class ScreenManager internal constructor(window: Window, private val renderSyste
 	val handle: Handle = HandleImpl()
 
 	init {
-		screens.add(LaunchingScreen(renderSystemHandle, handle, DelegatedRect()))
+		screens.add(LaunchingScreen(handle, DelegatedRect(), renderSystemHandle))
 	}
 
 	private sealed interface ScreenOperation {
@@ -181,7 +181,11 @@ class ScreenManager internal constructor(window: Window, private val renderSyste
 	/**
 	 * MUI Interoperability Interface
 	 */
-	internal class MuiIopIf(val renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem)
+	class MuiIopIf internal constructor(
+		val renderSystem: RenderSystem,
+		val screenManager: ScreenManager,
+		val inputSystem: InputSystem,
+	)
 
 	internal fun update(muiManager: MuiManager) {
 		val iopIf = MuiIopIf(muiManager.guiManager.renderSystem, this, muiManager.kuiManager.inputSystem)

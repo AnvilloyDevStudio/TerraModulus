@@ -51,6 +51,7 @@ abstract class Screen(
 	}
 
 	internal fun update(muiIopIf: ScreenManager.MuiIopIf) {
+		dispatchEvent(ScreenEvent.Update(muiIopIf))
 		layout.update()
 		layout.components.forEach { it.update(muiIopIf) }
 	}
@@ -63,8 +64,8 @@ abstract class Screen(
 	/**
 	 * Cleans up and closes any used resources in this session.
 	 */
-	override fun close() {
-		listeners[ScreenEvent.Close.javaClass]?.forEach { it(ScreenEvent.Close) }
+	final override fun close() {
+		dispatchEvent(ScreenEvent.Close)
 		rect.close()
 	}
 }

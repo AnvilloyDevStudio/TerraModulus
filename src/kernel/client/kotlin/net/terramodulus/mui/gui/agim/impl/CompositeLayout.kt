@@ -14,7 +14,11 @@ class CompositeLayout(container: Container) : Layout(container) {
 
 	override val components = layouts.asSequence().flatMap { it.components }
 
+	fun update(operation: ArrayDeque<Layout>.() -> Unit) {
+		operate { operation(layouts) }
+	}
+
 	override fun layout(rect: RectangleF) {
-		TODO("Not yet implemented")
+		layouts.forEach { it.update() }
 	}
 }

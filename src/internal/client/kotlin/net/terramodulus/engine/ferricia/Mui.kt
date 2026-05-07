@@ -7,6 +7,7 @@ package net.terramodulus.engine.ferricia
 
 import net.terramodulus.engine.MuiEvent
 
+@OptIn(ExperimentalUnsignedTypes::class)
 internal object Mui {
 	/**
 	 * @return SDL handle pointer
@@ -140,6 +141,20 @@ internal object Mui {
 	 */
 	@JvmName("setGeomPos")
 	external fun setGeomPos(handle: ULong, data: FloatArray)
+
+	/**
+	 * @param data `[sx, sy, angle, px, py]`; scaling, rotation, position
+	 * @return GeneralTransform handle pointers
+	 */
+	@JvmName("modelGeneralTransform")
+	external fun modelGeneralTransform(data: DoubleArray): ULongArray
+
+	/**
+	 * @param handle GeneralTransform thin pointer
+	 * @param data `[sx, sy, angle, px, py]`; scaling, rotation, position
+	 */
+	@JvmName("updateGeneralTransform")
+	external fun updateGeneralTransform(handle: ULong, data: DoubleArray)
 
 	/**
 	 * @param data `[w, h, param, w, h]`

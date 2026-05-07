@@ -40,6 +40,13 @@ enum class Direction4A {
 }
 
 /**
+ * Set of 4 axial diagonal directions, by Cartesian quadrants.
+ */
+enum class Direction4AD {
+	QuadOne, QuadTwo, QuadThree, QuadFour;
+}
+
+/**
  * Set of 8 compass directions.
  */
 enum class Direction8C {

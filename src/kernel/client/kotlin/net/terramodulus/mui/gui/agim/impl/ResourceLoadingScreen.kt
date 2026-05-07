@@ -31,9 +31,9 @@ private const val ANI_DURATION = 1F // in second
 private const val PAUSE_DURATION = 2F // in second
 
 class ResourceLoadingScreen(
-	renderSystemHandle: RenderSystem.Handle,
 	managerHandle: ScreenManager.Handle,
 	rect: ScreenManager.DelegatedRect,
+	renderSystemHandle: RenderSystem.Handle,
 ) : Screen(managerHandle, rect) {
 	private var stage = 0
 	private var last = System.currentTimeMillis() // timestamp in milliseconds

@@ -22,7 +22,7 @@ abstract class Component {
 	/**
 	 * Caveat: This should only be modified by [Layout][net.terramodulus.mui.gui.agim.Layout] managers.
 	 */
-	open lateinit var rect: ManagedRect
+	open lateinit var rect: ManagedRect.Normal
 		internal set
 
 	abstract fun render(renderSystem: RenderSystem)
@@ -41,6 +41,6 @@ abstract class Component {
 	}
 
 	internal open fun update(muiIopIf: ScreenManager.MuiIopIf) {
-		dispatchEvent(ComponentEvent.Update)
+		dispatchEvent(ComponentEvent.Update(muiIopIf))
 	}
 }
