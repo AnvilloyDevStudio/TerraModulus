@@ -8,9 +8,10 @@ package net.terramodulus.mui.gui.agim.impl
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
-import net.terramodulus.mui.gui.gfx.InsetsD
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.InsetsF
 import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.gfx.RenderSystem
 
 class AbsoluteLayout(container: Container, component: Component, private var config: Config) : Layout(container) {
 	override val components = componentsSequence(::component)
@@ -18,14 +19,14 @@ class AbsoluteLayout(container: Container, component: Component, private var con
 		private set
 
 	sealed class Config private constructor() {
-		abstract fun layout(container: RectangleF): RectangleF
+		abstract fun layOut(container: RectangleF): RectangleF
 
 		data object Full : Config() {
-			override fun layout(container: RectangleF) = container
+			override fun layOut(container: RectangleF) = container
 		}
 
 		data class Insets(var insets: InsetsF) : Config() {
-			override fun layout(container: RectangleF) = container - insets
+			override fun layOut(container: RectangleF) = container - insets
 		}
 	}
 
@@ -41,7 +42,8 @@ class AbsoluteLayout(container: Container, component: Component, private var con
 		}
 	}
 
-	override fun layout(rect: RectangleF) {
-		component.rect.value = config.layout(rect)
+	override fun layOut(handle: AsdHandle) {
+		component.asdHandle.rect = config.layOut(handle.rect)
+		component.asdHandle.triggerObservers()
 	}
 }

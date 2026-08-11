@@ -6,10 +6,11 @@
 package net.terramodulus.mui.gui.agim.impl
 
 import net.terramodulus.mui.gui.agim.Component
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.GuiGeometry
 import net.terramodulus.mui.gui.gfx.RenderSystem
 
-class GeomComponent(val geom: GuiGeometry) : Component() {
+class GeomComponent(val geom: GuiGeometry, asdHandle: AsdHandle) : Component(asdHandle) {
 	override fun render(renderSystem: RenderSystem) {
 		geom.render(renderSystem)
 	}

@@ -5,10 +5,13 @@
 
 package net.terramodulus.mui.gui.agim
 
+import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.util.ArrayDeque
 
-class MenuManager internal constructor() {
+class MenuManager internal constructor(private val asdHandle: (AsdProcessor<*>) -> Unit) {
 	private val menus = LinkedHashSet<Menu>()
 	private val menuQueue = ArrayDeque<MenuOperation>()
 	val handle: Handle = HandleImpl()
@@ -30,14 +33,14 @@ class MenuManager internal constructor() {
 	}
 
 	sealed interface Handle {
-		fun addMenu(menu: () -> Menu)
+		fun addMenu(menu: (Handle, AsdHandle) -> Menu)
 
 		fun removeMenu(menu: Menu)
 	}
 
 	private inner class HandleImpl : Handle {
-		override fun addMenu(menu: () -> Menu) {
-			menuQueue.add(MenuOperation.Add(menu))
+		override fun addMenu(menu: (Handle, AsdHandle) -> Menu) {
+			menuQueue.add(MenuOperation.Add { menu(handle, MenuAsdHandleImpl()) })
 		}
 
 		override fun removeMenu(menu: Menu) {
@@ -45,12 +48,21 @@ class MenuManager internal constructor() {
 		}
 	}
 
-	internal fun update(muiIopIf: ScreenManager.MuiIopIf) {
+	private inner class MenuAsdHandleImpl : AsdHandle.Menu() {
+		override lateinit var rect: RectangleF
+		override fun registerAsdProcessor(processor: AsdProcessor<*>) = asdHandle(processor)
+	}
+
+	internal fun update(muiIoI: ScreenManager.MuiIoI) {
 		menuQueue.forEach { it.apply(menus) }
 		menuQueue.clear()
 	}
 
 	internal fun render(renderSystem: RenderSystem, screenManager: ScreenManager) {
 		menus.forEach { it.render(renderSystem) }
+	}
+
+	internal fun visit() = AgimoTreeVisitor.MenuTreeVisitor {
+		menus.asSequence()
 	}
 }

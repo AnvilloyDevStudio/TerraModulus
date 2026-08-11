@@ -10,6 +10,7 @@ import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.ScreenManager
+import net.terramodulus.mui.gui.asd.AsdManager
 import net.terramodulus.util.logging.logger
 import java.io.Closeable
 
@@ -20,7 +21,10 @@ private val logger = logger {}
  */
 internal class GuiManager internal constructor(private val window: Window, core: TerraModulus) : Closeable {
 	val renderSystem = RenderSystem(core, window.canvas)
-	val screenManager = ScreenManager(renderSystem.handle)
+	val asdManager = AsdManager()
+	val screenManager = ScreenManager(window, renderSystem.handle, asdManager.AgimHandle())
+
+	private var proceeded = false
 
 	/**
 	 * Screen updating, targeting as the same as *maximum FPS*,
@@ -29,6 +33,10 @@ internal class GuiManager internal constructor(private val window: Window, core:
 	 */
 	internal fun updateScreens(muiManager: MuiManager) {
 		screenManager.update(muiManager)
+		if (!proceeded) {
+			asdManager.process()
+			proceeded = true
+		}
 	}
 
 	/**

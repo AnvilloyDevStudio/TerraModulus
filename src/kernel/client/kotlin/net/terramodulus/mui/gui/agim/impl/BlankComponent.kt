@@ -7,10 +7,12 @@ package net.terramodulus.mui.gui.agim.impl
 
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.Component
+import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.gfx.Dimension2F
 
 /**
  * This can act as a placeholder [Component] in a [Layout][net.terramodulus.mui.gui.agim.Layout].
  */
-class BlankComponent : Component() {
+class BlankComponent(asdHandle: AsdHandle, dim: Dimension2F) : Component(asdHandle) {
 	override fun render(renderSystem: RenderSystem) {}
 }

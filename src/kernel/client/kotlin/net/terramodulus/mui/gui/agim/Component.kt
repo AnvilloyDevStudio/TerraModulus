@@ -6,9 +6,8 @@
 package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.mui.gui.agim.event.ComponentEvent
-import net.terramodulus.mui.gui.gfx.ManagedRect
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.RenderSystem
-import net.terramodulus.mui.kui.InputSystem
 
 /**
  * [Component] can only be contained by only one [Container][net.terramodulus.mui.gui.agim.Container] at once.
@@ -16,14 +15,14 @@ import net.terramodulus.mui.kui.InputSystem
  * It is an undefined behavior when the `Component` is contained repeatedly
  * or in different containers simultaneously.
  */
-abstract class Component {
+abstract class Component(open val asdHandle: AsdHandle) {
 	private val listeners = HashMap<Class<out ComponentEvent>, LinkedHashSet<(ComponentEvent) -> Unit>>()
 
-	/**
-	 * Caveat: This should only be modified by [Layout][net.terramodulus.mui.gui.agim.Layout] managers.
-	 */
-	open lateinit var rect: ManagedRect.Normal
-		internal set
+// 	/**
+// 	 * Caveat: This should only be modified by [Layout][net.terramodulus.mui.gui.agim.Layout] managers.
+// 	 */
+// 	open lateinit var layoutHandle: LayoutHandle
+// 		internal set
 
 	abstract fun render(renderSystem: RenderSystem)
 
@@ -40,7 +39,7 @@ abstract class Component {
 		listeners[event.javaClass]?.forEach { it(event) }
 	}
 
-	internal open fun update(muiIopIf: ScreenManager.MuiIopIf) {
-		dispatchEvent(ComponentEvent.Update(muiIopIf))
+	internal open fun update(muiIoI: ScreenManager.MuiIoI) {
+		dispatchEvent(ComponentEvent.Update(muiIoI))
 	}
 }

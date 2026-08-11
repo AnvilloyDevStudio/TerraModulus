@@ -30,10 +30,16 @@ class Window(
 	private val windowHandle = initWindowHandle(sdlHandle) // TODO pass dimensions
 	val canvas = Canvas(windowHandle)
 
+	private val listeners = HashSet<(UInt, UInt) -> Unit>()
+
+	fun addListener(listener: (UInt, UInt) -> Unit) = listeners.add(listener)
+	fun removeListener(listener: (UInt, UInt) -> Unit) = listeners.remove(listener)
+
 	fun sizeChanged(width: UInt, height: UInt) {
 		this.width = width
 		this.height = height
 		canvas.resizeGLViewport()
+		listeners.forEach { it(width, height) }
 	}
 
 	fun show() = showWindow(windowHandle)

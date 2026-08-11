@@ -7,7 +7,7 @@ package net.terramodulus.mui.gui.agim.impl
 
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
-import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.asd.AsdHandle
 
 class CompositeLayout(container: Container) : Layout(container) {
 	private val layouts = ArrayDeque<Layout>()
@@ -18,7 +18,7 @@ class CompositeLayout(container: Container) : Layout(container) {
 		operate { operation(layouts) }
 	}
 
-	override fun layout(rect: RectangleF) {
+	override fun layOut(handle: AsdHandle) {
 		layouts.forEach { it.update() }
 	}
 }

@@ -5,7 +5,8 @@
 
 package net.terramodulus.mui.gui.agim
 
-import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.io.Closeable
 import java.util.ArrayDeque
 
@@ -24,7 +25,7 @@ abstract class Layout(private val container: Container) : Closeable {
 
 	abstract val components: Sequence<Component>
 
-	private val containerObserver = ::layout.apply(container.rect::observe)
+	private val containerObserver = { layOut(container.asdHandle) }.apply(container.asdHandle::observe)
 
 	private val layoutOperations = ArrayDeque<Operation>()
 
@@ -44,30 +45,35 @@ abstract class Layout(private val container: Container) : Closeable {
 
 	/**
 	 * Updates the layout output using pending operations added via [operate],
-	 * and the resultant layout configurations by invoking [layout] internally if any operation exists.
+	 * and the resultant layout configurations by invoking [layOut] internally if any operation exists.
 	 */
 	fun update() {
 		val nonEmpty = layoutOperations.isNotEmpty()
 		while (layoutOperations.isNotEmpty()) {
 			with(layoutOperations.removeFirst()) { this@Layout.operate() }
 		}
-		if (nonEmpty) layout(container.rect.value)
+		if (nonEmpty) layOut(container.asdHandle)
 	}
 
 	/**
 	 * Lays out the managed [components] by this [Layout] manager.
 	 *
-	 * Only the `rect`s of the managed `components` should be (re)assigned;
-	 * no other state-changing operations should be done beside this.
-	 * @param rect the rectangle of the container at this moment
+	 * In most cases, only the `layoutHandle`s of the managed `components` should be (re)assigned.
+	 * Otherwise, no other state-changing operations should be done beside this.
+	 * @param handle the `LayoutHandle` of the Container
 	 */
-	protected abstract fun layout(rect: RectangleF)
+	protected abstract fun layOut(handle: AsdHandle)
+
+	/**
+	 * Renders this [Layout] with underlying managed [components].
+	 */
+	internal fun render(renderSystem: RenderSystem) = components.forEach { it.render(renderSystem) }
 
 	/**
 	 * Must be invoked when this [Layout] is no longer in use.
 	 */
 	fun clear() { // Not sure whether there is the necessity to separate this from [close].
-		container.rect.unobserve(containerObserver)
+		container.asdHandle.unobserve(containerObserver)
 	}
 
 	override fun close() {

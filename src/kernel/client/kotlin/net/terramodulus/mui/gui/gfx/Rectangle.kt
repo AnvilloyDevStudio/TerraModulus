@@ -145,7 +145,7 @@ data class RectangleI(
 	override fun vec2(x: Int, y: Int) = ImmVec2i(x, y)
 
 	override fun Int.plus(other: Int) = this + other
-
+	override fun Int.minus(other: Int) = this - other
 	override fun Int.div(other: Int) = this / other
 
 	override val Vec2i.x: Int by ::x
@@ -175,7 +175,7 @@ data class RectangleF(
 	override fun vec2(x: Float, y: Float) = ImmVec2f(x, y)
 
 	override fun Float.plus(other: Float) = this + other
-
+	override fun Float.minus(other: Float) = this - other
 	override fun Float.div(other: Int) = this / other
 
 	override val Vec2f.x: Float by ::x

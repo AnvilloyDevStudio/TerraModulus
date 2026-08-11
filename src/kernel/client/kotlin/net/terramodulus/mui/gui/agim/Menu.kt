@@ -6,11 +6,18 @@
 package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.mui.gui.agim.event.MenuEvent
+import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.io.Closeable
 
-abstract class Menu : Container, Closeable {
+abstract class Menu(
+	managerHandle: MenuManager.Handle,
+	final override val asdHandle: AsdHandle.Container,
+) : Container, Closeable {
 	private val listeners = HashMap<Class<out MenuEvent>, LinkedHashSet<(MenuEvent) -> Unit>>()
+	val handle: Handle = HandleImpl(managerHandle)
 
 	fun <T: MenuEvent> addListener(e: Class<T>, l: (T) -> Unit) {
 		@Suppress("UNCHECKED_CAST")
@@ -25,14 +32,31 @@ abstract class Menu : Container, Closeable {
 		listeners[event.javaClass]?.forEach { it(event) }
 	}
 
-	internal fun render(renderSystem: RenderSystem) {
-		layout.components.forEach { it.render(renderSystem) }
+	sealed interface Handle {
+		fun addMenu(menu: (MenuManager.Handle, AsdHandle) -> Menu)
+
+		fun removeMenu(menu: Menu)
 	}
 
-	internal fun update(muiIopIf: ScreenManager.MuiIopIf) {
-		dispatchEvent(MenuEvent.Update(muiIopIf))
+	private inner class HandleImpl(private val managerHandle: MenuManager.Handle) : Handle {
+		override fun addMenu(menu: (MenuManager.Handle, AsdHandle) -> Menu) = managerHandle.addMenu(menu)
+
+		override fun removeMenu(menu: Menu) = managerHandle.removeMenu(menu)
+	}
+
+	protected inner class ComponentAsdHandleImpl : AsdHandle.Container() {
+		override lateinit var rect: RectangleF
+		override fun registerAsdProcessor(processor: AsdProcessor<*>) = asdHandle.registerAsdProcessor(processor)
+	}
+
+	internal fun render(renderSystem: RenderSystem) {
+		layout.render(renderSystem)
+	}
+
+	internal fun update(muiIoI: ScreenManager.MuiIoI) {
+		dispatchEvent(MenuEvent.Update(muiIoI))
 		layout.update()
-		layout.components.forEach { it.update(muiIopIf) }
+		layout.components.forEach { it.update(muiIoI) }
 	}
 
 	/**

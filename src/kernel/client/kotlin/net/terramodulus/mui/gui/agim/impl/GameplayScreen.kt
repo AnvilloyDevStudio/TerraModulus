@@ -28,7 +28,11 @@ import net.terramodulus.engine.common.ZeroImmVec3d
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
+import net.terramodulus.mui.gui.agim.event.ScreenEvent
+import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.asd.AsdProcessor
 import net.terramodulus.mui.gui.gfx.Direction6C
+import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.kui.InputSystem
 import net.terramodulus.util.logging.logger
@@ -60,19 +64,23 @@ internal class GameplayScreen(
 	private val camera: Camera3D,
 	renderSystemHandle: RenderSystem.Handle,
 	managerHandle: ScreenManager.Handle,
-	rect: ScreenManager.DelegatedRect,
-) : Screen(managerHandle, rect) {
+	asdHandle: AsdHandle.Container,
+) : Screen(managerHandle, asdHandle) {
 	private val geoShaders = camera.loadGeoShaders(
 		getResourceAsString("/gwr_geo.vsh"),
 		getResourceAsString("/gwr_geo.fsh"),
 	)
 
 	private lateinit var player: PlayerVoidGeom
+	override val layout: AbsoluteLayout
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
 		core.world = World(Ymir())
-		addComponent(GameplayRenderer())
+		layout = AbsoluteLayout(this, GameplayRenderer(), AbsoluteLayout.Config.Full)
+		addListener(ScreenEvent.Update::class.java) {
+			update0(it.muiIoI)
+		}
 // 		val progressBarEdge = GeomComponent(GuiLine(0, 100, 100, 100, 255, 255, 255, 255))
 // 		addComponent(progressBarEdge)
 // 		val progressBarCtnVal = GuiLine(0, 101, 0, 101, 255, 255, 0, 255)
@@ -183,7 +191,8 @@ internal class GameplayScreen(
 
 	private fun Vec3d.display() = "[$x, $y, $z]"
 
-	override fun update(renderSystem: RenderSystem, screenManager: ScreenManager, inputSystem: InputSystem) {
+	private fun update0(muiIoI: ScreenManager.MuiIoI) {
+		val inputSystem = muiIoI.inputSystem
 		// Those keys are not related to GUI, so they are fine to be here.
 		if (inputSystem.condition { Q.justDown() }) {
 			// Query position of sphere
@@ -320,8 +329,8 @@ internal class GameplayScreen(
 		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
 		player.move(dirs.fold(ZeroImmVec3d, Vec3d::plus))
 	}
-
-	private inner class GameplayRenderer : Component() {
+	
+	private inner class GameplayRenderer : Component(ComponentAsdHandleImpl()) {
 		override fun render(renderSystem: RenderSystem) {
 			if (core.world != null) core.world!!.objects.values.sortedWith(
 				compareBy<World.VoidGeom> { it.pos.y }.thenBy { it.pos.z }

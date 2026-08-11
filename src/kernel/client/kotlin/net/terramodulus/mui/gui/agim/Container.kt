@@ -5,13 +5,13 @@
 
 package net.terramodulus.mui.gui.agim
 
-import net.terramodulus.mui.gui.gfx.ManagedRect
+import net.terramodulus.mui.gui.asd.AsdHandle
 
 /**
  * **AGIM Container**, direct subclasses are explicitly defined.
  */
 sealed interface Container {
-	val rect: ManagedRect
+	val asdHandle: AsdHandle//.Container
 
 	val layout: Layout
 }

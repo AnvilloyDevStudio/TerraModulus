@@ -15,6 +15,7 @@ abstract class ManagedRect {
 
 	protected val observers = LinkedHashSet<(RectangleF) -> Unit>()
 
+	// What is this?
 	internal abstract fun setValue(rect: RectangleF)
 
 	class Normal(rect: RectangleF) : ManagedRect() {

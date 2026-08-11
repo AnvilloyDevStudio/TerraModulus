@@ -8,6 +8,6 @@ package net.terramodulus.mui.gui.agim.event
 import net.terramodulus.mui.gui.agim.ScreenManager
 
 sealed interface ScreenEvent {
-	data class Update(val muiIopIf: ScreenManager.MuiIopIf) : ScreenEvent
+	data class Update(val muiIoI: ScreenManager.MuiIoI) : ScreenEvent
 	data object Close : ScreenEvent
 }

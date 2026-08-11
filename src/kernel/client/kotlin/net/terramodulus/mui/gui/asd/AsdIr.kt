@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: LGPL-3.0-only
  */
 
-package net.terramodulus.mui.gui.agim.asd
+package net.terramodulus.mui.gui.asd
 
-class MenuStyles {
+/**
+ * ASD Intermediate Representation (IR)
+ */
+class AsdIr {
 }
