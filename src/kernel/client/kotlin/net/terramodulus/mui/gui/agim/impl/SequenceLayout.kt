@@ -8,6 +8,7 @@ package net.terramodulus.mui.gui.agim.impl
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.RectangleF
 
 /**
@@ -59,7 +60,7 @@ class ColumnLayout private constructor(container: Container, elements: ElementLi
 		}
 	}
 
-	override fun layout(rect: RectangleF) {
+	override fun layOut(handle: AsdHandle) {
 		elements.forEach { TODO() }
 	}
 }
@@ -87,7 +88,7 @@ class RowLayout private constructor(container: Container, elements: ElementList<
 		}
 	}
 
-	override fun layout(rect: RectangleF) {
+	override fun layOut(handle: AsdHandle) {
 		elements.forEach { TODO() }
 	}
 }

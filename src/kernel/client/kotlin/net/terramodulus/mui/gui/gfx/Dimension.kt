@@ -9,6 +9,8 @@ data class Dimension2I(val width: Int, val height: Int)
 
 data class Dimension2F(val width: Float, val height: Float)
 
+data class Dimension2D(val width: Double, val height: Double)
+
 data class Dimension3I(val width: Int, val height: Int, val length: Int)
 
 data class Dimension3F(val width: Float, val height: Float, val length: Float)

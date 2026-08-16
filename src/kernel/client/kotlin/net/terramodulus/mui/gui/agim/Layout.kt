@@ -25,7 +25,7 @@ abstract class Layout(private val container: Container) : Closeable {
 
 	abstract val components: Sequence<Component>
 
-	private val containerObserver = { layOut(container.asdHandle) }.apply(container.asdHandle::observe)
+	private val containerObserver = { layOut(container.asdHandle) }.apply(container.asdHandle::observeRect)
 
 	private val layoutOperations = ArrayDeque<Operation>()
 
@@ -73,7 +73,7 @@ abstract class Layout(private val container: Container) : Closeable {
 	 * Must be invoked when this [Layout] is no longer in use.
 	 */
 	fun clear() { // Not sure whether there is the necessity to separate this from [close].
-		container.asdHandle.unobserve(containerObserver)
+		container.asdHandle.unobserveRect(containerObserver)
 	}
 
 	override fun close() {

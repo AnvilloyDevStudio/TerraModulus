@@ -33,7 +33,7 @@ class ScreenManager internal constructor(
 	init {
 		window.addListener { w, h ->
 			viewportRect = RectangleF(0F, 0F, w.toFloat(), h.toFloat())
-			asdHandles.forEach { it.triggerObservers() } // already referring viewportRect
+			asdHandles.forEach { it.triggerRectObservers() } // already referring viewportRect
 		}
 	}
 

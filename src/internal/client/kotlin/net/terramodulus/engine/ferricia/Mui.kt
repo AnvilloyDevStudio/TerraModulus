@@ -157,27 +157,6 @@ internal object Mui {
 	external fun updateGeneralTransform(handle: ULong, data: DoubleArray)
 
 	/**
-	 * @param data `[w, h, param, w, h]`
-	 * @return SmartScaling handle pointers
-	 */
-	@JvmName("modelSmartScaling")
-	external fun modelSmartScaling(data: IntArray): ULongArray
-
-	/**
-	 * @param data `[w, h]`
-	 * @return FullScaling handle pointers
-	 */
-	@JvmName("modelFullScaling")
-	external fun modelFullScaling(data: IntArray): ULongArray
-
-	/**
-	 * @param data `[x, y]`
-	 * @return SimpleTranslation handle pointers
-	 */
-	@JvmName("modelSimpleTranslation")
-	external fun modelSimpleTranslation(data: FloatArray): ULongArray
-
-	/**
 	 * @param data alpha
 	 * @return AlphaFilter handle pointers
 	 */

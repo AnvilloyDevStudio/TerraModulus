@@ -5,12 +5,18 @@
 
 package net.terramodulus.mui.gui.gfx
 
+import com.cout970.math.vec2.ImmVec2d
 import com.cout970.math.vec2.ImmVec2f
 import com.cout970.math.vec2.ImmVec2i
 import com.cout970.math.vec2.Vec2
+import com.cout970.math.vec2.Vec2d
 import com.cout970.math.vec2.Vec2f
 import com.cout970.math.vec2.Vec2i
 
+/**
+ * Rectangle in a coordinate system with (0, 0) on the bottom left.
+ * The anchor of the rectangle is the bottom-left corner.
+ */
 sealed class Rectangle<T: Rectangle<T, N, V, D>, N: Number, V: Vec2, D>(
 	open val x: N,
 	open val y: N,
@@ -127,13 +133,11 @@ sealed class Rectangle<T: Rectangle<T, N, V, D>, N: Number, V: Vec2, D>(
 		height - other.bottom - other.top,
 	)
 
+	abstract fun toInt(): RectangleI
 	abstract fun toFloat(): RectangleF
+	abstract fun toDouble(): RectangleD
 }
 
-/**
- * Rectangle in a coordinate system with (0, 0) on the bottom left.
- * The anchor of the rectangle is the bottom-left corner.
- */
 data class RectangleI(
 	override val x: Int,
 	override val y: Int,
@@ -152,13 +156,11 @@ data class RectangleI(
 	override val Vec2i.y: Int by ::y
 	override val size = Dimension2I(width, height)
 
+	override fun toInt() = this
 	override fun toFloat() = RectangleF(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+	override fun toDouble() = RectangleD(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 }
 
-/**
- * Rectangle in a coordinate system with (0, 0) on the bottom left.
- * The anchor of the rectangle is the bottom-left corner.
- */
 data class RectangleF(
 	override val x: Float,
 	override val y: Float,
@@ -181,5 +183,36 @@ data class RectangleF(
 	override val Vec2f.x: Float by ::x
 	override val Vec2f.y: Float by ::y
 	override val size = Dimension2F(width, height)
+
+	override fun toInt() = RectangleI(x.toInt(), y.toInt(), width.toInt(), height.toInt())
 	override fun toFloat() = this
+	override fun toDouble() = RectangleD(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+}
+
+data class RectangleD(
+	override val x: Double,
+	override val y: Double,
+	override val width: Double,
+	override val height: Double
+) : Rectangle<RectangleD, Double, Vec2d, Dimension2D>(x, y, width, height) {
+	override fun constructor(
+		x: Double,
+		y: Double,
+		width: Double,
+		height: Double
+	) = RectangleD(x, y, width, height)
+
+	override fun vec2(x: Double, y: Double) = ImmVec2d(x, y)
+
+	override fun Double.plus(other: Double) = this + other
+	override fun Double.minus(other: Double) = this - other
+	override fun Double.div(other: Int) = this / other
+
+	override val Vec2d.x: Double by ::x
+	override val Vec2d.y: Double by ::y
+	override val size = Dimension2D(width, height)
+
+	override fun toInt() = RectangleI(x.toInt(), y.toInt(), width.toInt(), height.toInt())
+	override fun toFloat() = RectangleF(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+	override fun toDouble() = this
 }

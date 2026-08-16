@@ -7,9 +7,7 @@ package net.terramodulus.engine
 
 import com.cout970.math.vec2.MutVec2d
 import com.cout970.math.vec2.Vec2d
-import net.terramodulus.engine.ferricia.Mui.modelFullScaling
 import net.terramodulus.engine.ferricia.Mui.modelGeneralTransform
-import net.terramodulus.engine.ferricia.Mui.modelSmartScaling
 import net.terramodulus.engine.ferricia.Mui.updateGeneralTransform
 import kotlin.properties.Delegates
 
@@ -32,21 +30,3 @@ class GeneralTransform(sx: Double, sy: Double, angle: Double, px: Double, py: Do
 		updateGeneralTransform(handle, doubleArrayOf(sx, sy, angle, new.x, new.y))
 	}
 }
-
-@OptIn(ExperimentalUnsignedTypes::class)
-class SmartScaling private constructor(vararg args: Int) :
-	ModelTransform(modelSmartScaling(args)) {
-
-	companion object {
-		fun none(w: Int, h: Int) = SmartScaling(w, h, 0)
-
-		fun x(w: Int, h: Int, ww: Int, hh: Int) = SmartScaling(w, h, 1, ww, hh)
-
-		fun y(w: Int, h: Int, ww: Int, hh: Int) = SmartScaling(w, h, 2, ww, hh)
-
-		fun both(w: Int, h: Int, ww: Int, hh: Int) = SmartScaling(w, h, 3, ww, hh)
-	}
-}
-
-@OptIn(ExperimentalUnsignedTypes::class)
-class FullScaling(w: Int, h: Int) : ModelTransform(modelFullScaling(intArrayOf(w, h)))

@@ -11,7 +11,6 @@ import net.terramodulus.mui.gui.agim.Layout
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.InsetsF
 import net.terramodulus.mui.gui.gfx.RectangleF
-import net.terramodulus.mui.gui.gfx.RenderSystem
 
 class AbsoluteLayout(container: Container, component: Component, private var config: Config) : Layout(container) {
 	override val components = componentsSequence(::component)
@@ -44,6 +43,6 @@ class AbsoluteLayout(container: Container, component: Component, private var con
 
 	override fun layOut(handle: AsdHandle) {
 		component.asdHandle.rect = config.layOut(handle.rect)
-		component.asdHandle.triggerObservers()
+		component.asdHandle.triggerRectObservers()
 	}
 }
