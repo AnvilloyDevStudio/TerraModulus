@@ -8,6 +8,7 @@ package net.terramodulus.mui.gui
 import net.terramodulus.core.TerraModulus
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
+import net.terramodulus.mui.gui.agim.LayoutManager
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.asd.AsdManager
@@ -23,6 +24,7 @@ internal class GuiManager internal constructor(private val window: Window, core:
 	val renderSystem = RenderSystem(core, window.canvas)
 	val asdManager = AsdManager()
 	val screenManager = ScreenManager(window, renderSystem.handle, asdManager.AgimHandle())
+	val layoutManager = LayoutManager()
 
 	private var proceeded = false
 

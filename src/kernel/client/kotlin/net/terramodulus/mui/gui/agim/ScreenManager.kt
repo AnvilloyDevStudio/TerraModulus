@@ -241,7 +241,9 @@ class ScreenManager internal constructor(
 		screens.forEach { it.render(renderSystem, this) }
 	}
 
-	internal fun visit() = AgimoTreeVisitor.ScreenTreeVisitor {
+	internal fun visitScreens() = AgimoTreeVisitor.ScreenTreeVisitor {
 		screens.asSequence()
 	}
+
+	internal fun visitMenus() = menuManager.visit()
 }

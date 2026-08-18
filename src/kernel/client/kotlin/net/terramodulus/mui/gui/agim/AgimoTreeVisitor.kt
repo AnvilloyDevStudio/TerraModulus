@@ -16,36 +16,36 @@ internal abstract class AgimoTreeVisitor {
 		fun visit(): Sequence<Menu>
 	}
 
-	protected class RootNode(screens: Sequence<Screen>, menus: Sequence<Menu>) {
+	class RootNode(screens: Sequence<Screen>, menus: Sequence<Menu>) {
 		val screens = ScreenTree(screens)
 		val menus = MenuTree(menus)
 	}
 
-	protected abstract class ContainerNode(val layout: Layout) {
+	sealed class ContainerNode(val layout: Layout) {
 		val elements = LinkedList(layout.components.map {
 			if (it is AbstractPane) PaneNode(it) else SimpleComponentNode(it)
 		}.toList())
 	}
 
-	protected sealed interface ComponentNode {
+	sealed interface ComponentNode {
 		val component: Component
 	}
 
-	protected class SimpleComponentNode(override val component: Component) : ComponentNode
+	class SimpleComponentNode(override val component: Component) : ComponentNode
 
-	protected class PaneNode(override val component: AbstractPane) : ContainerNode(component.layout), ComponentNode
+	class PaneNode(override val component: AbstractPane) : ContainerNode(component.layout), ComponentNode
 
-	protected class ScreenTree(screens: Sequence<Screen>) {
+	class ScreenTree(screens: Sequence<Screen>) {
 		val list = LinkedList(screens.map { ScreenNode(it) }.toList())
 	}
 
-	protected class ScreenNode(val screen: Screen) : ContainerNode(screen.layout) {
+	class ScreenNode(val screen: Screen) : ContainerNode(screen.layout) {
 		val menus = MenuTree(screen.visit().visit())
 	}
 
-	protected class MenuTree(menus: Sequence<Menu>) {
+	class MenuTree(menus: Sequence<Menu>) {
 		val list = LinkedList(menus.map { MenuNode(it) }.toList())
 	}
 
-	protected class MenuNode(val menu: Menu) : ContainerNode(menu.layout)
+	class MenuNode(val menu: Menu) : ContainerNode(menu.layout)
 }

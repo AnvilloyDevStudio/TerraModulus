@@ -52,17 +52,22 @@ abstract class Layout(private val container: Container) : Closeable {
 		while (layoutOperations.isNotEmpty()) {
 			with(layoutOperations.removeFirst()) { this@Layout.operate() }
 		}
-		if (nonEmpty) layOut(container.asdHandle)
+		if (nonEmpty) updated = true
 	}
+
+	/**
+	 * Whether this [Layout] has been updated (as in [update]) at this moment.
+	 * This should only be updated by [update] and [LayoutManager].
+	 */
+	internal var updated = false
 
 	/**
 	 * Lays out the managed [components] by this [Layout] manager.
 	 *
 	 * In most cases, only the `layoutHandle`s of the managed `components` should be (re)assigned.
 	 * Otherwise, no other state-changing operations should be done beside this.
-	 * @param handle the `LayoutHandle` of the Container
 	 */
-	protected abstract fun layOut(handle: AsdHandle)
+	protected abstract fun layOut(handle: LayoutHandle): LayoutComputationGroup
 
 	/**
 	 * Renders this [Layout] with underlying managed [components].

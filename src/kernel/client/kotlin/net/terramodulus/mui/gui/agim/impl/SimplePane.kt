@@ -10,11 +10,8 @@ import net.terramodulus.mui.gui.agim.Layout
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.RenderSystem
 
-class ScrollPane(asdHandle: AsdHandle) : AbstractPane(asdHandle) {
+class SimplePane(asdHandle: AsdHandle, override var layout: Layout) : AbstractPane(asdHandle) {
 	override fun render(renderSystem: RenderSystem) {
-		TODO("Not yet implemented")
+		layout.render(renderSystem)
 	}
-
-	override val layout: Layout
-		get() = TODO("Not yet implemented")
 }
