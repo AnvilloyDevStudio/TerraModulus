@@ -5,7 +5,6 @@
 
 package net.terramodulus.mui.gui.agim
 
-import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.io.Closeable
 import java.util.ArrayDeque
@@ -16,7 +15,7 @@ import java.util.ArrayDeque
  * **Layout** is defined only when all its managed components all belong to the container
  * associated with this layout manager *exclusively*.
  */
-abstract class Layout(private val container: Container) : Closeable {
+abstract class Layout(protected val container: Container) : Closeable {
 	companion object {
 		const val ALIGN_START = 0F
 		const val ALIGN_CENTER = .5F
@@ -24,8 +23,6 @@ abstract class Layout(private val container: Container) : Closeable {
 	}
 
 	abstract val components: Sequence<Component>
-
-	private val containerObserver = { layOut(container.asdHandle) }.apply(container.asdHandle::observeRect)
 
 	private val layoutOperations = ArrayDeque<Operation>()
 
@@ -67,7 +64,9 @@ abstract class Layout(private val container: Container) : Closeable {
 	 * In most cases, only the `layoutHandle`s of the managed `components` should be (re)assigned.
 	 * Otherwise, no other state-changing operations should be done beside this.
 	 */
-	protected abstract fun layOut(handle: LayoutHandle): LayoutComputationGroup
+	protected abstract fun layOut(handle: LayoutHandle): Sequence<LayoutComputationGroup>
+
+	internal fun layOutInternal(handle: LayoutHandle) = layOut(handle)
 
 	/**
 	 * Renders this [Layout] with underlying managed [components].
@@ -78,7 +77,7 @@ abstract class Layout(private val container: Container) : Closeable {
 	 * Must be invoked when this [Layout] is no longer in use.
 	 */
 	fun clear() { // Not sure whether there is the necessity to separate this from [close].
-		container.asdHandle.unobserveRect(containerObserver)
+// 		container.asdHandle.unobserveRect(containerObserver)
 	}
 
 	override fun close() {
@@ -126,8 +125,8 @@ abstract class Layout(private val container: Container) : Closeable {
 	}
 
 	abstract class ElementGroup<E : Any> protected constructor(
-        container: Container,
-        protected val elements: ElementList<E>,
+		container: Container,
+		protected open val elements: ElementList<E>,
 	) : Group(container) {
 		final override val components = elements.componentsView.asSequence()
 

@@ -72,12 +72,12 @@ internal class GameplayScreen(
 	)
 
 	private lateinit var player: PlayerVoidGeom
-	override val layout: AbsoluteLayout
+	override val layout: SingletonLayout
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
 		core.world = World(Ymir())
-		layout = AbsoluteLayout(this, GameplayRenderer(), AbsoluteLayout.Config.Full)
+		layout = SingletonLayout(this, GameplayRenderer(), SingletonLayout.Config.Absolute.Full)
 		addListener(ScreenEvent.Update::class.java) {
 			update0(it.muiIoI)
 		}
@@ -329,7 +329,7 @@ internal class GameplayScreen(
 		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
 		player.move(dirs.fold(ZeroImmVec3d, Vec3d::plus))
 	}
-	
+
 	private inner class GameplayRenderer : Component(ComponentAsdHandleImpl()) {
 		override fun render(renderSystem: RenderSystem) {
 			if (core.world != null) core.world!!.objects.values.sortedWith(

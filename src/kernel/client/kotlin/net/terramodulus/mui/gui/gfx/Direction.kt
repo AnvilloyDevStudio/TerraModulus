@@ -11,6 +11,10 @@ package net.terramodulus.mui.gui.gfx
  * Those should be used with care since they are not already interconvertible.
  */
 
+enum class Direction2 {
+	Positive, Negative;
+}
+
 /**
  * Set of 4 compass directions.
  */

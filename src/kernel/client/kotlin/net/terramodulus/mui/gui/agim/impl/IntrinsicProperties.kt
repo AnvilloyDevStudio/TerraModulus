@@ -6,7 +6,7 @@
 package net.terramodulus.mui.gui.agim.impl
 
 import net.terramodulus.mui.gui.agim.AgimoProperty
-import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.agim.AgimoPropertyMap
 import net.terramodulus.util.gcd
 
 /**
@@ -14,7 +14,7 @@ import net.terramodulus.util.gcd
  */
 data class IntrinsicRatioProperty(val width: UInt, val height: UInt) : AgimoProperty() {
 	companion object {
-		val KEY = AsdHandle.PropertyKey(IntrinsicRatioProperty::class.java)
+		val KEY = AgimoPropertyMap.Key(IntrinsicRatioProperty::class.java)
 		fun compute(width: UInt, height: UInt): IntrinsicRatioProperty {
 			val gcd = gcd(width, height)
 			return IntrinsicRatioProperty(width / gcd, height / gcd)
@@ -24,7 +24,7 @@ data class IntrinsicRatioProperty(val width: UInt, val height: UInt) : AgimoProp
 
 class IntrinsicDimensionsProperty(val width: UInt, val height: UInt) : AgimoProperty() {
 	companion object {
-		val KEY = AsdHandle.PropertyKey(IntrinsicDimensionsProperty::class.java)
+		val KEY = AgimoPropertyMap.Key(IntrinsicDimensionsProperty::class.java)
 	}
 	fun computeRatio() = IntrinsicRatioProperty.compute(width, height)
 }

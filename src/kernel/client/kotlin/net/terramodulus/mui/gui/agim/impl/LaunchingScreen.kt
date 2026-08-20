@@ -5,19 +5,15 @@
 
 package net.terramodulus.mui.gui.agim.impl
 
-import net.terramodulus.mui.gui.gfx.AlphaFilter
-import net.terramodulus.mui.gui.gfx.Dimension2I
-import net.terramodulus.mui.gui.gfx.GuiRect
-import net.terramodulus.mui.gui.gfx.GuiSprite
-import net.terramodulus.mui.gui.gfx.RectangleI
-import net.terramodulus.mui.gui.gfx.RenderSystem
-import net.terramodulus.mui.gui.gfx.SmartScaling
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.event.ScreenEvent
 import net.terramodulus.mui.gui.asd.AsdHandle
-
-private val REF_SIZE = Dimension2I(800, 480)
+import net.terramodulus.mui.gui.gfx.AlphaFilter
+import net.terramodulus.mui.gui.gfx.GuiRect
+import net.terramodulus.mui.gui.gfx.GuiSprite
+import net.terramodulus.mui.gui.gfx.RectangleI
+import net.terramodulus.mui.gui.gfx.RenderSystem
 
 private val BG_COLOR = floatArrayOf(.145F, .776F, .768F)
 
@@ -37,20 +33,22 @@ internal class LaunchingScreen(
 
 	init {
 		layout.update {
-			add(AbsoluteLayout(this@LaunchingScreen, GeomComponent(GuiRect(
+			add(SingletonLayout(this@LaunchingScreen, GeomComponent(GuiRect(
 				0, 0, 1, 1, 37, 198, 196, 255
 			), ComponentAsdHandleImpl()).apply {
 				geom.add(alphaFilter)
-			}, AbsoluteLayout.Config.Full))
+			}, SingletonLayout.Config.Absolute.Full))
 		}
 		layout.update {
-			add(AbsoluteLayout(this@LaunchingScreen, SpriteComponent(GuiSprite(
+			add(SingletonLayout(this@LaunchingScreen, SpriteComponent(GuiSprite(
 				RectangleI(0, 0, 512, 128),
 				renderSystemHandle.loadTexture("/studio_logo.png"),
 			), ComponentAsdHandleImpl()).apply {
 				sprite.add(alphaFilter)
-				sprite.add(SmartScaling.both(REF_SIZE.width, REF_SIZE.height, 512, 128))
-			}, AbsoluteLayout.Config.Full))
+			}, SingletonLayout.Config.Aligned(
+				SingletonLayout.Config.ObjectFit.Contain,
+				SingletonLayout.Config.AlignmentConfig.DEFAULT,
+			)))
 		}
 
 		addListener(ScreenEvent.Update::class.java) {

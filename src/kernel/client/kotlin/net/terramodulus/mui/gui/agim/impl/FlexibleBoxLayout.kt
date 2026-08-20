@@ -7,12 +7,14 @@ package net.terramodulus.mui.gui.agim.impl
 
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
+import net.terramodulus.mui.gui.agim.LayoutComputationGroup
+import net.terramodulus.mui.gui.agim.LayoutHandle
 import net.terramodulus.mui.gui.asd.AsdHandle
 
 class FlexibleBoxLayout(container: Container) : Layout(container) {
 	override val components = TODO("Not yet implemented")
 
-	override fun layOut(handle: AsdHandle) {
+	override fun layOut(handle: LayoutHandle): Sequence<LayoutComputationGroup> {
 		TODO("Not yet implemented")
 	}
 }

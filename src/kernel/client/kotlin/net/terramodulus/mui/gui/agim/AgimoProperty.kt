@@ -95,4 +95,9 @@ class AgimoPropertyMap {
 
 	@Suppress("UNCHECKED_CAST")
 	fun asMap(): Map<Key<*>, AgimoProperty> = properties as Map<Key<*>, AgimoProperty>
+
 }
+
+@Suppress("UNCHECKED_CAST")
+fun <T: AgimoProperty> Map<AgimoPropertyMap.Key<*>, AgimoProperty>.getProperty(key: AgimoPropertyMap.Key<T>) =
+	this[key] as T?

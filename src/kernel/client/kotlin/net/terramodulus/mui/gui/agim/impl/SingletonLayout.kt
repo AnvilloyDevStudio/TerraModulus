@@ -6,14 +6,19 @@
 package net.terramodulus.mui.gui.agim.impl
 
 import com.cout970.math.vec2.ImmVec2d
+import net.terramodulus.mui.gui.agim.AgimoPropertyMap
 import net.terramodulus.mui.gui.agim.AnchorAlignmentHelper
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
+import net.terramodulus.mui.gui.agim.LayoutComputationGroup
+import net.terramodulus.mui.gui.agim.LayoutComputationUnit
+import net.terramodulus.mui.gui.agim.LayoutHandle
+import net.terramodulus.mui.gui.agim.getProperty
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.Dimension2D
-import net.terramodulus.mui.gui.gfx.InsetsF
-import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.gfx.InsetsD
+import net.terramodulus.mui.gui.gfx.RectangleD
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,56 +28,201 @@ class SingletonLayout(container: Container, component: Component, private var co
 		private set
 
 	sealed class Config private constructor() {
-		abstract fun layOut(container: RectangleF): RectangleF
+		abstract fun layOut(layout: SingletonLayout): Set<LayoutComputationUnit>
 
 		sealed class Absolute private constructor() : Config() {
-			data object Full : Config() {
-				override fun layOut(container: RectangleF) = container
+			override fun layOut(layout: SingletonLayout): Set<LayoutComputationUnit> =
+				setOf(LayoutComputationUnit({
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				}, {
+					put(layout.component.asdHandle, setOf(RectangleProperty.KEY))
+				}, {
+					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
+						putProperty(RectangleProperty.KEY, RectangleProperty(layOut(
+							getUnit(layout.container.asdHandle).properties.getProperty(RectangleProperty.KEY)!!.value)
+						))
+					})
+				}))
+
+			abstract fun layOut(container: RectangleD): RectangleD
+
+			data object Full : Absolute() {
+				override fun layOut(container: RectangleD) = container
 			}
 
-			data class Insets(var insets: InsetsF) : Config() {
-				override fun layOut(container: RectangleF) = container - insets
+			data class Insets(var insets: InsetsD) : Absolute() {
+				override fun layOut(container: RectangleD) = container - insets
 			}
 		}
 
-		enum class ObjectFit {
-			Contain {
-				override fun compute(container: RectangleF, component: IntrinsicRatioProperty): Dimension2D {
-					val w = container.width.toDouble() / component.width.toDouble()
-					val h = container.height.toDouble() / component.height.toDouble()
+		data class Aligned(val config: Relative, val alignment: AlignmentConfig) : Config() {
+			private operator fun RectangleD.times(other: AlignmentConfig) =
+				ImmVec2d(width * other.x, height * other.y)
+			private operator fun Dimension2D.times(other: AlignmentConfig) =
+				ImmVec2d(width * other.x, height * other.y)
+
+			override fun layOut(layout: SingletonLayout): Set<LayoutComputationUnit> =
+				setOf(LayoutComputationUnit(config.dependencies(layout), {
+					put(layout.component.asdHandle, setOf(RectangleProperty.KEY))
+				}, {
+					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
+						val rect = getUnit(layout.container.asdHandle).properties
+							.getProperty(RectangleProperty.KEY)!!.value
+						val target = config.compute(layout, this@LayoutComputationUnit)
+						putProperty(RectangleProperty.KEY, RectangleProperty(
+							AnchorAlignmentHelper.Subject(rect.toDouble(), rect * alignment)
+								.alignTarget(AnchorAlignmentHelper.Target(target, target * alignment))
+						))
+					})
+				}))
+		}
+
+		sealed class Relative {
+			// Must include Container Rectangle
+			abstract fun dependencies(layout: SingletonLayout):
+				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit
+
+			abstract fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D
+
+			data class Simple(val scale: Double) : Relative() {
+				override fun dependencies(layout: SingletonLayout):
+					MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				}
+
+				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
+					val rect = handle.getUnit(layout.container.asdHandle).properties
+						.getProperty(RectangleProperty.KEY)!!.value
+					return Dimension2D(rect.width * scale, rect.height * scale)
+				}
+			}
+
+			data class Both(val scaleX: Double, val scaleY: Double) : Relative() {
+				override fun dependencies(layout: SingletonLayout):
+					MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				}
+
+				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
+					val rect = handle.getUnit(layout.container.asdHandle).properties
+						.getProperty(RectangleProperty.KEY)!!.value
+					return Dimension2D(rect.width * scaleX, rect.height * scaleY)
+				}
+			}
+		}
+
+		sealed class ObjectFit private constructor() : Relative() {
+			override fun dependencies(layout: SingletonLayout):
+				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
+				put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				put(layout.component.asdHandle, setOf(IntrinsicRatioProperty.KEY))
+			}
+
+			override fun compute(layout: SingletonLayout, handle: LayoutHandle) = compute(
+				handle.getUnit(layout.container.asdHandle).properties
+					.getProperty(RectangleProperty.KEY)!!.value,
+				handle.getUnit(layout.component.asdHandle).properties
+					.getProperty(IntrinsicRatioProperty.KEY)!!
+			)
+
+			abstract fun compute(container: RectangleD, component: IntrinsicRatioProperty): Dimension2D
+
+			data object Contain : ObjectFit() {
+				override fun compute(container: RectangleD, component: IntrinsicRatioProperty): Dimension2D {
+					val w = container.width / component.width.toDouble()
+					val h = container.height / component.height.toDouble()
 					val scale = min(w, h)
 					return Dimension2D(
 						component.width.toDouble() * scale,
 						component.height.toDouble() * scale,
 					)
 				}
-			},
-			Cover {
-				override fun compute(container: RectangleF, component: IntrinsicRatioProperty): Dimension2D {
-					val w = container.width.toDouble() / component.width.toDouble()
-					val h = container.height.toDouble() / component.height.toDouble()
+			}
+
+			data object Cover : ObjectFit() {
+				override fun compute(container: RectangleD, component: IntrinsicRatioProperty): Dimension2D {
+					val w = container.width / component.width.toDouble()
+					val h = container.height / component.height.toDouble()
 					val scale = max(w, h)
 					return Dimension2D(
 						component.width.toDouble() * scale,
 						component.height.toDouble() * scale,
 					)
 				}
-			},
-			;
+			}
+		}
 
-			abstract fun compute(container: RectangleF, component: IntrinsicRatioProperty): Dimension2D
+		sealed class Scaled private constructor() : Relative() {
+			override fun dependencies(layout: SingletonLayout):
+				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
+				put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				put(layout.component.asdHandle, setOf(IntrinsicDimensionsProperty.KEY))
+			}
 
-			private operator fun RectangleF.times(other: ObjectFitLayout.AlignmentConfig) = ImmVec2d(width * other.x, height * other.y)
-			private operator fun Dimension2D.times(other: ObjectFitLayout.AlignmentConfig) = ImmVec2d(width * other.x, height * other.y)
+			override fun compute(layout: SingletonLayout, handle: LayoutHandle) = compute(
+				handle.getUnit(layout.component.asdHandle).properties
+					.getProperty(IntrinsicDimensionsProperty.KEY)!!
+			)
 
-			override fun layOut(handle: AsdHandle) {
-				val ratio = component.asdHandle.getProperty(IntrinsicRatioProperty.KEY)
-				if (ratio === null)
-					throw IllegalStateException("component has no intrinsic ratio")
-				val target = mode.compute(handle.rect, ratio)
-				component.asdHandle.rect = AnchorAlignmentHelper.Subject(handle.rect.toDouble(), handle.rect * alignment)
-					.alignTarget(AnchorAlignmentHelper.Target(target, target * alignment)).toFloat()
-				component.asdHandle.triggerRectObservers()
+			abstract fun compute(dim: IntrinsicDimensionsProperty): Dimension2D
+
+			/**
+			 * Scale both dimensions by the same scaling
+			 * @param scale `> 0`
+			 */
+			data class Scale(val scale: Double) : Scaled() {
+				override fun compute(dim: IntrinsicDimensionsProperty) =
+					Dimension2D(dim.width.toDouble() * scale, dim.height.toDouble() * scale)
+			}
+
+			class Compute private constructor(private val x: Value, private val y: Value) : Scaled() {
+				private object MathEnvImpl : MathEnv
+
+				constructor(x: MathEnv.() -> Value, y: MathEnv.() -> Value) : this(x(MathEnvImpl), y(MathEnvImpl))
+
+				sealed interface Value {
+					fun compute(dim: IntrinsicDimensionsProperty): Double
+
+					operator fun plus(that: Value) = Operator.Plus(this, that)
+					operator fun minus(that: Value) = Operator.Minus(this, that)
+					operator fun times(that: Value) = Operator.Times(this, that)
+					operator fun div(that: Value) = Operator.Div(this, that)
+				}
+
+				sealed class Operator private constructor() : Value {
+					data class Plus(val a: Value, val b: Value) : Operator() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = a.compute(dim) + b.compute(dim)
+					}
+					data class Minus(val a: Value, val b: Value) : Operator() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = a.compute(dim) - b.compute(dim)
+					}
+					data class Times(val a: Value, val b: Value) : Operator() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = a.compute(dim) * b.compute(dim)
+					}
+					data class Div(val a: Value, val b: Value) : Operator() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = a.compute(dim) / b.compute(dim)
+					}
+				}
+
+				sealed class Param private constructor() : Value {
+					data class Num(val value: Double) : Param() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = value
+					}
+					data object DimX : Param() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = dim.width.toDouble()
+					}
+					data object DimY : Param() {
+						override fun compute(dim: IntrinsicDimensionsProperty) = dim.height.toDouble()
+					}
+				}
+
+				sealed interface MathEnv {
+					val dimX: Param get() = Param.DimX
+					val dimY: Param get() = Param.DimY
+					fun num(value: Double) = Param.Num(value)
+				}
+
+				override fun compute(dim: IntrinsicDimensionsProperty) = Dimension2D(x.compute(dim), y.compute(dim))
 			}
 		}
 
@@ -86,7 +236,6 @@ class SingletonLayout(container: Container, component: Component, private var co
 				fun withY(y: Double) = AlignmentConfig(y, 0.5)
 			}
 		}
-
 	}
 
 	fun update(component: Component) {
@@ -95,14 +244,18 @@ class SingletonLayout(container: Container, component: Component, private var co
 		}
 	}
 
-	fun update(operation: (Config) -> Config) {
+	interface ConfigEnv {
+		var config: Config
+	}
+
+	fun update(operation: ConfigEnv.() -> Unit) {
 		operate {
-			config = operation(config)
+			operation(object : ConfigEnv {
+				override var config: Config by this@SingletonLayout::config
+			})
 		}
 	}
 
-	override fun layOut(handle: AsdHandle) {
-		component.asdHandle.rect = config.layOut(handle.rect)
-		component.asdHandle.triggerRectObservers()
-	}
+	override fun layOut(handle: LayoutHandle) =
+		sequenceOf(LayoutComputationGroup({}, { config.layOut(this@SingletonLayout) }))
 }

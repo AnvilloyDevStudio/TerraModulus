@@ -14,8 +14,8 @@ class LayoutComputationUnit @PublishedApi internal constructor(
 ) {
 	companion object {
 		inline operator fun invoke(
-			dependencies: Map<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
-			results: Map<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
+			dependencies: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
+			results: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
 			noinline computation: LayoutHandle.() -> Map<AsdHandle, AgimoPropertyMap>,
 		) = LayoutComputationUnit(computation,
 			mutableMapOf<AsdHandle, Set<AgimoPropertyMap.Key<*>>>().apply(dependencies),
@@ -26,11 +26,11 @@ class LayoutComputationUnit @PublishedApi internal constructor(
 
 class LayoutComputationGroup @PublishedApi internal constructor(
 	val conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
-	val dependencies: Map<AsdHandle, Set<AgimoPropertyMap.Key<*>>>,
+	val dependencies: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>,
 ) {
 	companion object {
 		inline operator fun invoke(
-			dependencies: Map<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
+			dependencies: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
 			noinline conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
 		) = LayoutComputationGroup(conditions,
 			mutableMapOf<AsdHandle, Set<AgimoPropertyMap.Key<*>>>().apply(dependencies),
