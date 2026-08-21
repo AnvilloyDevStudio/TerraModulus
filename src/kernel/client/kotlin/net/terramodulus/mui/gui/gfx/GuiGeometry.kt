@@ -14,7 +14,7 @@ sealed class GuiGeometry(protected val geom: GeomDrawable) {
 
 	fun add(filter: ColorFilter) = geom.add(filter)
 
-	fun setPos(pos: FloatArray) = geom.setPos(pos)
+	protected fun setPos(pos: FloatArray) = geom.setPos(pos)
 
 	fun render(renderSystem: RenderSystem) = renderSystem.renderGuiGeo(geom)
 }

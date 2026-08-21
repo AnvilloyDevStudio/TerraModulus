@@ -5,6 +5,8 @@
 
 package net.terramodulus.mui.gui.agim.impl
 
+import com.cout970.math.vec2.MutVec2d
+import net.terramodulus.mui.gui.agim.AgimoPropertyMap
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Container
 import net.terramodulus.mui.gui.agim.Layout
@@ -15,6 +17,8 @@ import net.terramodulus.mui.gui.agim.getProperty
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.Anchor5
 import net.terramodulus.mui.gui.gfx.Direction2
+import net.terramodulus.mui.gui.gfx.RectangleD
+import kotlin.math.max
 
 /**
  * Common implementation that is either [ColumnLayout] or [RowLayout].
@@ -84,23 +88,49 @@ class ColumnLayout private constructor(container: Container, elements: ElementLi
 		}
 	}
 
-	override fun layOut(handle: LayoutHandle) = sequenceOf(LayoutComputationGroup({
-		put(container.asdHandle, setOf(RectangleProperty.KEY))
-	}, {
-		val containerRect = getUnit(container.asdHandle).properties.getProperty(RectangleProperty.KEY)!!.value
-		var anchor = containerRect.anchor(when (config.direction) {
-			Direction2.Positive -> Anchor5.BottomLeft
-			Direction2.Negative -> Anchor5.TopLeft
-		})
-		elements.map {
-			LayoutComputationUnit({
-				put(container.asdHandle, setOf(IntrinsicDimensionsProperty.KEY))
-			}, {
-
-			}, {
-
+	override fun layOut(handle: LayoutHandle) = sequenceOf(LayoutComputationGroup({}, {
+		// If all elements are separated into respective Units, race conditions may occur.
+		setOf(LayoutComputationUnit({
+			put(container.asdHandle, setOf(BoundsProperty.KEY))
+			elements.forEach { put(it.first.asdHandle, setOf(IntrinsicDimensionsProperty.KEY)) }
+		}, {
+			elements.forEach { put(it.first.asdHandle, setOf(BoundsProperty.KEY)) }
+			put(container.asdHandle, setOf(RectangleProperty.KEY))
+		}, {
+			val containerRect = getUnit(container.asdHandle).properties.getProperty(BoundsProperty.KEY)!!.value
+			val anchor = MutVec2d(containerRect.x + config.padding, when (config.direction) {
+				Direction2.Positive -> containerRect.y + config.padding
+				Direction2.Negative -> containerRect.y + containerRect.height - config.padding
 			})
-		}.toSet()
+			var width = 0.0
+			var height = 0.0
+			val map = mutableMapOf<AsdHandle, AgimoPropertyMap>()
+			elements.forEach {
+				val dim = getUnit(it.first.asdHandle).properties.getProperty(IntrinsicDimensionsProperty.KEY)!!
+				width = max(width, dim.width.toDouble())
+				height += dim.height.toDouble() + config.gap
+			}
+			height = max(height - config.gap, 0.0)
+			elements.forEach {
+				val dim = getUnit(it.first.asdHandle).properties.getProperty(IntrinsicDimensionsProperty.KEY)!!
+				if (config.direction == Direction2.Negative) anchor.y -= dim.height.toDouble()
+				map[it.first.asdHandle] = AgimoPropertyMap().apply {
+					putProperty(BoundsProperty.KEY, BoundsProperty(
+						RectangleD(anchor.x, anchor.y, width, dim.height.toDouble())
+					))
+				}
+				when (config.direction) {
+					Direction2.Positive -> anchor.y += dim.height.toDouble() + config.gap
+					Direction2.Negative -> anchor.y -= config.gap
+				}
+			}
+			map[container.asdHandle] = AgimoPropertyMap().apply {
+				putProperty(RectangleProperty.KEY, RectangleProperty(RectangleD(
+					containerRect.x, containerRect.y, width + config.padding * 2, height + config.padding * 2,
+				)))
+			}
+			map
+		}))
 	}))
 }
 
@@ -110,24 +140,65 @@ class ColumnLayout private constructor(container: Container, elements: ElementLi
 class RowLayout private constructor(container: Container, elements: ElementList<Element>, config: Config) :
 	SequenceLayout(container, elements, config) {
 	companion object {
-		fun withComponents(vararg components: Component) = { it: Container ->
-			RowLayout(it, ElementList.withComponentsDefault(Element::default, *components))
+		fun withComponents(vararg components: Component, config: Config) = { it: Container ->
+			RowLayout(it, ElementList.withComponentsDefault(Element::default, *components), config)
 		}
 
-		fun withComponents(components: Collection<Component>) = { it: Container ->
-			RowLayout(it, ElementList.withComponentsDefault(Element::default, components))
+		fun withComponents(components: Collection<Component>, config: Config) = { it: Container ->
+			RowLayout(it, ElementList.withComponentsDefault(Element::default, components), config)
 		}
 
-		fun withElements(vararg elements: Pair<Component, Element>) = { it: Container ->
-			RowLayout(it, ElementList.withElements(*elements))
+		fun withElements(vararg elements: Pair<Component, Element>, config: Config) = { it: Container ->
+			RowLayout(it, ElementList.withElements(*elements), config)
 		}
 
-		fun withElements(elements: Map<Component, Element>) = { it: Container ->
-			RowLayout(it, ElementList.withElements(elements))
+		fun withElements(elements: Map<Component, Element>, config: Config) = { it: Container ->
+			RowLayout(it, ElementList.withElements(elements), config)
 		}
 	}
 
-	override fun layOut(handle: AsdHandle) {
-		elements.forEach { TODO() }
-	}
+	override fun layOut(handle: LayoutHandle) = sequenceOf(LayoutComputationGroup({}, {
+		// If all elements are separated into respective Units, race conditions may occur.
+		setOf(LayoutComputationUnit({
+			put(container.asdHandle, setOf(BoundsProperty.KEY))
+			elements.forEach { put(it.first.asdHandle, setOf(IntrinsicDimensionsProperty.KEY)) }
+		}, {
+			elements.forEach { put(it.first.asdHandle, setOf(BoundsProperty.KEY)) }
+			put(container.asdHandle, setOf(RectangleProperty.KEY))
+		}, {
+			val containerRect = getUnit(container.asdHandle).properties.getProperty(BoundsProperty.KEY)!!.value
+			val anchor = MutVec2d(when (config.direction) {
+				Direction2.Positive -> containerRect.x + config.padding
+				Direction2.Negative -> containerRect.x + containerRect.width - config.padding
+			}, containerRect.y + config.gap)
+			var width = 0.0
+			var height = 0.0
+			val map = mutableMapOf<AsdHandle, AgimoPropertyMap>()
+			elements.forEach {
+				val dim = getUnit(it.first.asdHandle).properties.getProperty(IntrinsicDimensionsProperty.KEY)!!
+				width += dim.width.toDouble() + config.gap
+				height = max(height, dim.height.toDouble())
+			}
+			width = max(width - config.gap, 0.0)
+			elements.forEach {
+				val dim = getUnit(it.first.asdHandle).properties.getProperty(IntrinsicDimensionsProperty.KEY)!!
+				if (config.direction == Direction2.Negative) anchor.x -= dim.width.toDouble()
+				map[it.first.asdHandle] = AgimoPropertyMap().apply {
+					putProperty(BoundsProperty.KEY, BoundsProperty(
+						RectangleD(anchor.x, anchor.y, dim.width.toDouble(), height)
+					))
+				}
+				when (config.direction) {
+					Direction2.Positive -> anchor.x += dim.width.toDouble() + config.gap
+					Direction2.Negative -> anchor.x -= config.gap
+				}
+			}
+			map[container.asdHandle] = AgimoPropertyMap().apply {
+				putProperty(RectangleProperty.KEY, RectangleProperty(RectangleD(
+					containerRect.x, containerRect.y, width + config.padding * 2, height + config.padding * 2,
+				)))
+			}
+			map
+		}))
+	}))
 }

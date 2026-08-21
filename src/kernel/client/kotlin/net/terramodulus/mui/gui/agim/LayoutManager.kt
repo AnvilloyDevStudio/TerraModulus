@@ -97,10 +97,27 @@ internal class LayoutManager(screenManager: ScreenManager) {
 		fun addLayout(asdHandle: AsdHandle, layout: LayoutNode) {
 			if (layouts.containsKey(asdHandle)) throw IllegalStateException()
 			layouts[asdHandle] = layout
+			layout.group.dependencies.forEach { (handle, keys) ->
+				keys.forEach {
+					groupDeps.push(handle, it, layout.group) { mutableSetOf() }
+				}
+			}
+			layout.units.forEach { unit ->
+				unit.dependencies.forEach { (handle, keys) ->
+					keys.forEach {
+						unitDeps.push(handle, it, unit) { mutableSetOf() }
+					}
+				}
+			}
+			groups[layout.group] = layout.units
 		}
 
 		private fun addAffectedProp(handle: AsdHandle, key: AgimoPropertyMap.Key<*>) {
 			affectedProps.computeIfAbsent(handle) { mutableSetOf() }.add(key)
+		}
+
+		private fun compute() {
+			
 		}
 
 		fun validateCyclicGraphs() {

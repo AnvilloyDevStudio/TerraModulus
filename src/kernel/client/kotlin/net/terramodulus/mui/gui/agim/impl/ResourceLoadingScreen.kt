@@ -8,6 +8,7 @@ package net.terramodulus.mui.gui.agim.impl
 import net.terramodulus.engine.common.ZeroImmVec3f
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.AlphaFilter
 import net.terramodulus.mui.gui.gfx.Dimension2I
 import net.terramodulus.mui.gui.gfx.FullScaling
@@ -32,15 +33,19 @@ private const val PAUSE_DURATION = 2F // in second
 
 class ResourceLoadingScreen(
 	managerHandle: ScreenManager.Handle,
-	rect: ScreenManager.DelegatedRect,
+	asdHandle: AsdHandle.Container,
 	renderSystemHandle: RenderSystem.Handle,
-) : Screen(managerHandle, rect) {
+) : Screen(managerHandle, asdHandle) {
 	private var stage = 0
 	private var last = System.currentTimeMillis() // timestamp in milliseconds
 	private var alphaFilter = AlphaFilter(0F)
 	private val progressBar = ProgressBar()
+	override val layout = CompositeLayout(this)
 
 	init {
+		layout.update {
+			add(SingletonLayout())
+		}
 		GeomComponent(GuiRect(0, 0, 800, 480, 0, 255, 213, 255)).apply {
 			geom.add(alphaFilter)
 			geom.add(FullScaling(REF_SIZE))

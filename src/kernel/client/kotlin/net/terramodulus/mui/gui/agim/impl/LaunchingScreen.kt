@@ -35,17 +35,20 @@ internal class LaunchingScreen(
 		layout.update {
 			add(SingletonLayout(this@LaunchingScreen, GeomComponent(GuiRect(
 				0, 0, 1, 1, 37, 198, 196, 255
-			), ComponentAsdHandleImpl()).apply {
+			), { rect, geom ->
+				(geom as GuiRect).setPos(rect.x.toInt(), rect.y.toInt(), rect.width.toInt(), rect.height.toInt())
+			}, ComponentAsdHandleImpl()).apply {
 				geom.add(alphaFilter)
 			}, SingletonLayout.Config.Absolute.Full))
-		}
-		layout.update {
-			add(SingletonLayout(this@LaunchingScreen, SpriteComponent(GuiSprite(
-				RectangleI(0, 0, 512, 128),
-				renderSystemHandle.loadTexture("/studio_logo.png"),
-			), ComponentAsdHandleImpl()).apply {
-				sprite.add(alphaFilter)
-			}, SingletonLayout.Config.Aligned(
+			add(SingletonLayout(this@LaunchingScreen, SizedPane(ComponentAsdHandleImpl(),
+				SpriteComponent(GuiSprite(
+					RectangleI(0, 0, 512, 128),
+					renderSystemHandle.loadTexture("/studio_logo.png"),
+				), ComponentAsdHandleImpl()).apply {
+					sprite.add(alphaFilter)
+				},
+				SizedPane.Config(512u, 128u)
+			), SingletonLayout.Config.Aligned(
 				SingletonLayout.Config.ObjectFit.Contain,
 				SingletonLayout.Config.AlignmentConfig.DEFAULT,
 			)))

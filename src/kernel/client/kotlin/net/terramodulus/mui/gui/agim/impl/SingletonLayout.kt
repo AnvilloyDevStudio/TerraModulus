@@ -33,25 +33,27 @@ class SingletonLayout(container: Container, component: Component, private var co
 		sealed class Absolute private constructor() : Config() {
 			override fun layOut(layout: SingletonLayout): Set<LayoutComputationUnit> =
 				setOf(LayoutComputationUnit({
-					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
 				}, {
-					put(layout.component.asdHandle, setOf(RectangleProperty.KEY))
+					put(layout.component.asdHandle, setOf(BoundsProperty.KEY))
 				}, {
 					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
-						putProperty(RectangleProperty.KEY, RectangleProperty(layOut(
-							getUnit(layout.container.asdHandle).properties.getProperty(RectangleProperty.KEY)!!.value)
+						val prop = getUnit(layout.container.asdHandle).properties
+						putProperty(BoundsProperty.KEY, BoundsProperty(compute(
+							prop.getProperty(RectangleProperty.KEY)?.value
+								?: prop.getProperty(BoundsProperty.KEY)!!.value)
 						))
 					})
 				}))
 
-			abstract fun layOut(container: RectangleD): RectangleD
+			abstract fun compute(container: RectangleD): RectangleD
 
 			data object Full : Absolute() {
-				override fun layOut(container: RectangleD) = container
+				override fun compute(container: RectangleD) = container
 			}
 
 			data class Insets(var insets: InsetsD) : Absolute() {
-				override fun layOut(container: RectangleD) = container - insets
+				override fun compute(container: RectangleD) = container - insets
 			}
 		}
 
@@ -63,13 +65,14 @@ class SingletonLayout(container: Container, component: Component, private var co
 
 			override fun layOut(layout: SingletonLayout): Set<LayoutComputationUnit> =
 				setOf(LayoutComputationUnit(config.dependencies(layout), {
-					put(layout.component.asdHandle, setOf(RectangleProperty.KEY))
+					put(layout.component.asdHandle, setOf(BoundsProperty.KEY))
 				}, {
 					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
-						val rect = getUnit(layout.container.asdHandle).properties
-							.getProperty(RectangleProperty.KEY)!!.value
+						val prop = getUnit(layout.container.asdHandle).properties
+						val rect = prop.getProperty(RectangleProperty.KEY)?.value
+							?: prop.getProperty(BoundsProperty.KEY)!!.value
 						val target = config.compute(layout, this@LayoutComputationUnit)
-						putProperty(RectangleProperty.KEY, RectangleProperty(
+						putProperty(BoundsProperty.KEY, BoundsProperty(
 							AnchorAlignmentHelper.Subject(rect.toDouble(), rect * alignment)
 								.alignTarget(AnchorAlignmentHelper.Target(target, target * alignment))
 						))
@@ -78,7 +81,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 		}
 
 		sealed class Relative {
-			// Must include Container Rectangle
+			// Must include Container Bounds & Rectangle
 			abstract fun dependencies(layout: SingletonLayout):
 				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit
 
@@ -87,12 +90,13 @@ class SingletonLayout(container: Container, component: Component, private var co
 			data class Simple(val scale: Double) : Relative() {
 				override fun dependencies(layout: SingletonLayout):
 					MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
-					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
 				}
 
 				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
-					val rect = handle.getUnit(layout.container.asdHandle).properties
-						.getProperty(RectangleProperty.KEY)!!.value
+					val prop = handle.getUnit(layout.container.asdHandle).properties
+					val rect = prop.getProperty(RectangleProperty.KEY)?.value
+						?: prop.getProperty(BoundsProperty.KEY)!!.value
 					return Dimension2D(rect.width * scale, rect.height * scale)
 				}
 			}
@@ -100,12 +104,13 @@ class SingletonLayout(container: Container, component: Component, private var co
 			data class Both(val scaleX: Double, val scaleY: Double) : Relative() {
 				override fun dependencies(layout: SingletonLayout):
 					MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
-					put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+					put(layout.container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
 				}
 
 				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
-					val rect = handle.getUnit(layout.container.asdHandle).properties
-						.getProperty(RectangleProperty.KEY)!!.value
+					val prop = handle.getUnit(layout.container.asdHandle).properties
+					val rect = prop.getProperty(RectangleProperty.KEY)?.value
+						?: prop.getProperty(BoundsProperty.KEY)!!.value
 					return Dimension2D(rect.width * scaleX, rect.height * scaleY)
 				}
 			}
@@ -114,16 +119,19 @@ class SingletonLayout(container: Container, component: Component, private var co
 		sealed class ObjectFit private constructor() : Relative() {
 			override fun dependencies(layout: SingletonLayout):
 				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
-				put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				put(layout.container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
 				put(layout.component.asdHandle, setOf(IntrinsicRatioProperty.KEY))
 			}
 
-			override fun compute(layout: SingletonLayout, handle: LayoutHandle) = compute(
-				handle.getUnit(layout.container.asdHandle).properties
-					.getProperty(RectangleProperty.KEY)!!.value,
-				handle.getUnit(layout.component.asdHandle).properties
-					.getProperty(IntrinsicRatioProperty.KEY)!!
-			)
+			override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
+				val prop = handle.getUnit(layout.container.asdHandle).properties
+				return compute(
+					prop.getProperty(RectangleProperty.KEY)?.value
+						?: prop.getProperty(BoundsProperty.KEY)!!.value,
+					handle.getUnit(layout.component.asdHandle).properties
+						.getProperty(IntrinsicRatioProperty.KEY)!!
+				)
+			}
 
 			abstract fun compute(container: RectangleD, component: IntrinsicRatioProperty): Dimension2D
 
@@ -155,7 +163,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 		sealed class Scaled private constructor() : Relative() {
 			override fun dependencies(layout: SingletonLayout):
 				MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit = {
-				put(layout.container.asdHandle, setOf(RectangleProperty.KEY))
+				put(layout.container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
 				put(layout.component.asdHandle, setOf(IntrinsicDimensionsProperty.KEY))
 			}
 
