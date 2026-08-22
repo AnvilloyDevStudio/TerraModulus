@@ -8,6 +8,7 @@ package net.terramodulus.mui.gui.agim
 import net.terramodulus.mui.gui.agim.event.MenuEvent
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.io.Closeable
@@ -45,7 +46,7 @@ abstract class Menu(
 	}
 
 	protected inner class ComponentAsdHandleImpl : AsdHandle.Container() {
-		override lateinit var rect: RectangleF
+		override lateinit var rect: RectangleD
 		override fun registerAsdProcessor(processor: AsdProcessor<*>) = asdHandle.registerAsdProcessor(processor)
 	}
 

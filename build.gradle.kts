@@ -138,10 +138,12 @@ project(":kernel:common") {
 
 project(":kernel:client").dependencies {
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 }
 
 project(":kernel:server").dependencies {
     implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
 }
 
 project(":internal:common").dependencies {

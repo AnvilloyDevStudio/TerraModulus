@@ -25,13 +25,15 @@ class LayoutComputationUnit @PublishedApi internal constructor(
 }
 
 class LayoutComputationGroup @PublishedApi internal constructor(
-	val conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
+	val conditions: () -> Set<LayoutComputationUnit>,
+// 	val conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
 	val dependencies: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>,
 ) {
 	companion object {
 		inline operator fun invoke(
 			dependencies: MutableMap<AsdHandle, Set<AgimoPropertyMap.Key<*>>>.() -> Unit,
-			noinline conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
+			noinline conditions: () -> Set<LayoutComputationUnit>,
+// 			noinline conditions: LayoutHandle.() -> Set<LayoutComputationUnit>,
 		) = LayoutComputationGroup(conditions,
 			mutableMapOf<AsdHandle, Set<AgimoPropertyMap.Key<*>>>().apply(dependencies),
 		)

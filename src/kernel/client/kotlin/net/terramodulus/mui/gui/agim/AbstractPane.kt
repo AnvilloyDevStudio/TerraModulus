@@ -7,11 +7,12 @@ package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleF
 
 abstract class AbstractPane(asdHandle: AsdHandle) : Component(asdHandle), Container {
 	protected inner class ComponentAsdHandleImpl : AsdHandle.Container() {
-		override lateinit var rect: RectangleF
+		override lateinit var rect: RectangleD
 		override fun registerAsdProcessor(processor: AsdProcessor<*>) = asdHandle.registerAsdProcessor(processor)
 	}
 

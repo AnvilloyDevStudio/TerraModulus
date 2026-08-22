@@ -5,7 +5,13 @@
 
 package net.terramodulus.mui.gui.agim
 
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.terramodulus.mui.gui.asd.AsdHandle
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.collections.mutableSetOf
 
 internal class LayoutManager(screenManager: ScreenManager) {
@@ -66,8 +72,8 @@ internal class LayoutManager(screenManager: ScreenManager) {
 	private data class LayoutNode(
 		val layout: Layout,
 		val containerHandle: AsdHandle,
-		var group: LayoutComputationGroup,
-		var units: Set<LayoutComputationUnit>,
+		val groups: Sequence<LayoutComputationGroup>,
+// 		var units: Set<LayoutComputationUnit>,
 	)
 
 	private typealias InstancedPropertyMap<V> = MutableMap<AsdHandle, MutableMap<AgimoPropertyMap.Key<*>, V>>
@@ -87,29 +93,25 @@ internal class LayoutManager(screenManager: ScreenManager) {
 		private val layouts = mutableMapOf<AsdHandle, LayoutNode>()
 		private val groupDeps: InstancedPropertyMap<MutableSet<LayoutComputationGroup>> = mutableMapOf()
 		private val unitDeps: InstancedPropertyMap<MutableSet<LayoutComputationUnit>> = mutableMapOf()
-		private val groups = mutableMapOf<LayoutComputationGroup, Set<LayoutComputationUnit>>()
+		private val unitResults: InstancedPropertyMap<MutableSet<LayoutComputationUnit>> = mutableMapOf()
+		private val units = mutableMapOf<LayoutComputationGroup, Set<LayoutComputationUnit>>()
+		private val unitGroups = mutableMapOf<LayoutComputationUnit, LayoutComputationGroup>()
 		private val results = mutableMapOf<LayoutComputationUnit, Map<AsdHandle, AgimoPropertyMap>>()
 		private val affectedProps = mutableMapOf<AsdHandle, MutableSet<AgimoPropertyMap.Key<*>>>()
-		private val changedUnits = mutableSetOf<LayoutComputationUnit>()
+// 		private val changedUnits = mutableSetOf<LayoutComputationUnit>()
 
 		fun getLayout(asdHandle: AsdHandle) = layouts[asdHandle]
 
 		fun addLayout(asdHandle: AsdHandle, layout: LayoutNode) {
 			if (layouts.containsKey(asdHandle)) throw IllegalStateException()
 			layouts[asdHandle] = layout
-			layout.group.dependencies.forEach { (handle, keys) ->
-				keys.forEach {
-					groupDeps.push(handle, it, layout.group) { mutableSetOf() }
-				}
-			}
-			layout.units.forEach { unit ->
-				unit.dependencies.forEach { (handle, keys) ->
+			layout.groups.forEach { group ->
+				group.dependencies.forEach { (handle, keys) ->
 					keys.forEach {
-						unitDeps.push(handle, it, unit) { mutableSetOf() }
+						groupDeps.push(handle, it, group) { mutableSetOf() }
 					}
 				}
 			}
-			groups[layout.group] = layout.units
 		}
 
 		private fun addAffectedProp(handle: AsdHandle, key: AgimoPropertyMap.Key<*>) {
@@ -117,7 +119,126 @@ internal class LayoutManager(screenManager: ScreenManager) {
 		}
 
 		private fun compute() {
-			
+			// TODO Currently groups have no dependencies, so not sure how this should be handled
+			// However, instancing Groups does not depend on states of Layouts,
+			// but computations of Units from Groups depend on states of Layouts.
+
+			val unitsToCompute = mutableSetOf<LayoutComputationUnit>()
+			// Recompute for Units where needed
+			run {
+				val unitsToRecompute = mutableSetOf<LayoutComputationUnit>()
+				affectedProps.forEach { (handle, keys) ->
+					keys.forEach {
+						unitDeps[handle, it]?.apply { unitsToRecompute.addAll(this) }
+					}
+				}
+				affectedProps.clear()
+				val groupsToCompute = mutableSetOf<LayoutComputationGroup>()
+				unitsToRecompute.forEach {
+					val group = unitGroups[it]!!
+					if (groupsToCompute.add(group)) removeGroup(group)
+				}
+				layouts.values.forEach { layout ->
+					layout.groups.forEach {
+						if (!units.containsKey(it)) groupsToCompute.add(it)
+					}
+				}
+				groupsToCompute.forEach { group ->
+					// Ignore dependencies and LayoutHandle used for Group.conditions at the moment
+					group.conditions().apply {
+						units[group] = this
+					}.forEach { unit ->
+						unitsToCompute.add(unit)
+						unitGroups[unit] = group
+						unit.dependencies.forEach { (handle, keys) ->
+							keys.forEach {
+								unitDeps.push(handle, it, unit) { mutableSetOf() }
+							}
+						}
+						unit.results.forEach { (handle, keys) ->
+							keys.forEach {
+								unitResults.push(handle, it, unit) { mutableSetOf() }
+							}
+						}
+					}
+				}
+			}
+
+			// Compute Units while respecting their dependencies
+			units.values.asSequence().flatten().forEach { if (!results.containsKey(it)) unitsToCompute.add(it) }
+// 			val parents = mutableMapOf<LayoutComputationUnit, LayoutComputationUnit>()
+// 			val children = mutableMapOf<LayoutComputationUnit, MutableSet<LayoutComputationUnit>>()
+// 			val roots = mutableSetOf<LayoutComputationUnit>()
+			// one coroutine put Units to the forest and send ?? (do we really need this?)
+			// one coroutine checks for computability of Units (by dependencies)
+			//   - compute result dependencies that are required by awaiting Units at the moment,
+			//     only when those result dependencies are with uncomputed Units
+			//   - Note: if any case some Units are dependencies but computed already, already fulfilled
+			//   - send fulfilled computable Units to another coroutine
+			// one coroutine receives computable Units then compute Units sequentially in its scope
+			// with dependencies computed and combined as Handle,
+			// then notify another coroutine for dependencies by computed results
+			runBlocking {
+				val channelToCompute = Channel<LayoutComputationUnit>(UNLIMITED)
+				val channelComputed = Channel<LayoutComputationUnit>(UNLIMITED)
+				launch {
+					val unitResults: InstancedPropertyMap<MutableSet<LayoutComputationUnit>> = mutableMapOf()
+					unitsToCompute.forEach { unit ->
+						unit.results.forEach { (handle, keys) ->
+							keys.forEach {
+								unitResults.push(handle, it, unit) { mutableSetOf() }
+							}
+						}
+					}
+					val unitDeps = mutableMapOf<LayoutComputationUnit, MutableSet<LayoutComputationUnit>>()
+					val unitChildren = mutableMapOf<LayoutComputationUnit, MutableSet<LayoutComputationUnit>>()
+					unitsToCompute.forEach { unit ->
+						unit.dependencies.forEach { (handle, keys) ->
+							keys.forEach { key ->
+								val deps = unitResults[handle, key]
+								if (deps !== null) {
+									deps.forEach {
+										unitDeps.computeIfAbsent(unit) { mutableSetOf() }.add(it)
+										unitChildren.computeIfAbsent(it) { mutableSetOf() }.add(unit)
+									}
+								}
+							}
+						}
+					}
+					// First compute Units without any dependency needed to be computed
+					unitsToCompute.iterator().apply {
+						while (hasNext()) {
+							val unit = next()
+							if (unitDeps[unit] === null) {
+								channelToCompute.send(unit)
+								remove()
+							}
+						}
+					}
+					for (unit in channelComputed) {
+						unitChildren.remove(unit)?.forEach {
+							val deps = requireNotNull(unitDeps[it])
+							assert(deps.remove(unit))
+							if (deps.isEmpty()) {
+								channelToCompute.send(it)
+								unitDeps.remove(it)
+								unitsToCompute.remove(it)
+							}
+						}
+						if (unitsToCompute.isEmpty()) {
+							channelToCompute.close()
+							assert(unitChildren.isEmpty())
+							assert(unitDeps.isEmpty())
+						}
+					}
+				}
+				launch {
+					for (unit in channelToCompute) {
+
+					}
+					channelComputed.close()
+				}
+			}
 		}
 
 		fun validateCyclicGraphs() {
@@ -133,12 +254,12 @@ internal class LayoutManager(screenManager: ScreenManager) {
 				val visited = mutableSetOf<GroupNode>()
 				val visiting = mutableSetOf<GroupNode>()
 				layouts.values.map {
-					GroupNode(
-						it.group.dependencies.flatMap { (handle, keys) -> keys.map { it -> handle to it } }.toSet(),
-						it.units.flatMap { it ->
-							it.results.flatMap { (handle, keys) -> keys.map { it -> handle to it } }
-						}.toSet(),
-					)
+// 					GroupNode(
+// 						it.group.dependencies.flatMap { (handle, keys) -> keys.map { it -> handle to it } }.toSet(),
+// 						it.units.flatMap { it ->
+// 							it.results.flatMap { (handle, keys) -> keys.map { it -> handle to it } }
+// 						}.toSet(),
+// 					)
 				}
 
 			}
@@ -150,15 +271,19 @@ internal class LayoutManager(screenManager: ScreenManager) {
 		fun removeLayout(asdHandle: AsdHandle) {
 			val layout = layouts.remove(asdHandle)
 			if (layout === null) throw IllegalStateException()
-			groups.remove(layout.group)
-			layout.group.dependencies.forEach { (handle, keys) ->
-				keys.forEach { groupDeps[handle, it]?.remove(layout.group) }
+			layout.groups.forEach { removeGroup(it) }
+		}
+
+		private fun removeGroup(group: LayoutComputationGroup) {
+			group.dependencies.forEach { (handle, keys) ->
+				keys.forEach { groupDeps[handle, it]?.remove(group) }
 			}
-			layout.units.forEach { unit ->
+			units.remove(group)?.forEach { unit ->
+				results.remove(unit)
+				unitGroups.remove(unit)
 				unit.dependencies.forEach { (handle, keys) ->
 					keys.forEach { unitDeps[handle, it]?.remove(unit) }
 				}
-				changedUnits.add(unit)
 			}
 		}
 	}

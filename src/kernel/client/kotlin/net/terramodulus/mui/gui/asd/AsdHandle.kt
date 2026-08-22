@@ -7,6 +7,7 @@ package net.terramodulus.mui.gui.asd
 
 import net.terramodulus.mui.gui.agim.AgimoProperty
 import net.terramodulus.mui.gui.agim.AgimoPropertyMap
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.util.TypedAnchorMap
 import java.util.function.BiFunction
@@ -20,7 +21,7 @@ abstract class AsdHandle internal constructor() {
 	 * Caveat: Must only be modified by [Layout][net.terramodulus.mui.gui.agim.Layout].
 	 * When modified, [triggerRectObservers] must be invoked.
 	 */
-	abstract var rect: RectangleF
+	abstract var rect: RectangleD
 		internal set
 
 	protected val rectObservers = LinkedHashSet<() -> Unit>()

@@ -12,6 +12,7 @@ import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.AlphaFilter
 import net.terramodulus.mui.gui.gfx.GuiRect
 import net.terramodulus.mui.gui.gfx.GuiSprite
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleI
 import net.terramodulus.mui.gui.gfx.RenderSystem
 
@@ -35,20 +36,15 @@ internal class LaunchingScreen(
 		layout.update {
 			add(SingletonLayout(this@LaunchingScreen, GeomComponent(GuiRect(
 				0, 0, 1, 1, 37, 198, 196, 255
-			), { rect, geom ->
-				(geom as GuiRect).setPos(rect.x.toInt(), rect.y.toInt(), rect.width.toInt(), rect.height.toInt())
-			}, ComponentAsdHandleImpl()).apply {
+			), RectangleD(0.0, 0.0, 1.0, 1.0), ComponentAsdHandleImpl()).apply {
 				geom.add(alphaFilter)
 			}, SingletonLayout.Config.Absolute.Full))
-			add(SingletonLayout(this@LaunchingScreen, SizedPane(ComponentAsdHandleImpl(),
-				SpriteComponent(GuiSprite(
+			add(SingletonLayout(this@LaunchingScreen, SpriteComponent(GuiSprite(
 					RectangleI(0, 0, 512, 128),
 					renderSystemHandle.loadTexture("/studio_logo.png"),
 				), ComponentAsdHandleImpl()).apply {
 					sprite.add(alphaFilter)
-				},
-				SizedPane.Config(512u, 128u)
-			), SingletonLayout.Config.Aligned(
+				}, SingletonLayout.Config.Aligned(
 				SingletonLayout.Config.ObjectFit.Contain,
 				SingletonLayout.Config.AlignmentConfig.DEFAULT,
 			)))

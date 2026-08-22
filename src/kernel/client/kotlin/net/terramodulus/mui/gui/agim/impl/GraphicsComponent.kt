@@ -9,12 +9,25 @@ import net.terramodulus.mui.gui.agim.AbstractPane
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Layout
 import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.gfx.GeneralTransform
 import net.terramodulus.mui.gui.gfx.GuiSprite
+import net.terramodulus.mui.gui.gfx.RectStParams
 import net.terramodulus.mui.gui.gfx.RenderSystem
 
 sealed interface GraphicsComponent
 
 class SpriteComponent(val sprite: GuiSprite, asdHandle: AsdHandle) : Component(asdHandle), GraphicsComponent {
+	private val transform = GeneralTransform().apply { sprite.add(this) }
+
+	init {
+		val dim = IntrinsicDimensionsProperty(asdHandle.rect.width.toUInt(), asdHandle.rect.height.toUInt())
+		asdHandle.properties.putProperty(IntrinsicDimensionsProperty.KEY, dim)
+		asdHandle.properties.putProperty(IntrinsicRatioProperty.KEY, dim.computeRatio())
+		asdHandle.observeRect {
+			RectStParams.fromRects(sprite.rect.toDouble(), asdHandle.rect).applyToGeneralTransform(transform)
+		}
+	}
+
 	override fun render(renderSystem: RenderSystem) {
 		sprite.render(renderSystem)
 	}

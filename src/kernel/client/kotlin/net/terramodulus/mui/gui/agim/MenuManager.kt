@@ -7,6 +7,7 @@ package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import java.util.ArrayDeque
@@ -49,7 +50,7 @@ class MenuManager internal constructor(private val asdHandle: (AsdProcessor<*>) 
 	}
 
 	private inner class MenuAsdHandleImpl : AsdHandle.Menu() {
-		override lateinit var rect: RectangleF
+		override lateinit var rect: RectangleD
 		override fun registerAsdProcessor(processor: AsdProcessor<*>) = asdHandle(processor)
 	}
 

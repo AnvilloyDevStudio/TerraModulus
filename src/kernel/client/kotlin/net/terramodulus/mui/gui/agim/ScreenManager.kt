@@ -12,6 +12,7 @@ import net.terramodulus.mui.gui.agim.impl.LaunchingScreen
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdManager
 import net.terramodulus.mui.gui.asd.AsdProcessor
+import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.kui.InputSystem
 
@@ -28,11 +29,11 @@ class ScreenManager internal constructor(
 	private val menuManager = MenuManager(asdManagerHandle::registerProcessor)
 
 	private val asdHandles = HashSet<AsdHandle.Screen>()
-	private var viewportRect = RectangleF(0F, 0F, window.width.toFloat(), window.height.toFloat())
+	private var viewportRect = RectangleD(0.0, 0.0, window.width.toDouble(), window.height.toDouble())
 
 	init {
 		window.addListener { w, h ->
-			viewportRect = RectangleF(0F, 0F, w.toFloat(), h.toFloat())
+			viewportRect = RectangleD(0.0, 0.0, w.toDouble(), h.toDouble())
 			asdHandles.forEach { it.triggerRectObservers() } // already referring viewportRect
 		}
 	}
