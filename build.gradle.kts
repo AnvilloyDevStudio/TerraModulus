@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.serialization") version "2.1.20"
     id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
-    id("io.github.arc-blroth.cargo-wrapper") version "1.0.0" apply false
+    id("net.terramodulus.plugins.cargo") apply false
 //    id("fr.stardustenterprises.rust.wrapper") version "3.2.4" apply false
     application
 }
@@ -18,30 +18,37 @@ repositories {
 
 project(":ferricia") {
     // Candidates: fr.stardustenterprises.rust.wrapper
-    apply(plugin = "io.github.arc-blroth.cargo-wrapper")
+    apply(plugin = "net.terramodulus.plugins.cargo")
 
-    if (providers.gradleProperty("release").isPresent) configure<ai.arcblroth.cargo.CargoExtension> {
-        profile = "release" // use `-Prelease=true`
+    if (providers.gradleProperty("release").isPresent) configure<CargoExtension> {
+        release = true // use `-Prelease=true`
+    }
+    configure<CargoExtension> {
+        outputFile = release.map {
+            projectDir.resolve("target/${if (it) "release" else "debug"}/${System.mapLibraryName("ferricia")}")
+        }
     }
     // somehow, .cargo extension is unusable
-    configure<ai.arcblroth.cargo.CargoExtension> {
-        outputs = mapOf("" to System.mapLibraryName("ferricia"))
+    tasks.register<CargoTask>("buildClient") {
+        args = listOf("-F", "client")
+        println(outputFile.get())
+    }
+    tasks.register<CargoTask>("buildServer") {
+        args = listOf("-F", "server")
     }
     configurations {
         create("client") {
-            configure<ai.arcblroth.cargo.CargoExtension> {
-                arguments = listOf("-F", "client")
-            }
+            isCanBeConsumed = true
+            isCanBeResolved = false
         }
         create("server") {
-            configure<ai.arcblroth.cargo.CargoExtension> {
-                arguments = listOf("-F", "server")
-            }
+            isCanBeConsumed = true
+            isCanBeResolved = false
         }
     }
     artifacts {
-        add("client", tasks.named("build"))
-        add("server", tasks.named("build"))
+        add("client", tasks.named("buildClient"))
+        add("server", tasks.named("buildServer"))
     }
 }
 
