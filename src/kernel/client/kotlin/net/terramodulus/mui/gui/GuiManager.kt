@@ -24,7 +24,7 @@ internal class GuiManager internal constructor(private val window: Window, core:
 	val renderSystem = RenderSystem(core, window.canvas)
 	val asdManager = AsdManager()
 	val screenManager = ScreenManager(window, renderSystem.handle, asdManager.AgimHandle())
-	val layoutManager = LayoutManager()
+	val layoutManager = LayoutManager(screenManager)
 
 	private var proceeded = false
 
@@ -39,6 +39,7 @@ internal class GuiManager internal constructor(private val window: Window, core:
 			asdManager.process()
 			proceeded = true
 		}
+		layoutManager.tick()
 	}
 
 	/**

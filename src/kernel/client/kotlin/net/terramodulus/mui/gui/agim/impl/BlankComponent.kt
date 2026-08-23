@@ -13,6 +13,6 @@ import net.terramodulus.mui.gui.gfx.Dimension2F
 /**
  * This can act as a placeholder [Component] in a [Layout][net.terramodulus.mui.gui.agim.Layout].
  */
-class BlankComponent(asdHandle: AsdHandle, dim: Dimension2F) : Component(asdHandle) {
+class BlankComponent(asdHandle: AsdHandle) : Component(asdHandle) {
 	override fun render(renderSystem: RenderSystem) {}
 }

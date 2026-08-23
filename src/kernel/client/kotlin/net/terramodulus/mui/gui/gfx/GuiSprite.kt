@@ -7,8 +7,8 @@ package net.terramodulus.mui.gui.gfx
 
 import net.terramodulus.engine.SpriteMesh
 
-class GuiSprite(val rect: RectangleI, private val texture: UInt) {
-	private val mesh = SpriteMesh(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height)
+class GuiSprite(handle: RenderSystem.CanvasHandle, val rect: RectangleI, private val texture: UInt) {
+	private val mesh = SpriteMesh(handle.canvas, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height)
 
 	fun add(model: ModelTransform) = mesh.add(model)
 

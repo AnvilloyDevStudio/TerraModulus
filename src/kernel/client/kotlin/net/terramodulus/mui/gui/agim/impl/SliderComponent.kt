@@ -5,67 +5,86 @@
 
 package net.terramodulus.mui.gui.agim.impl
 
+import com.cout970.math.vec3.Vec3i
 import net.terramodulus.mui.gui.agim.Component
+import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.Anchor5
 import net.terramodulus.mui.gui.gfx.Direction4A
 import net.terramodulus.mui.gui.gfx.Direction4AD
+import net.terramodulus.mui.gui.gfx.GeneralTransform
 import net.terramodulus.mui.gui.gfx.GuiRect
+import net.terramodulus.mui.gui.gfx.RectStParams
 import net.terramodulus.mui.gui.gfx.Rectangle
-import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.gfx.RectangleD
+import net.terramodulus.mui.gui.gfx.RectangleI
 import net.terramodulus.mui.gui.gfx.RenderSystem
+import kotlin.math.roundToInt
 import kotlin.properties.Delegates
 
-class SliderComponent(val dir: Direction4A) : Component() {
-	private var bgInit = false
-	private var fgInit = false
-	private lateinit var background: GuiRect
-	private lateinit var bgComponent: GeomComponent
-	private lateinit var foreground: GuiRect
-	private lateinit var fgComponent: GeomComponent
-	var fraction: Float by Delegates.observable(0F) { _, _, value ->
-		updateForeground(rect.value, value)
+class SliderComponent(
+	val dir: Direction4A,
+	canvasHandle: RenderSystem.CanvasHandle,
+	asdHandle: AsdHandle,
+	config: Config,
+) : Component(asdHandle) {
+	// Though this could be made into a Pane, it would be better to optimize this into a simple Component
+	// to reduce complexities and avoid unnecessary layout computations.
+	companion object {
+		// Kind of like resolution, since parameters of Engine geometries only accept integers at the moment.
+		private val BOUNDS = RectangleI(0, 0, 10000, 10000)
 	}
+
+	private val bgTransform = GeneralTransform()
+	private val fgTransform = GeneralTransform()
+	private val background = GuiRect(canvasHandle,
+		BOUNDS.x, BOUNDS.y, BOUNDS.width, BOUNDS.height,
+		config.bgColor.x, config.bgColor.y, config.bgColor.z, 255,
+	).apply { add(bgTransform) }
+	private val foreground = GuiRect(canvasHandle,
+		BOUNDS.x, BOUNDS.y, BOUNDS.width, BOUNDS.height,
+		config.fgColor.x, config.fgColor.y, config.fgColor.z, 255,
+	).apply { add(fgTransform) }
+	var fraction: Double by Delegates.observable(0.0) { _, _, value ->
+		updateForeground(asdHandle.rect, value)
+	}
+
+	class Config(val bgColor: Vec3i, val fgColor: Vec3i)
 
 	init {
-		rect.observe {
-			val anchor = it.anchor(Anchor5.TopRight)
-			if (!bgInit) {
-				background = GuiRect(it.x.toInt(), it.y.toInt(), anchor.xi, anchor.yi, 255, 255, 255, 255)
-				bgComponent = GeomComponent(background)
-				bgInit = true
-			} else {
-				background.setPos(it.x.toInt(), it.y.toInt(), anchor.xi, anchor.yi)
-			}
-			updateForeground(it, fraction)
+		asdHandle.observeRect {
+			RectStParams.fromRects(BOUNDS.toDouble(), asdHandle.rect).applyToGeneralTransform(bgTransform)
+			updateForeground(asdHandle.rect, fraction)
 		}
 	}
 
-	private fun updateForeground(bounds: RectangleF, fraction: Float) {
-		// (bounds.x, bounds.y) is the bottom-left anchor
-		val topRight = bounds.anchor(Anchor5.TopRight)
-		val rect = when (dir) {
+	private fun updateForeground(rect: RectangleD, fraction: Double) {
+		// Using division by fraction is a quick hack to apply scaling along the axis while using the same BOUNDS.
+		RectStParams.fromRects(when (dir) {
 			Direction4A.XPos -> // left to right
-				Rectangle.withDirection(bounds.x, bounds.y, bounds.width * fraction, bounds.height, Direction4AD.QuadOne)
+				Rectangle.withDirection(
+					BOUNDS.x, BOUNDS.y, (BOUNDS.width / fraction).roundToInt(), BOUNDS.height,
+					Direction4AD.QuadOne,
+				)
 			Direction4A.XNeg -> // right to left
-				Rectangle.withDirection(topRight.x, bounds.y, bounds.width * fraction, bounds.height, Direction4AD.QuadTwo)
+				Rectangle.withDirection(
+					BOUNDS.width, BOUNDS.y, (BOUNDS.width / fraction).roundToInt(), BOUNDS.height,
+					Direction4AD.QuadTwo,
+				)
 			Direction4A.YPos -> // bottom to top
-				Rectangle.withDirection(bounds.x, bounds.y, bounds.width, bounds.height * fraction, Direction4AD.QuadOne)
+				Rectangle.withDirection(
+					BOUNDS.x, BOUNDS.y, BOUNDS.width, (BOUNDS.height / fraction).roundToInt(),
+					Direction4AD.QuadOne,
+				)
 			Direction4A.YNeg -> // top to bottom
-				Rectangle.withDirection(bounds.x, topRight.y, bounds.width, bounds.height * fraction, Direction4AD.QuadFour)
-		}
-		val anchor = rect.anchor(Anchor5.TopRight)
-		if (!fgInit) {
-			foreground = GuiRect(rect.x.toInt(), rect.y.toInt(), anchor.xi, anchor.yi, 122, 122, 122, 255)
-			fgComponent = GeomComponent(foreground)
-			fgInit = true
-		} else {
-			foreground.setPos(rect.x.toInt(), rect.y.toInt(), anchor.xi, anchor.yi)
-		}
+				Rectangle.withDirection(
+					BOUNDS.x, BOUNDS.height, BOUNDS.width, (BOUNDS.height / fraction).roundToInt(),
+					Direction4AD.QuadFour,
+				)
+		}.toDouble(), rect).applyToGeneralTransform(fgTransform)
 	}
 
 	override fun render(renderSystem: RenderSystem) {
-		rect.value
-		bgComponent.render(renderSystem)
-		fgComponent.render(renderSystem)
+		background.render(renderSystem)
+		foreground.render(renderSystem)
 	}
 }

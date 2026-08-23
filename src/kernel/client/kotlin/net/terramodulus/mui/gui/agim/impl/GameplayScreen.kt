@@ -71,6 +71,8 @@ internal class GameplayScreen(
 		getResourceAsString("/gwr_geo.fsh"),
 	)
 
+	private val canvasHandle = renderSystemHandle.canvasHandle
+
 	private lateinit var player: PlayerVoidGeom
 	override val layout: SingletonLayout
 
@@ -104,6 +106,7 @@ internal class GameplayScreen(
 	private inner class Ymir : World.Ymir {
 		override fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom = EnvVoidGeom(phyGeom,
 			SimpleMesh3dGeomCube(
+				canvasHandle.canvas,
 				2F,
 				randomColor(),
 				ImmVec3d(x, y, z),
@@ -122,7 +125,7 @@ internal class GameplayScreen(
 
 		override fun wrapChar(phyBody: PhyBody): VoidGeom {
 			player = PlayerVoidGeom(phyBody,
-				SimpleMesh3dGeomSphere(1F, WHITE, ImmVec3d(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
+				SimpleMesh3dGeomSphere(canvasHandle.canvas, 1F, WHITE, ImmVec3d(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
 			)
 			return player
 		}

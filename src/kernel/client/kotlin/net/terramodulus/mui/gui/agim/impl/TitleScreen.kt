@@ -5,13 +5,17 @@
 
 package net.terramodulus.mui.gui.agim.impl
 
+import net.terramodulus.mui.gui.agim.Layout
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
+import net.terramodulus.mui.gui.asd.AsdHandle
 
 class TitleScreen(
-	renderSystemHandle: RenderSystem.Handle,
 	managerHandle: ScreenManager.Handle,
-	rect: ScreenManager.DelegatedRect,
-) : Screen(managerHandle, rect) {
+	asdHandle: AsdHandle.Container,
+	renderSystemHandle: RenderSystem.Handle,
+) : Screen(managerHandle, asdHandle) {
+	override val layout =
+		SingletonLayout(this, BlankComponent(ComponentAsdHandleImpl()), SingletonLayout.Config.Absolute.Full)
 }

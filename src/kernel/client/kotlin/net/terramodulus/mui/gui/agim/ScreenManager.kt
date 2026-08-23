@@ -7,8 +7,10 @@ package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
+import net.terramodulus.mui.gui.agim.impl.BoundsProperty
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.impl.LaunchingScreen
+import net.terramodulus.mui.gui.agim.impl.RectangleProperty
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdManager
 import net.terramodulus.mui.gui.asd.AsdProcessor
@@ -212,6 +214,12 @@ class ScreenManager internal constructor(
 	private inner class ScreenAsdHandleImpl : AsdHandle.Screen() {
 		init {
 			asdHandles.add(this)
+			properties.putProperty(BoundsProperty.KEY, BoundsProperty(viewportRect))
+			properties.putProperty(RectangleProperty.KEY, RectangleProperty(viewportRect))
+			observeRect {
+				properties.putProperty(BoundsProperty.KEY, BoundsProperty(viewportRect))
+				properties.putProperty(RectangleProperty.KEY, RectangleProperty(viewportRect))
+			}
 		}
 
 		override var rect get() = viewportRect

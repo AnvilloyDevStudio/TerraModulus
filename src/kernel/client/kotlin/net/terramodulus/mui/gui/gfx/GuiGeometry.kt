@@ -19,14 +19,14 @@ sealed class GuiGeometry(protected val geom: GeomDrawable) {
 	fun render(renderSystem: RenderSystem) = renderSystem.renderGuiGeo(geom)
 }
 
-class GuiLine(x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) :
-	GuiGeometry(SimpleLineGeom(x0, y0, x1, y1, r, g, b, a)) {
+class GuiLine(handle: RenderSystem.CanvasHandle, x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) :
+	GuiGeometry(SimpleLineGeom(handle.canvas, x0, y0, x1, y1, r, g, b, a)) {
 	fun setPos(x0: Int, y0: Int, x1: Int, y1: Int) =
 		setPos(floatArrayOf(x0.toFloat(), y0.toFloat(), x1.toFloat(), y1.toFloat()))
 }
 
-class GuiRect(x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) :
-	GuiGeometry(SimpleRectGeom(x0, y0, x1, y1, r, g, b, a)) {
+class GuiRect(handle: RenderSystem.CanvasHandle, x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) :
+	GuiGeometry(SimpleRectGeom(handle.canvas, x0, y0, x1, y1, r, g, b, a)) {
 	fun setPos(x0: Int, y0: Int, x1: Int, y1: Int) =
 		setPos(floatArrayOf(x0.toFloat(), y0.toFloat(), x1.toFloat(), y1.toFloat()))
 }

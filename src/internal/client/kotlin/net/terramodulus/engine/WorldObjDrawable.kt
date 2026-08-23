@@ -38,8 +38,8 @@ sealed class WorldObjDrawable(internal val handle: ULong, private var pos: Vec3d
 	}
 }
 
-class SimpleMesh3dGeomCube(width: Float, rgba: Vec4i, pos: Vec3d, scale: Vec3d, rot: Quatd) :
-	WorldObjDrawable(newMeshGeomCube(width, rgba.toArray()), pos, scale, rot)
+class SimpleMesh3dGeomCube(canvas: Canvas, width: Float, rgba: Vec4i, pos: Vec3d, scale: Vec3d, rot: Quatd) :
+	WorldObjDrawable(canvas.newMeshGeomCube(width, rgba), pos, scale, rot)
 
-class SimpleMesh3dGeomSphere(radius: Float, rgba: Vec4i, pos: Vec3d, scale: Vec3d, rot: Quatd) :
-	WorldObjDrawable(newMeshGeomSphere(radius, rgba.toArray()), pos, scale, rot)
+class SimpleMesh3dGeomSphere(canvas: Canvas, radius: Float, rgba: Vec4i, pos: Vec3d, scale: Vec3d, rot: Quatd) :
+	WorldObjDrawable(canvas.newMeshGeomSphere(radius, rgba), pos, scale, rot)

@@ -7,12 +7,13 @@ package net.terramodulus.engine.ferricia
 
 internal object Gwr {
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param vsh source code of vector shader
 	 * @param fsh source code of fragment shader
 	 * @return GWR Geo Shader Program handle pointer
 	 */
 	@JvmName("geoShaders")
-	external fun geoShaders(vsh: String, fsh: String): ULong
+	external fun geoShaders(windowHandle: ULong, vsh: String, fsh: String): ULong
 
 	/**
 	 * @param canvasHandle Canvas handle pointer
@@ -37,20 +38,22 @@ internal object Gwr {
 	external fun setCameraZoomLevel(cameraHandle: ULong, data: Float)
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param width cube's width, in `(0,2]`
 	 * @param data `[r, g, b, a]`
 	 * @return DrawableWorldObj handle pointer
 	 */
 	@JvmName("newMeshGeomCube")
-	external fun newMeshGeomCube(width: Float, data: IntArray): ULong
+	external fun newMeshGeomCube(windowHandle: ULong, width: Float, data: IntArray): ULong
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param width cube's radius, in `(0,1]`
 	 * @param data `[r, g, b, a]`
 	 * @return DrawableWorldObj handle pointer
 	 */
 	@JvmName("newMeshGeomSphere")
-	external fun newMeshGeomSphere(width: Float, data: IntArray): ULong
+	external fun newMeshGeomSphere(windowHandle: ULong, width: Float, data: IntArray): ULong
 
 	/**
 	 * @param objHandle DrawableWorldObj handle pointer
@@ -60,11 +63,12 @@ internal object Gwr {
 	external fun updateWorldObjModel(objHandle: ULong, data: DoubleArray)
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param canvasHandle Canvas handle pointer
 	 * @param cameraHandle Camera3D handle pointer
 	 * @param objHandle DrawableWorldObj handle pointer
 	 * @param programHandle GWR Shader Program handle pointer
 	 */
 	@JvmName("drawGwrObj")
-	external fun drawGwrObj(canvasHandle: ULong, cameraHandle: ULong, objHandle: ULong, programHandle: ULong)
+	external fun drawGwrObj(windowHandle: ULong, canvasHandle: ULong, cameraHandle: ULong, objHandle: ULong, programHandle: ULong)
 }

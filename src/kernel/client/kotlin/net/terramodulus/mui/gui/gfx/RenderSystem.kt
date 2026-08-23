@@ -12,7 +12,9 @@ import net.terramodulus.core.getResourceAsString
 import net.terramodulus.engine.Canvas
 import net.terramodulus.engine.GeomDrawable
 import net.terramodulus.engine.MeshDrawable
+import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.impl.GameplayScreen
+import net.terramodulus.mui.gui.asd.AsdHandle
 
 class RenderSystem internal constructor(private val core: TerraModulus, private val canvas: Canvas) {
 	val handle: Handle = HandleImpl()
@@ -27,12 +29,20 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 	val targetFps = 1000;
 
 	sealed interface Handle {
+		val canvasHandle: CanvasHandle
+
 		fun loadTexture(path: String): UInt
 
 		fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float)
 	}
 
+	inner class CanvasHandle internal constructor() {
+		internal val canvas = this@RenderSystem.canvas
+	}
+
 	private inner class HandleImpl : Handle {
+		override val canvasHandle = CanvasHandle()
+
 		override fun loadTexture(path: String) = canvas.loadImage(getResourceAsBytes(path))
 
 		override fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float) {
@@ -40,13 +50,10 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 		}
 	}
 
-	internal fun newGameplayScreen(pos: Vec3f) = { it: Handle ->
-		GameplayScreen(
-			core,
-			canvas.createCamera(floatArrayOf(pos.x, pos.y, pos.z)),
-			it
-		)
-	}
+	internal fun newGameplayScreen(pos: Vec3f) =
+		{ managerHandle: ScreenManager.Handle, asdHandle: AsdHandle.Container, it: Handle ->
+			GameplayScreen(core, canvas.createCamera(floatArrayOf(pos.x, pos.y, pos.z)), it, managerHandle, asdHandle)
+		}
 
 	internal fun renderGuiTex(drawable: MeshDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)
 

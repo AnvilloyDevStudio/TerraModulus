@@ -92,48 +92,59 @@ internal object Mui {
 	@JvmName("loadImageToCanvas")
 	external fun loadImageToCanvas(canvasHandle: ULong, data: ByteArray): UInt
 
+	/**
+	 * @param windowHandle window handle pointer
+	 */
 	@JvmName("clearCanvas")
-	external fun clearCanvas()
-
-	@JvmName("setCanvasClearColor")
-	external fun setCanvasClearColor(r: Float, g: Float, b: Float, a: Float)
+	external fun clearCanvas(windowHandle: ULong)
 
 	/**
+	 * @param windowHandle window handle pointer
+	 */
+	@JvmName("setCanvasClearColor")
+	external fun setCanvasClearColor(windowHandle: ULong, r: Float, g: Float, b: Float, a: Float)
+
+	/**
+	 * @param windowHandle window handle pointer
 	 * @param vsh source code of vector shader
 	 * @param fsh source code of fragment shader
 	 * @return Geo Shader Program handle pointer
 	 */
 	@JvmName("geoShaders")
-	external fun geoShaders(vsh: String, fsh: String): ULong
+	external fun geoShaders(windowHandle: ULong, vsh: String, fsh: String): ULong
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param vsh source code of vector shader
 	 * @param fsh source code of fragment shader
 	 * @return Tex Shader Program handle pointer
 	 */
 	@JvmName("texShaders")
-	external fun texShaders(vsh: String, fsh: String): ULong
+	external fun texShaders(windowHandle: ULong, vsh: String, fsh: String): ULong
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param data `[x0, y0, x1, y1, r, g, b, a]`
 	 * @return SimpleLineGeom as DrawableSet handle pointer
 	 */
 	@JvmName("newSimpleLineGeom")
-	external fun newSimpleLineGeom(data: IntArray): ULong
+	external fun newSimpleLineGeom(windowHandle: ULong, data: IntArray): ULong
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param data `[x0, y0, x1, y1, r, g, b, a]`
 	 * @return SimpleRectGeom as DrawableSet handle pointer
 	 */
 	@JvmName("newSimpleRectGeom")
-	external fun newSimpleRectGeom(data: IntArray): ULong
+	external fun newSimpleRectGeom(windowHandle: ULong, data: IntArray): ULong
 
 	/**
+	 * @param windowHandle window handle pointer
 	 * @param data `[x0, y0, x1, y1]`
 	 * @return SpriteMesh as DrawableSet handle pointer
 	 */
 	@JvmName("newSpriteMesh")
-	external fun newSpriteMesh(data: IntArray): ULong
+	external fun newSpriteMesh(windowHandle: ULong, data: IntArray): ULong
 
 	/**
 	 * @param handle DrawableSet handle pointer

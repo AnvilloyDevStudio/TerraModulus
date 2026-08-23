@@ -35,16 +35,17 @@ internal class LaunchingScreen(
 	init {
 		layout.update {
 			add(SingletonLayout(this@LaunchingScreen, GeomComponent(GuiRect(
-				0, 0, 1, 1, 37, 198, 196, 255
+				renderSystemHandle.canvasHandle, 0, 0, 1, 1, 37, 198, 196, 255
 			), RectangleD(0.0, 0.0, 1.0, 1.0), ComponentAsdHandleImpl()).apply {
 				geom.add(alphaFilter)
 			}, SingletonLayout.Config.Absolute.Full))
 			add(SingletonLayout(this@LaunchingScreen, SpriteComponent(GuiSprite(
-					RectangleI(0, 0, 512, 128),
-					renderSystemHandle.loadTexture("/studio_logo.png"),
-				), ComponentAsdHandleImpl()).apply {
-					sprite.add(alphaFilter)
-				}, SingletonLayout.Config.Aligned(
+				renderSystemHandle.canvasHandle,
+				RectangleI(0, 0, 512, 128),
+				renderSystemHandle.loadTexture("/studio_logo.png"),
+			), ComponentAsdHandleImpl()).apply {
+				sprite.add(alphaFilter)
+			}, SingletonLayout.Config.Aligned(
 				SingletonLayout.Config.ObjectFit.Contain,
 				SingletonLayout.Config.AlignmentConfig.DEFAULT,
 			)))

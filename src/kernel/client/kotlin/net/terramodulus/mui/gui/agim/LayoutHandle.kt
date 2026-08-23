@@ -7,10 +7,11 @@ package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.mui.gui.asd.AsdHandle
 
-sealed interface LayoutHandle {
-	fun getUnit(handle: AsdHandle): Unit
+abstract class LayoutHandle internal constructor() {
+	abstract fun getUnit(handle: AsdHandle): Unit
 
-	sealed interface Unit {
-		val properties: Map<AgimoPropertyMap.Key<out AgimoProperty>, AgimoProperty>
+	abstract class Unit internal constructor() {
+		abstract fun <T: AgimoProperty> getProperty(key: AgimoPropertyMap.Key<T>): T?
+		abstract fun <T: AgimoProperty> containsProperty(key: AgimoPropertyMap.Key<T>): Boolean
 	}
 }

@@ -38,7 +38,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 					put(layout.component.asdHandle, setOf(BoundsProperty.KEY))
 				}, {
 					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
-						val prop = getUnit(layout.container.asdHandle).properties
+						val prop = getUnit(layout.container.asdHandle)
 						putProperty(BoundsProperty.KEY, BoundsProperty(compute(
 							prop.getProperty(RectangleProperty.KEY)?.value
 								?: prop.getProperty(BoundsProperty.KEY)!!.value)
@@ -68,7 +68,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 					put(layout.component.asdHandle, setOf(BoundsProperty.KEY))
 				}, {
 					mapOf(layout.component.asdHandle to AgimoPropertyMap().apply {
-						val prop = getUnit(layout.container.asdHandle).properties
+						val prop = getUnit(layout.container.asdHandle)
 						val rect = prop.getProperty(RectangleProperty.KEY)?.value
 							?: prop.getProperty(BoundsProperty.KEY)!!.value
 						val target = config.compute(layout, this@LayoutComputationUnit)
@@ -94,7 +94,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 				}
 
 				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
-					val prop = handle.getUnit(layout.container.asdHandle).properties
+					val prop = handle.getUnit(layout.container.asdHandle)
 					val rect = prop.getProperty(RectangleProperty.KEY)?.value
 						?: prop.getProperty(BoundsProperty.KEY)!!.value
 					return Dimension2D(rect.width * scale, rect.height * scale)
@@ -108,7 +108,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 				}
 
 				override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
-					val prop = handle.getUnit(layout.container.asdHandle).properties
+					val prop = handle.getUnit(layout.container.asdHandle)
 					val rect = prop.getProperty(RectangleProperty.KEY)?.value
 						?: prop.getProperty(BoundsProperty.KEY)!!.value
 					return Dimension2D(rect.width * scaleX, rect.height * scaleY)
@@ -124,12 +124,11 @@ class SingletonLayout(container: Container, component: Component, private var co
 			}
 
 			override fun compute(layout: SingletonLayout, handle: LayoutHandle): Dimension2D {
-				val prop = handle.getUnit(layout.container.asdHandle).properties
+				val prop = handle.getUnit(layout.container.asdHandle)
 				return compute(
 					prop.getProperty(RectangleProperty.KEY)?.value
 						?: prop.getProperty(BoundsProperty.KEY)!!.value,
-					handle.getUnit(layout.component.asdHandle).properties
-						.getProperty(IntrinsicRatioProperty.KEY)!!
+					handle.getUnit(layout.component.asdHandle).getProperty(IntrinsicRatioProperty.KEY)!!
 				)
 			}
 
@@ -168,8 +167,7 @@ class SingletonLayout(container: Container, component: Component, private var co
 			}
 
 			override fun compute(layout: SingletonLayout, handle: LayoutHandle) = compute(
-				handle.getUnit(layout.component.asdHandle).properties
-					.getProperty(IntrinsicDimensionsProperty.KEY)!!
+				handle.getUnit(layout.component.asdHandle).getProperty(IntrinsicDimensionsProperty.KEY)!!
 			)
 
 			abstract fun compute(dim: IntrinsicDimensionsProperty): Dimension2D
