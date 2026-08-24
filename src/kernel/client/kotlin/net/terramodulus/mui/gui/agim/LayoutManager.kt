@@ -60,7 +60,8 @@ internal class LayoutManager(screenManager: ScreenManager) {
 			return LayoutChanges(
 				old.filter { !new.containsKey(it.key) }.entries.associate { it.value to it.key.layout },
 				new.filter { !old.containsKey(it.key) }.entries.associate { it.value to it.key.layout },
-				new.filter { it.key.layout.updated }.entries.associate { it.value to it.key.layout },
+				new.filter { old.containsKey(it.key) && it.key.layout.updated }
+					.entries.associate { it.value to it.key.layout },
 			)
 		}
 
@@ -294,7 +295,11 @@ internal class LayoutManager(screenManager: ScreenManager) {
 			layouts.values.forEach { node ->
 				node.layout.components.forEach {
 					val dep = requireNotNull(depResults[it.asdHandle])
-					val prev = it.asdHandle.rect
+					val prev = try {
+						it.asdHandle::rect.get()
+					} catch (_: UninitializedPropertyAccessException) {
+						null
+					}
 					it.asdHandle.rect = dep.getProperty(RectangleProperty.KEY)?.value
 						?: requireNotNull(dep.getProperty(BoundsProperty.KEY)).value
 					if (prev != it.asdHandle.rect)

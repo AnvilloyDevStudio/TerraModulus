@@ -15,6 +15,7 @@ class CargoPlugin : Plugin<Project> {
 		target.tasks.withType(CargoTask::class.java).configureEach {
 			release.convention(extension.release)
 			outputFile.convention(extension.outputFile)
+			inputs.dir(project.projectDir)
 		}
 	}
 }

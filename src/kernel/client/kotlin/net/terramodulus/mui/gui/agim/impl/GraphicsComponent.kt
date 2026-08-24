@@ -24,7 +24,7 @@ class SpriteComponent(val sprite: GuiSprite, asdHandle: AsdHandle) : Component(a
 	private val transform = GeneralTransform().apply { sprite.add(this) }
 
 	init {
-		val dim = IntrinsicDimensionsProperty(asdHandle.rect.width.toUInt(), asdHandle.rect.height.toUInt())
+		val dim = IntrinsicDimensionsProperty(sprite.rect.width.toUInt(), sprite.rect.height.toUInt())
 		asdHandle.properties.putProperty(IntrinsicDimensionsProperty.KEY, dim)
 		asdHandle.properties.putProperty(IntrinsicRatioProperty.KEY, dim.computeRatio())
 		asdHandle.observeRect {
