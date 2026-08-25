@@ -74,14 +74,21 @@ internal class GameplayScreen(
 	private val canvasHandle = renderSystemHandle.canvasHandle
 
 	private lateinit var player: PlayerVoidGeom
-	override val layout: SingletonLayout
+	override val layout =
+		SingletonLayout(this, BlankComponent(ComponentAsdHandleImpl()), SingletonLayout.Config.Absolute.Full)
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
-		core.world = World(Ymir())
-		layout = SingletonLayout(this, GameplayRenderer(), SingletonLayout.Config.Absolute.Full)
-		addListener(ScreenEvent.Update::class.java) {
-			update0(it.muiIoI)
+		managerHandle.open { p1: ScreenManager.Handle, p2: AsdHandle.Container, p3: RenderSystem.Handle ->
+			WorldInitScreen(p1, p2, p3).apply {
+				core.world = World(Ymir(), progressBar)
+				addListener(ScreenEvent.Close::class.java) {
+					this@GameplayScreen.layout.update(GameplayRenderer())
+					this@GameplayScreen.addListener(ScreenEvent.Update::class.java) {
+						update0(it.muiIoI)
+					}
+				}
+			}
 		}
 // 		val progressBarEdge = GeomComponent(GuiLine(0, 100, 100, 100, 255, 255, 255, 255))
 // 		addComponent(progressBarEdge)
@@ -104,16 +111,12 @@ internal class GameplayScreen(
 	}
 
 	private inner class Ymir : World.Ymir {
+		private val cubeGeom = SimpleMesh3dGeomCube(canvasHandle.canvas, 2F)
+		private val sphereGeom = SimpleMesh3dGeomSphere(canvasHandle.canvas, 1F)
+
 		override fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom = EnvVoidGeom(phyGeom,
-			SimpleMesh3dGeomCube(
-				canvasHandle.canvas,
-				2F,
-				randomColor(),
-				ImmVec3d(x, y, z),
-				STD_SCALE,
-				IDENT_ROT,
-			),
-			ImmVec3d(x, y, z)
+			WorldObjDrawable(cubeGeom, randomColor(), ImmVec3d(x, y, z), STD_SCALE, IDENT_ROT,),
+			ImmVec3d(x, y, z),
 		)
 
 		private fun randomColor() = when (Random.nextInt(3)) {
@@ -125,7 +128,7 @@ internal class GameplayScreen(
 
 		override fun wrapChar(phyBody: PhyBody): VoidGeom {
 			player = PlayerVoidGeom(phyBody,
-				SimpleMesh3dGeomSphere(canvasHandle.canvas, 1F, WHITE, ImmVec3d(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
+				WorldObjDrawable(sphereGeom, WHITE, ImmVec3d(0.0, 1.0, 0.0), STD_SCALE, IDENT_ROT)
 			)
 			return player
 		}

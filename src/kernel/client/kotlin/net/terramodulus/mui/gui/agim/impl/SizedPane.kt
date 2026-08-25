@@ -42,6 +42,18 @@ class SizedPane(asdHandle: AsdHandle, component: Component, private var config: 
 						putProperty(IntrinsicDimensionsProperty.KEY, dim)
 					}
 				)
+			}), LayoutComputationUnit({ // Forwarding Rect to component
+				put(container.asdHandle, setOf(RectangleProperty.KEY, BoundsProperty.KEY))
+			}, {
+				put(component.asdHandle, setOf(BoundsProperty.KEY))
+			}, {
+				mapOf(component.asdHandle to AgimoPropertyMap().apply {
+					val prop = getUnit(container.asdHandle)
+					putProperty(BoundsProperty.KEY, BoundsProperty(
+						prop.getProperty(RectangleProperty.KEY)?.value
+							?: prop.getProperty(BoundsProperty.KEY)!!.value)
+					)
+				})
 			}))
 		}))
 	}

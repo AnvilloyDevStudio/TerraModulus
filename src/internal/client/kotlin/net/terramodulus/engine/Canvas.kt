@@ -5,7 +5,6 @@
 
 package net.terramodulus.engine
 
-import com.cout970.math.vec4.Vec4i
 import net.terramodulus.engine.ferricia.Gwr
 import net.terramodulus.engine.ferricia.Gwr.drawGwrObj
 import net.terramodulus.engine.ferricia.Gwr.newMeshGeomCube
@@ -31,6 +30,7 @@ import java.io.Closeable
  *
  * This manages GL viewport in the SDL window and rendering in the viewport.
  */
+@OptIn(ExperimentalUnsignedTypes::class)
 class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 	internal val handle = initCanvasHandle(windowHandle)
 	val glVersion = getGLVersion(windowHandle)
@@ -68,11 +68,9 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 	internal fun newSpriteMesh(x0: Int, y0: Int, x1: Int, y1: Int) =
 		newSpriteMesh(windowHandle, intArrayOf(x0, y0, x1, y1))
 
-	internal fun newMeshGeomCube(width: Float, rgba: Vec4i) =
-		newMeshGeomCube(windowHandle, width, rgba.toArray())
+	internal fun newMeshGeomCube(width: Float) = newMeshGeomCube(windowHandle, width)
 
-	internal fun newMeshGeomSphere(radius: Float, rgba: Vec4i) =
-		newMeshGeomSphere(windowHandle, radius, rgba.toArray())
+	internal fun newMeshGeomSphere(radius: Float) = newMeshGeomSphere(windowHandle, radius)
 
 	fun renderGuiGeo(drawable: GeomDrawable, programHandle: ULong) =
 		drawGuiGeo(handle, drawable.handle, programHandle)

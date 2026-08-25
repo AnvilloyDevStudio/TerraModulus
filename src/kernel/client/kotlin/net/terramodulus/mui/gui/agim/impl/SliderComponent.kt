@@ -5,10 +5,10 @@
 
 package net.terramodulus.mui.gui.agim.impl
 
-import com.cout970.math.vec3.Vec3i
+import com.cout970.math.vec4.Vec4i
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.asd.AsdHandle
-import net.terramodulus.mui.gui.gfx.Anchor5
+import net.terramodulus.mui.gui.gfx.ColorFilter
 import net.terramodulus.mui.gui.gfx.Direction4A
 import net.terramodulus.mui.gui.gfx.Direction4AD
 import net.terramodulus.mui.gui.gfx.GeneralTransform
@@ -38,23 +38,30 @@ class SliderComponent(
 	private val fgTransform = GeneralTransform()
 	private val background = GuiRect(canvasHandle,
 		BOUNDS.x, BOUNDS.y, BOUNDS.width, BOUNDS.height,
-		config.bgColor.x, config.bgColor.y, config.bgColor.z, 255,
+		config.bgColor.x, config.bgColor.y, config.bgColor.z, config.bgColor.w,
 	).apply { add(bgTransform) }
 	private val foreground = GuiRect(canvasHandle,
 		BOUNDS.x, BOUNDS.y, BOUNDS.width, BOUNDS.height,
-		config.fgColor.x, config.fgColor.y, config.fgColor.z, 255,
+		config.fgColor.x, config.fgColor.y, config.fgColor.z, config.bgColor.w,
 	).apply { add(fgTransform) }
 	var fraction: Double by Delegates.observable(0.0) { _, _, value ->
-		updateForeground(asdHandle.rect, value)
+		try {
+			updateForeground(asdHandle.rect, value)
+		} catch (_: UninitializedPropertyAccessException) {}
 	}
 
-	class Config(val bgColor: Vec3i, val fgColor: Vec3i)
+	class Config(val bgColor: Vec4i, val fgColor: Vec4i)
 
 	init {
 		asdHandle.observeRect {
 			RectStParams.fromRects(BOUNDS.toDouble(), asdHandle.rect).applyToGeneralTransform(bgTransform)
 			updateForeground(asdHandle.rect, fraction)
 		}
+	}
+
+	fun addFilter(filter: ColorFilter) {
+		background.add(filter)
+		foreground.add(filter)
 	}
 
 	private fun updateForeground(rect: RectangleD, fraction: Double) {

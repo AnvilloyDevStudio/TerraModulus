@@ -21,8 +21,6 @@ import net.terramodulus.mui.gui.gfx.RenderSystem
 import kotlin.math.min
 import kotlin.properties.Delegates
 
-private val CONTENT_SIZE = Dimension2I(400, 200)
-
 private val BG_COLOR = floatArrayOf(.145F, .776F, 0.768F)
 
 private const val ANI_DURATION = 1F // in second
@@ -46,19 +44,30 @@ class ResourceLoadingScreen(
 			), RectangleD(0.0, 0.0, 1.0, 1.0), ComponentAsdHandleImpl()).apply {
 				geom.add(alphaFilter)
 			}, SingletonLayout.Config.Absolute.Full))
-			add(SingletonLayout(this@ResourceLoadingScreen, DrawablesComponent(sequenceOf(
-				DrawablesComponent.Drawable(GuiSprite(
-					renderSystemHandle.canvasHandle,
-					RectangleI(0, 100, 400, 100),
-					renderSystemHandle.loadTexture("/game_logo.png")
-				)),
-				DrawablesComponent.Drawable(GuiRect(renderSystemHandle.canvasHandle, 0, 0, 400, 40, 240, 240, 240, 255)),
-				DrawablesComponent.Drawable(GuiRect(renderSystemHandle.canvasHandle, 5, 5, 395, 35, 0, 255, 213, 255)),
-				DrawablesComponent.Drawable(progressBar.rect),
-			), RectangleD(0.0, 0.0, 400.0, 200.0), ComponentAsdHandleImpl()).apply {
-				addFilter(alphaFilter)
+			add(SingletonLayout(this@ResourceLoadingScreen, SimplePane(ComponentAsdHandleImpl()) {
+				SingletonLayout(this, DrawablesComponent(sequenceOf(
+					DrawablesComponent.Drawable(
+						GuiSprite(
+							renderSystemHandle.canvasHandle,
+							RectangleI(0, 100, 400, 100),
+							renderSystemHandle.loadTexture("/game_logo.png")
+						)
+					),
+					DrawablesComponent.Drawable(
+						GuiRect(renderSystemHandle.canvasHandle, 0, 0, 400, 40, 240, 240, 240, 255)
+					),
+					DrawablesComponent.Drawable(
+						GuiRect(renderSystemHandle.canvasHandle, 5, 5, 395, 35, 0, 255, 213, 255)
+					),
+					DrawablesComponent.Drawable(progressBar.rect),
+				), RectangleD(0.0, 0.0, 400.0, 200.0), ComponentAsdHandleImpl()).apply {
+					addFilter(alphaFilter)
+				}, SingletonLayout.Config.Aligned(
+					SingletonLayout.Config.ObjectFit.Contain,
+					SingletonLayout.Config.AlignmentConfig.DEFAULT,
+				))
 			}, SingletonLayout.Config.Aligned(
-				SingletonLayout.Config.ObjectFit.Contain,
+				SingletonLayout.Config.Relative.Simple(0.5),
 				SingletonLayout.Config.AlignmentConfig.DEFAULT,
 			)))
 		}

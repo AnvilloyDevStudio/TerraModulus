@@ -66,7 +66,7 @@ class ScreenManager internal constructor(
 		 */
 		class Exit(val n: Int) : ScreenOperation {
 			init {
-				require(n < 0) { "`n` < 1" }
+				require(n > 0) { "`n` < 1" }
 			}
 
 			override fun apply(
@@ -238,8 +238,9 @@ class ScreenManager internal constructor(
 	)
 
 	internal fun update(muiManager: MuiManager) {
-		screenOpQueue.forEach { it.apply(renderSystemHandle, screens, asdHandles) }
-		screenOpQueue.clear()
+		repeat(screenOpQueue.size) {
+			screenOpQueue.removeFirst().apply(renderSystemHandle, screens, asdHandles)
+		}
 		val ioi = MuiIoI(muiManager.guiManager.renderSystem, this, muiManager.kuiManager.inputSystem)
 		menuManager.update(ioi)
 		screens.forEach { it.update(ioi) }

@@ -5,6 +5,7 @@
 
 package net.terramodulus.engine.ferricia
 
+@OptIn(ExperimentalUnsignedTypes::class)
 internal object Gwr {
 	/**
 	 * @param windowHandle window handle pointer
@@ -40,20 +41,26 @@ internal object Gwr {
 	/**
 	 * @param windowHandle window handle pointer
 	 * @param width cube's width, in `(0,2]`
-	 * @param data `[r, g, b, a]`
-	 * @return DrawableWorldObj handle pointer
+	 * @return SimpleMesh3dGeom handle pointer and Render3dPrimitive (wide) handle pointer
 	 */
 	@JvmName("newMeshGeomCube")
-	external fun newMeshGeomCube(windowHandle: ULong, width: Float, data: IntArray): ULong
+	external fun newMeshGeomCube(windowHandle: ULong, width: Float): ULongArray
 
 	/**
 	 * @param windowHandle window handle pointer
 	 * @param width cube's radius, in `(0,1]`
+	 * @return SimpleMesh3dGeom handle pointer and Render3dPrimitive (wide) handle pointer
+	 */
+	@JvmName("newMeshGeomSphere")
+	external fun newMeshGeomSphere(windowHandle: ULong, width: Float): ULongArray
+
+	/**
+	 * @param handle Render3dPrimitive (wide) handle pointer
 	 * @param data `[r, g, b, a]`
 	 * @return DrawableWorldObj handle pointer
 	 */
-	@JvmName("newMeshGeomSphere")
-	external fun newMeshGeomSphere(windowHandle: ULong, width: Float, data: IntArray): ULong
+	@JvmName("newDrawableWorldObj")
+	external fun newDrawableWorldObj(handle: ULong, data: IntArray): ULong
 
 	/**
 	 * @param objHandle DrawableWorldObj handle pointer

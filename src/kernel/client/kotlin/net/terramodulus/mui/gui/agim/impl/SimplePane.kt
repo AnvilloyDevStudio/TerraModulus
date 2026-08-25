@@ -10,7 +10,8 @@ import net.terramodulus.mui.gui.agim.Layout
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.RenderSystem
 
-class SimplePane(asdHandle: AsdHandle, override var layout: Layout) : AbstractPane(asdHandle) {
+class SimplePane(asdHandle: AsdHandle, layout: SimplePane.() -> Layout) : AbstractPane(asdHandle) {
+	override var layout = layout(this)
 	override fun render(renderSystem: RenderSystem) {
 		layout.render(renderSystem)
 	}

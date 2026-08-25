@@ -155,7 +155,7 @@ internal object Mui {
 
 	/**
 	 * @param data `[sx, sy, angle, px, py]`; scaling, rotation, position
-	 * @return GeneralTransform handle pointers
+	 * @return GeneralTransform handle pointer and PrimModelTransform (wide) handle pointer
 	 */
 	@JvmName("modelGeneralTransform")
 	external fun modelGeneralTransform(data: DoubleArray): ULongArray
@@ -169,7 +169,7 @@ internal object Mui {
 
 	/**
 	 * @param data alpha
-	 * @return AlphaFilter handle pointers
+	 * @return AlphaFilter handle pointer and PrimColorFilter (wide) handle pointer
 	 */
 	@JvmName("filterAlphaFilter")
 	external fun filterAlphaFilter(data: Float): ULongArray
