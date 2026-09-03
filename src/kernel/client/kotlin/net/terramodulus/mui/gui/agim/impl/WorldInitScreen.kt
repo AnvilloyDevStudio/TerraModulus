@@ -100,7 +100,7 @@ class WorldInitScreen internal constructor(
 						renderSystemHandle,
 						TextContext.Config(16.0F, 16.0F, ImmVec4i(255)),
 					).apply {
-						text = "Demo Test 123 ABC"
+						text = "Demo Test 123 ABC MONWQK1V"
 					}, SingletonLayout.Config.Absolute.Insets(InsetsD(7.0, 149.0, 7.0, 35.0)))
 				},
 					SizedPane.Config(400u, 200u)), SingletonLayout.Config.Aligned(
