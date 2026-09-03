@@ -5,19 +5,26 @@
 
 package net.terramodulus.mui.gui.gfx
 
+import com.cout970.math.vec2.Vec2f
 import com.cout970.math.vec3.Vec3f
+import com.cout970.math.vec4.Vec4i
 import net.terramodulus.core.TerraModulus
 import net.terramodulus.core.getResourceAsBytes
 import net.terramodulus.core.getResourceAsString
 import net.terramodulus.engine.Canvas
+import net.terramodulus.engine.FontManager
 import net.terramodulus.engine.GeomDrawable
 import net.terramodulus.engine.MeshDrawable
+import net.terramodulus.engine.TextRenderingContext
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.impl.GameplayScreen
 import net.terramodulus.mui.gui.asd.AsdHandle
 
 class RenderSystem internal constructor(private val core: TerraModulus, private val canvas: Canvas) {
 	val handle: Handle = HandleImpl()
+	// In production, initialization of fonts shall be deferred to session of resource loading.
+	private val fontManager = FontManager()
+	private val glyphManager = canvas.newGlyphManager(fontManager)
 	private val texShaders = canvas.loadTexShaders(
 		getResourceAsString("/gms_tex.vsh"),
 		getResourceAsString("/gms_tex.fsh")
@@ -26,6 +33,11 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 		getResourceAsString("/gms_geo.vsh"),
 		getResourceAsString("/gms_geo.fsh")
 	)
+	private val txtShaders = canvas.loadTxtShaders(
+		getResourceAsString("/gms_tex.vsh"),
+		getResourceAsString("/gms_txt.fsh")
+	)
+	private val textRenderer = canvas.newTextRenderer(geoShaders, txtShaders)
 	val targetFps = 1000;
 
 	sealed interface Handle {
@@ -34,6 +46,10 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 		fun loadTexture(path: String): UInt
 
 		fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float)
+
+		fun renderText(ctx: TextRenderingContext, pos: Vec2f)
+
+		fun newTextRenderingContext(fontSize: Float, lineHeight: Float, color: Vec4i): TextRenderingContext
 	}
 
 	inner class CanvasHandle internal constructor() {
@@ -48,6 +64,13 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 		override fun setBackgroundColor(red: Float, green: Float, blue: Float, alpha: Float) {
 			canvas.setClearColor(red, green, blue, alpha)
 		}
+
+		override fun renderText(ctx: TextRenderingContext, pos: Vec2f) {
+			textRenderer.renderText(ctx, canvas, glyphManager, fontManager, pos)
+		}
+
+		override fun newTextRenderingContext(fontSize: Float, lineHeight: Float, color: Vec4i) =
+			fontManager.newTextRenderingManager(fontSize, lineHeight, color)
 	}
 
 	internal fun newGameplayScreen(pos: Vec3f) =

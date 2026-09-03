@@ -224,4 +224,91 @@ internal object Mui {
 	 */
 	@JvmName("drawGuiTex")
 	external fun drawGuiTex(canvasHandle: ULong, drawableHandle: ULong, programHandle: ULong, textureHandle: UInt)
+
+	/**
+	 * @return FontManager handle pointer
+	 */
+	@JvmName("newFontManager")
+	external fun newFontManager(): ULong
+
+	/**
+	 * @param managerHandle FontManager handle pointer
+	 * @param windowHandle Window handle pointer
+	 * @return GlyphManager handle pointer
+	 */
+	@JvmName("newGlyphManager")
+	external fun newGlyphManager(managerHandle: ULong, windowHandle: ULong): ULong
+
+	/**
+	 * @param windowHandle Window handle pointer
+	 * @param vsh Window handle pointer
+	 * @param fsh Window handle pointer
+	 * @return TxtProgram handle pointer
+	 */
+	@JvmName("newTxtProgram")
+	external fun newTxtProgram(windowHandle: ULong, vsh: String, fsh: String): ULong
+
+	/**
+	 * @param windowHandle Window handle pointer
+	 * @param geoProgramHandle GeoProgram handle pointer
+	 * @param txtProgramHandle TxtProgram handle pointer
+	 * @return TextRenderer handle pointer
+	 */
+	@JvmName("newTextRenderer")
+	external fun newTextRenderer(windowHandle: ULong, geoProgramHandle: ULong, txtProgramHandle: ULong): ULong
+
+	/**
+	 * @param managerHandle FontManager handle pointer
+	 * @param data1 Font size and line height in pixels
+	 * @param data2 `[r, g, b, a]` in [0,255]
+	 * @return TextRenderingContext handle pointer
+	 */
+	@JvmName("newTextRenderingContext")
+	external fun newTextRenderingContext(managerHandle: ULong, data1: FloatArray, data2: IntArray): ULong
+
+	/**
+	 * @param ctxHandle TextRenderingContext handle pointer
+	 * @param data `[r, g, b, a]` in [0,255]
+	 */
+	@JvmName("setTextRenderingContextColor")
+	external fun setTextRenderingContextColor(ctxHandle: ULong, data: IntArray)
+
+	/**
+	 * @param ctxHandle TextRenderingContext handle pointer
+	 * @param data Font size and line height in pixels
+	 */
+	@JvmName("setTextRenderingContextMetrics")
+	external fun setTextRenderingContextMetrics(ctxHandle: ULong, data: FloatArray)
+
+	/**
+	 * @param ctxHandle TextRenderingContext handle pointer
+	 * @param data Width and height in pixels
+	 */
+	@JvmName("setTextRenderingContextSize")
+	external fun setTextRenderingContextSize(ctxHandle: ULong, data: FloatArray)
+
+	/**
+	 * @param ctxHandle TextRenderingContext handle pointer
+	 * @param text Contents of entire text widget
+	 */
+	@JvmName("setTextRenderingContextText")
+	external fun setTextRenderingContextText(ctxHandle: ULong, text: String)
+
+	/**
+	 * @param canvasHandle Canvas handle pointer
+	 * @param glyphMgrHandle GlyphManager handle pointer
+	 * @param rendererHandle TextRenderer handle pointer
+	 * @param fontMgrHandle FontManager handle pointer
+	 * @param ctxHandle TextRenderingContext handle pointer
+	 * @param data `[x, y]` Position
+	 */
+	@JvmName("renderText")
+	external fun renderText(
+		canvasHandle: ULong,
+		glyphMgrHandle: ULong,
+		rendererHandle: ULong,
+		fontMgrHandle: ULong,
+		ctxHandle: ULong,
+		data: FloatArray,
+	)
 }

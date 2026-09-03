@@ -21,6 +21,7 @@ import net.terramodulus.engine.ferricia.Mui.loadImageToCanvas
 import net.terramodulus.engine.ferricia.Mui.newSimpleLineGeom
 import net.terramodulus.engine.ferricia.Mui.newSimpleRectGeom
 import net.terramodulus.engine.ferricia.Mui.newSpriteMesh
+import net.terramodulus.engine.ferricia.Mui.newTxtProgram
 import net.terramodulus.engine.ferricia.Mui.setCanvasClearColor
 import net.terramodulus.engine.ferricia.Mui.texShaders
 import java.io.Closeable
@@ -51,6 +52,8 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 		return camera3D!!
 	}
 
+	fun newGlyphManager(manager: FontManager) = manager.newGlyphManager(windowHandle)
+
 	fun loadImage(data: ByteArray) = loadImageToCanvas(handle, data)
 
 	fun loadGeoShaders(vsh: String, fsh: String) = geoShaders(windowHandle, vsh, fsh)
@@ -58,6 +61,11 @@ class Canvas internal constructor(private val windowHandle: ULong) : Closeable {
 	fun load3DGeoShaders(vsh: String, fsh: String) = Gwr.geoShaders(windowHandle, vsh, fsh)
 
 	fun loadTexShaders(vsh: String, fsh: String) = texShaders(windowHandle, vsh, fsh)
+
+	fun loadTxtShaders(vsh: String, fsh: String) = newTxtProgram(windowHandle, vsh, fsh)
+
+	fun newTextRenderer(geoProgramHandle: ULong, txtProgramHandle: ULong) =
+		TextRenderer(windowHandle, geoProgramHandle, txtProgramHandle)
 
 	internal fun newSimpleLineGeom(x0: Int, y0: Int, x1: Int, y1: Int, r: Int, g: Int, b: Int, a: Int) =
 		newSimpleLineGeom(windowHandle, intArrayOf(x0, y0, x1, y1, r, g, b, a))

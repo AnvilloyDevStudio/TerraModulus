@@ -6,6 +6,8 @@
 package net.terramodulus.mui.gui
 
 import net.terramodulus.core.TerraModulus
+import net.terramodulus.engine.FontManager
+import net.terramodulus.engine.GlyphManager
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
 import net.terramodulus.mui.gui.agim.LayoutManager

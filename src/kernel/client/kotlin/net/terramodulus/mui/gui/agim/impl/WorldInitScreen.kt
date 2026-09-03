@@ -18,6 +18,7 @@ import net.terramodulus.mui.gui.gfx.InsetsD
 import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleI
 import net.terramodulus.mui.gui.gfx.RenderSystem
+import net.terramodulus.mui.gui.gfx.TextContext
 import net.terramodulus.void.World
 
 private const val ANI_DURATION = 1F // in second
@@ -82,6 +83,25 @@ class WorldInitScreen internal constructor(
 					SingletonLayout(this, progressBarComponent,
 						SingletonLayout.Config.Absolute.Insets(InsetsD(7.0, 167.0, 7.0, 7.0))
 					)
+				},
+					SizedPane.Config(400u, 200u)), SingletonLayout.Config.Aligned(
+						SingletonLayout.Config.ObjectFit.Contain,
+						SingletonLayout.Config.AlignmentConfig.DEFAULT,
+					)
+				)
+			}, SingletonLayout.Config.Aligned(
+				SingletonLayout.Config.Relative.Simple(0.5),
+				SingletonLayout.Config.AlignmentConfig.DEFAULT,
+			)))
+			add(SingletonLayout(this@WorldInitScreen, SimplePane(ComponentAsdHandleImpl()) {
+				SingletonLayout(this, SizedPane(ComponentAsdHandleImpl(), SimplePane(ComponentAsdHandleImpl()) {
+					SingletonLayout(this, TextDisplayComponent(
+						ComponentAsdHandleImpl(),
+						renderSystemHandle,
+						TextContext.Config(16.0F, 16.0F, ImmVec4i(255)),
+					).apply {
+						text = "Demo Test 123 ABC"
+					}, SingletonLayout.Config.Absolute.Insets(InsetsD(7.0, 149.0, 7.0, 35.0)))
 				},
 					SizedPane.Config(400u, 200u)), SingletonLayout.Config.Aligned(
 						SingletonLayout.Config.ObjectFit.Contain,

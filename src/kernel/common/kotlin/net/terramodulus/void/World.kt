@@ -125,7 +125,8 @@ class World(commander: Ymir, progressBar: ProgressBar) : Closeable {
 	private fun randomCubes(commander: Ymir, progressBar: ProgressBar): ArrayList<VoidGeom> {
 		val list = ArrayList<VoidGeom>()
 		var i = 0
-		val radius = 12
+// 		val radius = 12
+		val radius = 5
 		val total = radius * radius * 2 * 2 * 7
 		val intervalHor = 5.0
 		val intervalVert = 8
