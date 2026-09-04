@@ -19,6 +19,7 @@ import net.terramodulus.mui.gui.gfx.RectangleD
 import net.terramodulus.mui.gui.gfx.RectangleI
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.properties.Delegates
 
 private val BG_COLOR = floatArrayOf(.145F, .776F, 0.768F)
@@ -86,7 +87,9 @@ class ResourceLoadingScreen(
 
 				1 -> {
 					// TODO when there is something to load, stay at this stage until ready
-					progressBar.progress = min(elapsed / PAUSE_DURATION, 1F)
+					val x = elapsed / PAUSE_DURATION
+					// S-curve animation, but this will not look good if speed is not constant
+					progressBar.progress = min(1 - (1 - x.pow(3.5F)).pow(12), 1F)
 					if (progressBar.progress >= 1F) {
 						stage = 2
 						last = current

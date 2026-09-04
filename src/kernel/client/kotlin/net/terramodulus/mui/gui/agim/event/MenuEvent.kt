@@ -10,4 +10,5 @@ import net.terramodulus.mui.gui.agim.ScreenManager
 sealed interface MenuEvent {
 	data class Update(val muiIoI: ScreenManager.MuiIoI) : MenuEvent
 	data object Close : MenuEvent
+	data class Generic<T : GenericEvent>(val generic: T) : MenuEvent
 }

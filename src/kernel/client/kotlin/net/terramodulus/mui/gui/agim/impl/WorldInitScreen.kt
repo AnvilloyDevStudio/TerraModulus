@@ -20,6 +20,7 @@ import net.terramodulus.mui.gui.gfx.RectangleI
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.gfx.TextContext
 import net.terramodulus.void.World
+import kotlin.math.roundToInt
 
 private const val ANI_DURATION = 1F // in second
 
@@ -44,6 +45,7 @@ class WorldInitScreen internal constructor(
 	override val layout = CompositeLayout(this)
 	private val progressBarImpl = ProgressBarImpl()
 	internal val progressBar: World.ProgressBar = progressBarImpl
+	private var onAlphaChange: () -> Unit = {}
 
 	init {
 		layout.update {
@@ -98,9 +100,14 @@ class WorldInitScreen internal constructor(
 					SingletonLayout(this, TextDisplayComponent(
 						ComponentAsdHandleImpl(),
 						renderSystemHandle,
-						TextContext.Config(16.0F, 16.0F, ImmVec4i(255)),
+						TextContext.Config(16.0F, 16.0F, ImmVec4i(255, 255, 255, 0)),
 					).apply {
-						text = "Demo Test 123 ABC MONWQK1V"
+						text = "Initializing Demo World..."
+						onAlphaChange = {
+							update {
+								color = ImmVec4i(255, 255, 255, (alphaFilter.alpha * 255).roundToInt())
+							}
+						}
 					}, SingletonLayout.Config.Absolute.Insets(InsetsD(7.0, 149.0, 7.0, 35.0)))
 				},
 					SizedPane.Config(400u, 200u)), SingletonLayout.Config.Aligned(
@@ -122,9 +129,11 @@ class WorldInitScreen internal constructor(
 					stage = 1
 					last = current
 					alphaFilter.alpha = 1F
+					onAlphaChange()
 					progressBarImpl.ready = true
 				} else {
 					alphaFilter.alpha = elapsed / ANI_DURATION
+					onAlphaChange()
 				}
 
 				1 -> {
@@ -139,8 +148,10 @@ class WorldInitScreen internal constructor(
 					stage = 3
 					last = current
 					alphaFilter.alpha = 0F
+					onAlphaChange()
 				} else {
 					alphaFilter.alpha = 1 - elapsed / ANI_DURATION
+					onAlphaChange()
 				}
 
 // 			3 -> screenManager.handle.openBefore(::TitleScreen, this)

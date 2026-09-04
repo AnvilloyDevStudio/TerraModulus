@@ -9,5 +9,5 @@ import net.terramodulus.mui.gui.agim.ScreenManager
 
 sealed interface ComponentEvent {
 	data class Update(val muiIoI: ScreenManager.MuiIoI) : ComponentEvent
-	data class Key(val generic: GenericEvent.Key) : ComponentEvent
+	data class Generic<T : GenericEvent>(val generic: T) : ComponentEvent
 }

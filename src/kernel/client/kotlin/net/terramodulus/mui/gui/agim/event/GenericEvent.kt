@@ -5,8 +5,13 @@
 
 package net.terramodulus.mui.gui.agim.event
 
-sealed class GenericEvent {
-	var bubble = true
+// Must not be used in kernel
+abstract class GenericEvent : BubblingEvent by BubblingEventImpl() {
+	override fun equals(other: Any?): Boolean {
+		return this === other
+	}
 
-	data object Key : GenericEvent()
+	override fun hashCode(): Int {
+		return System.identityHashCode(this)
+	}
 }

@@ -137,6 +137,7 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 				is MuiEvent.MouseButtonDown -> {
 					logger.debug { "Mouse (id: ${event.mouseId}) key `${event.key}` down." }
+					guiManager
 				}
 				is MuiEvent.MouseButtonUp -> {
 					logger.debug { "Mouse (id: ${event.mouseId}) key `${event.key}` up." }

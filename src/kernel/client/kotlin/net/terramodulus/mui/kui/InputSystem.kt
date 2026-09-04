@@ -9,8 +9,22 @@ package net.terramodulus.mui.kui
 class InputSystem internal constructor() {
 	private val keys = HashMap<KeyId, Key>()
 
+	sealed interface Keys {
+		fun down(): KeyPredicate.Down
+		fun justDown(): KeyPredicate.JustDown
+		fun justUp(): KeyPredicate.JustUp
+		fun matches(other: KeyId): Boolean
+	}
+
+	private class KeysImpl(private val id: KeyId) : Keys {
+		override fun down() = KeyPredicate.Down(id)
+		override fun justDown() = KeyPredicate.JustDown(id)
+		override fun justUp() = KeyPredicate.JustUp(id)
+		override fun matches(other: KeyId) = id == other
+	}
+
 	// Values refer to ferricia::mui::KeyboardKey
-	enum class Keys(private val id: KeyId) {
+	enum class KeyboardKeys(private val id: KeyId) : Keys by KeysImpl(id) {
 		A(KeyId(0u)),
 		B(KeyId(1u)),
 		C(KeyId(2u)),
@@ -41,10 +55,6 @@ class InputSystem internal constructor() {
 		Minus(KeyId(41u)),
 		Equals(KeyId(42u)),
 		LShift(KeyId(205u)),
-		;
-		fun down() = KeyPredicate.Down(id)
-		fun justDown() = KeyPredicate.JustDown(id)
-		fun justUp() = KeyPredicate.JustUp(id)
 	}
 
 	sealed class KeyPredicate {
@@ -84,40 +94,38 @@ class InputSystem internal constructor() {
 		infix fun or(other: KeyPredicate) = Or(this, other)
 	}
 
-	private val keysScope = KeysScope()
-
 	// This class may be programmatically generated
-	inner class KeysScope internal constructor() {
-		val A = Keys.A
-		val B = Keys.B
-		val C = Keys.C
-		val D = Keys.D
-		val E = Keys.E
-		val F = Keys.F
-		val G = Keys.G
-		val H = Keys.H
-		val I = Keys.I
-		val J = Keys.J
-		val K = Keys.K
-		val L = Keys.L
-		val M = Keys.M
-		val N = Keys.N
-		val O = Keys.O
-		val P = Keys.P
-		val Q = Keys.Q
-		val R = Keys.R
-		val S = Keys.S
-		val T = Keys.T
-		val U = Keys.U
-		val V = Keys.V
-		val W = Keys.W
-		val X = Keys.X
-		val Y = Keys.Y
-		val Z = Keys.Z
-		val Space = Keys.Space
-		val Minus = Keys.Minus
-		val Equals = Keys.Equals
-		val LShift = Keys.LShift
+	object KeysScope {
+		val A = KeyboardKeys.A
+		val B = KeyboardKeys.B
+		val C = KeyboardKeys.C
+		val D = KeyboardKeys.D
+		val E = KeyboardKeys.E
+		val F = KeyboardKeys.F
+		val G = KeyboardKeys.G
+		val H = KeyboardKeys.H
+		val I = KeyboardKeys.I
+		val J = KeyboardKeys.J
+		val K = KeyboardKeys.K
+		val L = KeyboardKeys.L
+		val M = KeyboardKeys.M
+		val N = KeyboardKeys.N
+		val O = KeyboardKeys.O
+		val P = KeyboardKeys.P
+		val Q = KeyboardKeys.Q
+		val R = KeyboardKeys.R
+		val S = KeyboardKeys.S
+		val T = KeyboardKeys.T
+		val U = KeyboardKeys.U
+		val V = KeyboardKeys.V
+		val W = KeyboardKeys.W
+		val X = KeyboardKeys.X
+		val Y = KeyboardKeys.Y
+		val Z = KeyboardKeys.Z
+		val Space = KeyboardKeys.Space
+		val Minus = KeyboardKeys.Minus
+		val Equals = KeyboardKeys.Equals
+		val LShift = KeyboardKeys.LShift
 	}
 
 	init {
@@ -126,7 +134,9 @@ class InputSystem internal constructor() {
 	}
 
 	@JvmInline
-	value class KeyId(private val id: UInt)
+	value class KeyId(private val id: UInt) {
+		fun matches(other: Keys) = other.matches(this)
+	}
 
 	class Key {
 		var down = false
@@ -137,7 +147,7 @@ class InputSystem internal constructor() {
 		fun isJustUp() = !down && justChanged
 	}
 
-	fun condition(predicate: KeysScope.() -> KeyPredicate) = keysScope.predicate().test(KeyPredicate.Helper(keys))
+	fun condition(predicate: KeysScope.() -> KeyPredicate) = KeysScope.predicate().test(KeyPredicate.Helper(keys))
 
 	sealed class KeyEvent private constructor(internal open val key: KeyId) {
 		data class Down(override val key: KeyId) : KeyEvent(key)
