@@ -216,3 +216,27 @@ data class RectangleD(
 	override fun toFloat() = RectangleF(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
 	override fun toDouble() = this
 }
+
+@ExposedCopyVisibility
+data class RectRange private constructor(val rect: RectangleD, internal val type: Type) {
+	internal enum class Type { Inclusive, Range, Exclusive }
+	companion object {
+		fun inclusive(rect: RectangleD) = RectRange(rect, Type.Inclusive)
+		fun exclusive(rect: RectangleD) = RectRange(rect, Type.Exclusive)
+
+		/**
+		 * For each axis, inclusive for the lower bound and exclusive for the upper bound.
+		 */
+		fun range(rect: RectangleD) = RectRange(rect, Type.Range)
+	}
+
+	fun contains(pt: Vec2d): Boolean {
+		val lower = ImmVec2d(rect.x, rect.y)
+		val upper = ImmVec2d(rect.x + rect.width, rect.y + rect.height)
+		return when (type) {
+			Type.Inclusive -> pt.x in lower.x..upper.x && pt.y in lower.y..upper.y
+			Type.Exclusive -> pt.x > lower.x && pt.x < upper.x && pt.y > lower.y && pt.y < upper.y
+			Type.Range -> pt.x in lower.x..<upper.x && pt.y in lower.y..<upper.y
+		}
+	}
+}

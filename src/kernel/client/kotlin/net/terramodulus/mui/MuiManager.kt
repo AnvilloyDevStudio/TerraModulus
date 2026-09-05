@@ -12,7 +12,9 @@ import net.terramodulus.mui.aui.AuiManager
 import net.terramodulus.mui.gui.GuiManager
 import net.terramodulus.mui.hui.HuiManager
 import net.terramodulus.mui.kui.InputSystem
+import net.terramodulus.mui.kui.KeyboardInputHandler
 import net.terramodulus.mui.kui.KuiManager
+import net.terramodulus.mui.uid.UidManager
 import net.terramodulus.util.logging.logger
 import java.io.Closeable
 
@@ -22,9 +24,10 @@ private const val HEIGHT = 480u
 
 internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 	private val window = Window(WIDTH, HEIGHT) // SDL Window
+	internal val uidManager = UidManager()
 	internal val auiManager = AuiManager()
 	internal val huiManager = HuiManager()
-	internal val kuiManager = KuiManager()
+	internal val kuiManager = KuiManager(uidManager)
 	internal val guiManager = GuiManager(window, core)
 
 	internal fun showWindow() = window.show()
@@ -34,7 +37,7 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 	 * This includes input ticking and canvas rendering.
 	 */
 	internal fun update() {
-		val keyEvents = ArrayList<InputSystem.KeyEvent>()
+		val keyEvents = ArrayList<InputSystem.InputEvent>()
 		window.pollEvents().forEach { event ->
 			when (event) {
 				is MuiEvent.DisplayAdded -> {
@@ -120,11 +123,11 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 				is MuiEvent.KeyboardKeyDown -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` down." }
-					keyEvents.add(InputSystem.KeyEvent.Down(InputSystem.KeyId(event.key)))
+					keyEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Down(KeyboardInputHandler.KeyId(event.key))))
 				}
 				is MuiEvent.KeyboardKeyUp -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` up." }
-					keyEvents.add(InputSystem.KeyEvent.Up(InputSystem.KeyId(event.key)))
+					keyEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Up(KeyboardInputHandler.KeyId(event.key))))
 				}
 				MuiEvent.KeyboardRemoved -> {
 					logger.debug { "Keyboard removed." }
@@ -236,7 +239,7 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 			}
 		}
-		kuiManager.update(keyEvents)
+		kuiManager.inputSystem.update(keyEvents.asSequence())
 		guiManager.updateScreens(this)
 		guiManager.updateCanvas()
 	}

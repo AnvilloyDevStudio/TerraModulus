@@ -6,7 +6,7 @@
 package net.terramodulus.mui.gui.agim.event
 
 // Must not be used in kernel
-abstract class GenericEvent : BubblingEvent by BubblingEventImpl() {
+abstract class GenericEvent : BubblingEvent() {
 	override fun equals(other: Any?): Boolean {
 		return this === other
 	}

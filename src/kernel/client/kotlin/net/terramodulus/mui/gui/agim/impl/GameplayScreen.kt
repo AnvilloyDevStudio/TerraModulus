@@ -35,6 +35,7 @@ import net.terramodulus.mui.gui.gfx.Direction6C
 import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.kui.InputSystem
+import net.terramodulus.mui.kui.KeyboardInputHandler
 import net.terramodulus.util.logging.logger
 import net.terramodulus.void.World
 import kotlin.math.PI
@@ -178,12 +179,12 @@ internal class GameplayScreen(
 	private fun Vec3f.toArray() = floatArrayOf(x, y, z)
 
 	private fun Direction6C.toKey() = when (this) {
-		Direction6C.North -> InputSystem.Keys.W
-		Direction6C.South -> InputSystem.Keys.S
-		Direction6C.West -> InputSystem.Keys.A
-		Direction6C.East -> InputSystem.Keys.D
-		Direction6C.Up -> InputSystem.Keys.Space
-		Direction6C.Down -> InputSystem.Keys.LShift
+		Direction6C.North -> KeyboardInputHandler.Keys.W
+		Direction6C.South -> KeyboardInputHandler.Keys.S
+		Direction6C.West -> KeyboardInputHandler.Keys.A
+		Direction6C.East -> KeyboardInputHandler.Keys.D
+		Direction6C.Up -> KeyboardInputHandler.Keys.Space
+		Direction6C.Down -> KeyboardInputHandler.Keys.LShift
 	}
 
 	private fun Direction6C.toVector() = when (this) {
@@ -200,25 +201,25 @@ internal class GameplayScreen(
 	private fun update0(muiIoI: ScreenManager.MuiIoI) {
 		val inputSystem = muiIoI.inputSystem
 		// Those keys are not related to GUI, so they are fine to be here.
-		if (inputSystem.condition { Q.justDown() }) {
+		if (inputSystem.condition { keyboard { Q.justDown } }) {
 			// Query position of sphere
 			logger.info { "Position: ${player.pos.display()}" }
 		}
-		if (inputSystem.condition { R.justDown() }) {
+		if (inputSystem.condition { keyboard { R.justDown } }) {
 			// Query velocity of sphere
 			// Note: Acceleration is hard to be queried as force is zeroed after each world step
 			logger.info { "Velocity: ${player.phyBody.linearVel.display()}" }
 		}
-		if (inputSystem.condition { U.justDown() }) {
+		if (inputSystem.condition { keyboard { U.justDown } }) {
 			// Query gravity of world and gravity mode of (influence to) sphere
 			logger.info { "Gravity: ${core.world!!.gravity.display()}; influence: ${player.phyBody.gravityMode}" }
 		}
-		if (inputSystem.condition { I.justDown() }) {
+		if (inputSystem.condition { keyboard { I.justDown } }) {
 			// Toggle gravity mode of (influence to) sphere
 			player.phyBody.gravityMode = !player.phyBody.gravityMode
 			logger.info { "Gravity influence toggled: ${player.phyBody.gravityMode}" }
 		}
-		if (inputSystem.condition { O.justDown() }) {
+		if (inputSystem.condition { keyboard { O.justDown } }) {
 			// Increase world gravity
 			if (-core.world!!.gravity.y < MAX_GRAVITY) {
 				core.world!!.gravity *= 2.0
@@ -235,7 +236,7 @@ internal class GameplayScreen(
 				}
 			}
 		}
-		if (inputSystem.condition { P.justDown() }) {
+		if (inputSystem.condition { keyboard { P.justDown } }) {
 			// Decrease world gravity
 			if (-core.world!!.gravity.y > MIN_GRAVITY) {
 				core.world!!.gravity /= 2.0
@@ -252,11 +253,11 @@ internal class GameplayScreen(
 				}
 			}
 		}
-		if (inputSystem.condition { J.justDown() }) {
+		if (inputSystem.condition { keyboard { J.justDown } }) {
 			// Query friction states
 			logger.info { "Friction: ${core.world!!.friction}; mode: ${core.world!!.frictionMode}" }
 		}
-		if (inputSystem.condition { K.justDown() }) {
+		if (inputSystem.condition { keyboard { K.justDown } }) {
 			// Toggle friction mode
 			core.world!!.frictionMode = World.FrictionMode.entries[
 				(core.world!!.frictionMode.ordinal + 1) % World.FrictionMode.entries.size
@@ -267,7 +268,7 @@ internal class GameplayScreen(
 				}
 			}
 		}
-		if (inputSystem.condition { L.justDown() }) {
+		if (inputSystem.condition { keyboard { L.justDown } }) {
 			// Increase friction (for Limited mode)
 			if (core.world!!.friction < MAX_FRICTION) {
 				core.world!!.friction *= 2
@@ -284,7 +285,7 @@ internal class GameplayScreen(
 				}
 			}
 		}
-		if (inputSystem.condition { M.justDown() }) {
+		if (inputSystem.condition { keyboard { M.justDown } }) {
 			// Decrease friction (for Limited mode)
 			if (core.world!!.friction > MIN_FRICTION) {
 				core.world!!.friction /= 2
@@ -301,7 +302,7 @@ internal class GameplayScreen(
 				}
 			}
 		}
-		if (inputSystem.condition { N.justDown() }) {
+		if (inputSystem.condition { keyboard { N.justDown } }) {
 			// Reset velocity of sphere to zero
 			player.phyBody.linearVel = ZeroImmVec3d
 			logger.info { "Reset velocity to zero" }
@@ -312,7 +313,7 @@ internal class GameplayScreen(
 // 			player.pos = Vec3D(0.0, 1.0, 0.0)
 // 			logger.info { "Reset position to spawn point" }
 // 		}
-		if (inputSystem.condition { Equals.justDown() }) {
+		if (inputSystem.condition { keyboard { Equals.justDown } }) {
 			// Zoom in camera
 			if (camera.zoomLevel < MAX_ZOOM) {
 				camera.zoomLevel *= 2
@@ -321,7 +322,7 @@ internal class GameplayScreen(
 				logger.info { "Zoom maximized: ${camera.zoomLevel}" }
 			}
 		}
-		if (inputSystem.condition { Minus.justDown() }) {
+		if (inputSystem.condition { keyboard { Minus.justDown } }) {
 			// Zoom out camera
 			if (camera.zoomLevel > MIN_ZOOM) {
 				camera.zoomLevel /= 2
@@ -332,7 +333,7 @@ internal class GameplayScreen(
 		}
 
 		val dirs = ArrayList<Vec3d>()
-		Direction6C.entries.forEach { if (inputSystem.condition { it.toKey().down() }) dirs.add(it.toVector()) }
+		Direction6C.entries.forEach { if (inputSystem.condition { keyboard { it.toKey().down } }) dirs.add(it.toVector()) }
 		player.move(dirs.fold(ZeroImmVec3d, Vec3d::plus))
 	}
 

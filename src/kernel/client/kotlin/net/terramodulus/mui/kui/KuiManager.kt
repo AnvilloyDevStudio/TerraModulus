@@ -5,12 +5,14 @@
 
 package net.terramodulus.mui.kui
 
-import net.terramodulus.mui.kui.InputSystem.KeyEvent
+import net.terramodulus.mui.uid.UidManager
 
-class KuiManager {
-	val inputSystem = InputSystem()
+class KuiManager internal constructor(uidManager: UidManager) {
+	val keyboardInputHandler = KeyboardInputHandler(uidManager.keyboardDevice)
+	val mouseInputHandler = MouseInputHandler(uidManager.mouseDevice)
+	val inputSystem = InputSystem(this)
 
-	internal fun update(events: List<KeyEvent>) {
-		inputSystem.update(events)
-	}
+// 	internal fun update(events: List<KeyEvent>) {
+// 		inputSystem.update(events)
+// 	}
 }

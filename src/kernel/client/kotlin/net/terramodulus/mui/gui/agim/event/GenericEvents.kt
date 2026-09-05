@@ -5,22 +5,8 @@
 
 package net.terramodulus.mui.gui.agim.event
 
-import com.cout970.math.vec2.Vec2d
-import net.terramodulus.mui.kui.InputSystem
-
 object GenericEvents {
-	abstract class MouseEnter internal constructor()
-	abstract class MouseLeave internal constructor()
-	abstract class MouseMove internal constructor() {
-		abstract val a: Vec2d
-		abstract val b: Vec2d
-	}
-	abstract class MouseDown internal constructor() {
-		abstract val pos: Vec2d
-		abstract val keyId: InputSystem.KeyId
-	}
-	abstract class MouseUp internal constructor() {
-		abstract val pos: Vec2d
-		abstract val keyId: InputSystem.KeyId
-	}
+	// TODO not sure whether this is really needed or useful in the future
+	// This should either provide sealed classes to be extended by (more than one) subclasses of AGIMO Events,
+	// or provide variants to be used with GenericEvent.
 }

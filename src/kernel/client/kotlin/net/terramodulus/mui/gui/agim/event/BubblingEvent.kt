@@ -5,17 +5,11 @@
 
 package net.terramodulus.mui.gui.agim.event
 
-sealed interface BubblingEvent {
-	val bubbles: Boolean
-
-	fun stopPropagation()
-}
-
-internal class BubblingEventImpl : BubblingEvent {
-	override var bubbles: Boolean = true
+sealed class BubblingEvent {
+	var bubbles: Boolean = true
 		private set
 
-	override fun stopPropagation() {
+	fun stopPropagation() {
 		bubbles = false
 	}
 }
