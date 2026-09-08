@@ -34,13 +34,14 @@ class MouseInputHandler(mouseDevice: MouseDevice) {
 	}
 
 	sealed interface InnerButtons {
+		val id: ButtonId
 		val down: ButtonPredicate.Down
 		val justDown: ButtonPredicate.JustDown
 		val justUp: ButtonPredicate.JustUp
 		fun matches(other: ButtonId): Boolean // Is this useful?
 	}
 
-	private class ButtonsImpl(private val id: ButtonId) : InnerButtons {
+	private class ButtonsImpl(override val id: ButtonId) : InnerButtons {
 		override val down get() = ButtonPredicate.Down(id)
 		override val justDown get() = ButtonPredicate.JustDown(id)
 		override val justUp get() = ButtonPredicate.JustUp(id)
@@ -48,7 +49,7 @@ class MouseInputHandler(mouseDevice: MouseDevice) {
 	}
 
 	// Values refer to ferricia::mui::KeyboardKey
-	enum class Buttons(private val id: ButtonId) : InnerButtons by ButtonsImpl(id) {
+	enum class Buttons(override val id: ButtonId) : InnerButtons by ButtonsImpl(id) {
 		Left(ButtonId(0u)),
 		Middle(ButtonId(1u)),
 		Right(ButtonId(2u)),

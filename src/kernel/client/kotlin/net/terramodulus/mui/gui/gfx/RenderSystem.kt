@@ -16,6 +16,7 @@ import net.terramodulus.engine.FontManager
 import net.terramodulus.engine.GeomDrawable
 import net.terramodulus.engine.MeshDrawable
 import net.terramodulus.engine.TextRenderingContext
+import net.terramodulus.mui.gui.InputStatesHandle
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.impl.GameplayScreen
 import net.terramodulus.mui.gui.asd.AsdHandle
@@ -74,8 +75,8 @@ class RenderSystem internal constructor(private val core: TerraModulus, private 
 	}
 
 	internal fun newGameplayScreen(pos: Vec3f) =
-		{ managerHandle: ScreenManager.Handle, asdHandle: AsdHandle.Container, it: Handle ->
-			GameplayScreen(core, canvas.createCamera(floatArrayOf(pos.x, pos.y, pos.z)), it, managerHandle, asdHandle)
+		{ mh: ScreenManager.Handle, ah: AsdHandle.Container, it: Handle, ish: InputStatesHandle ->
+			GameplayScreen(core, canvas.createCamera(floatArrayOf(pos.x, pos.y, pos.z)), it, mh, ah, ish)
 		}
 
 	internal fun renderGuiTex(drawable: MeshDrawable, texture: UInt) = canvas.renderGuiTex(drawable, texShaders, texture)

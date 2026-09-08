@@ -6,8 +6,6 @@
 package net.terramodulus.mui.gui
 
 import net.terramodulus.core.TerraModulus
-import net.terramodulus.engine.FontManager
-import net.terramodulus.engine.GlyphManager
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
 import net.terramodulus.mui.gui.agim.LayoutManager
@@ -25,7 +23,8 @@ private val logger = logger {}
 internal class GuiManager internal constructor(private val window: Window, core: TerraModulus) : Closeable {
 	val renderSystem = RenderSystem(core, window.canvas)
 	val asdManager = AsdManager()
-	val screenManager = ScreenManager(window, renderSystem.handle, asdManager.AgimHandle())
+	val inputStatesHandle = InputStatesHandle()
+	val screenManager = ScreenManager(window, renderSystem.handle, asdManager.AgimHandle(), inputStatesHandle)
 	val layoutManager = LayoutManager(screenManager)
 
 	private var proceeded = false

@@ -15,7 +15,7 @@ sealed class InputState {
 	sealed interface Listener<S : InputState, K : Any> {
 		val triggers: Set<Trigger<S, K>>
 
-		fun act()
+		fun act(state: S)
 	}
 
 	sealed interface Trigger<S : InputState, K : Any> {

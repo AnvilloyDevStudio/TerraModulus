@@ -6,7 +6,39 @@
 package net.terramodulus.mui.gui
 
 import net.terramodulus.mui.gui.asd.AsdHandle
+import net.terramodulus.mui.gui.gfx.RectRange
+import java.io.Closeable
 
-sealed class InputCtxStates<S : InputState, K : Any>(protected val asdHandle: AsdHandle) {
+sealed class InputCtxStates<S : InputState, K : Any>(
+	protected val globalStates: InputGlobalStates<S, K>,
+	protected val asdHandle: AsdHandle,
+) : Closeable {
 	protected val listeners = mutableSetOf<InputState.Listener<S, K>>()
+	val ctxRange: CtxRange by lazy { CtxRange() }
+
+	inner class CtxRange : Closeable {
+		lateinit var rect: RectRange
+			private set
+		private val listener = {
+			rect = RectRange.range(asdHandle.rect)
+		}.also(asdHandle::observeRect)
+
+		override fun close() {
+			asdHandle.unobserveRect(listener)
+		}
+	}
+
+	fun addListener(listener: InputState.Listener<S, K>) {
+		listeners.add(listener)
+		globalStates.addListener(listener)
+	}
+
+	fun removeListener(listener: InputState.Listener<S, K>) {
+		listeners.remove(listener)
+		globalStates.removeListener(listener)
+	}
+
+	override fun close() {
+		listeners.forEach { globalStates.removeListener(it) }
+	}
 }

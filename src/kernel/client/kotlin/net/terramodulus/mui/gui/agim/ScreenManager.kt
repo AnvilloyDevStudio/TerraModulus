@@ -7,6 +7,7 @@ package net.terramodulus.mui.gui.agim
 
 import net.terramodulus.engine.Window
 import net.terramodulus.mui.MuiManager
+import net.terramodulus.mui.gui.InputStatesHandle
 import net.terramodulus.mui.gui.agim.impl.BoundsProperty
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.agim.impl.LaunchingScreen
@@ -15,13 +16,13 @@ import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.asd.AsdManager
 import net.terramodulus.mui.gui.asd.AsdProcessor
 import net.terramodulus.mui.gui.gfx.RectangleD
-import net.terramodulus.mui.gui.gfx.RectangleF
 import net.terramodulus.mui.kui.InputSystem
 
 class ScreenManager internal constructor(
 	window: Window,
 	private val renderSystemHandle: RenderSystem.Handle,
 	private val asdManagerHandle: AsdManager.AgimHandle,
+	private val inputStatesHandle: InputStatesHandle,
 ) {
 	/**
 	 * FILO screen stack; the top-most screen instance is in the last.
@@ -165,10 +166,24 @@ class ScreenManager internal constructor(
 		fun open(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle) -> Screen)
 
 		/**
+		 * @see ScreenOperation.Open
+		 */
+		fun open(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen)
+
+		/**
 		 * It is not recommended to use this in general scenarios.
 		 * @see ScreenOperation.OpenBefore
 		 */
 		fun openBefore(target: Screen, screen: (Handle, AsdHandle.Screen, RenderSystem.Handle) -> Screen)
+
+		/**
+		 * It is not recommended to use this in general scenarios.
+		 * @see ScreenOperation.OpenBefore
+		 */
+		fun openBefore(
+			target: Screen,
+			screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen,
+		)
 
 		/**
 		 * @see ScreenOperation.ExitTo
@@ -179,6 +194,11 @@ class ScreenManager internal constructor(
 		 * @see ScreenOperation.Reset
 		 */
 		fun reset(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle) -> Screen)
+
+		/**
+		 * @see ScreenOperation.Reset
+		 */
+		fun reset(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen)
 
 		fun addMenu(menu: (MenuManager.Handle, AsdHandle) -> Menu)
 
@@ -194,8 +214,21 @@ class ScreenManager internal constructor(
 			screenOpQueue.add(ScreenOperation.Open { screen(handle, ScreenAsdHandleImpl(), it) })
 		}
 
+		override fun open(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen) {
+			screenOpQueue.add(ScreenOperation.Open { screen(handle, ScreenAsdHandleImpl(), it, inputStatesHandle) })
+		}
+
 		override fun openBefore(target: Screen, screen: (Handle, AsdHandle.Screen, RenderSystem.Handle) -> Screen) {
 			screenOpQueue.add(ScreenOperation.OpenBefore(target) { screen(handle, ScreenAsdHandleImpl(), it) })
+		}
+
+		override fun openBefore(
+			target: Screen,
+			screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen
+		) {
+			screenOpQueue.add(ScreenOperation.OpenBefore(target) {
+				screen(handle, ScreenAsdHandleImpl(), it, inputStatesHandle)
+			})
 		}
 
 		override fun exitTo(screen: Screen) {
@@ -204,6 +237,10 @@ class ScreenManager internal constructor(
 
 		override fun reset(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle) -> Screen) {
 			screenOpQueue.add(ScreenOperation.Reset { screen(handle, ScreenAsdHandleImpl(), it) })
+		}
+
+		override fun reset(screen: (Handle, AsdHandle.Screen, RenderSystem.Handle, InputStatesHandle) -> Screen) {
+			screenOpQueue.add(ScreenOperation.Reset { screen(handle, ScreenAsdHandleImpl(), it, inputStatesHandle) })
 		}
 
 		override fun addMenu(menu: (MenuManager.Handle, AsdHandle) -> Menu) = menuManager.handle.addMenu(menu)

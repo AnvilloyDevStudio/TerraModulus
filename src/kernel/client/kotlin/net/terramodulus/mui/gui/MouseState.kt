@@ -28,9 +28,9 @@ sealed class MouseState : InputState() {
 	data class WheelYMotion(val delta: Double, val pos: Vec2d) : MouseState()
 	data class WheelXMotion(val delta: Double, val pos: Vec2d) : MouseState()
 
-	class Listener(override val triggers: Set<Trigger>, private val action: () -> Unit) :
+	class Listener(override val triggers: Set<Trigger>, private val action: (MouseState) -> Unit) :
 		InputState.Listener<MouseState, Key> {
-		override fun act() = action()
+		override fun act(state: MouseState) = action(state)
 	}
 
 	class Trigger(override val key: Key, private val condition: (MouseState) -> Boolean) :

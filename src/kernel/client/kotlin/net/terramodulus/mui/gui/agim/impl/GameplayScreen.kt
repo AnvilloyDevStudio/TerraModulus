@@ -25,16 +25,16 @@ import net.terramodulus.engine.SimpleMesh3dGeomCube
 import net.terramodulus.engine.SimpleMesh3dGeomSphere
 import net.terramodulus.engine.WorldObjDrawable
 import net.terramodulus.engine.common.ZeroImmVec3d
+import net.terramodulus.mui.gui.InputStatesHandle
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.event.ScreenEvent
 import net.terramodulus.mui.gui.asd.AsdHandle
-import net.terramodulus.mui.gui.asd.AsdProcessor
 import net.terramodulus.mui.gui.gfx.Direction6C
-import net.terramodulus.mui.gui.gfx.RectangleF
+import net.terramodulus.mui.gui.gfx.InsetsD
 import net.terramodulus.mui.gui.gfx.RenderSystem
-import net.terramodulus.mui.kui.InputSystem
+import net.terramodulus.mui.gui.gfx.TextContext
 import net.terramodulus.mui.kui.KeyboardInputHandler
 import net.terramodulus.util.logging.logger
 import net.terramodulus.void.World
@@ -66,6 +66,7 @@ internal class GameplayScreen(
 	renderSystemHandle: RenderSystem.Handle,
 	managerHandle: ScreenManager.Handle,
 	asdHandle: AsdHandle.Container,
+	inputStatesHandle: InputStatesHandle,
 ) : Screen(managerHandle, asdHandle) {
 	private val geoShaders = camera.loadGeoShaders(
 		getResourceAsString("/gwr_geo.vsh"),
@@ -75,8 +76,7 @@ internal class GameplayScreen(
 	private val canvasHandle = renderSystemHandle.canvasHandle
 
 	private lateinit var player: PlayerVoidGeom
-	override val layout =
-		SingletonLayout(this, BlankComponent(ComponentAsdHandleImpl()), SingletonLayout.Config.Absolute.Full)
+	override val layout = CompositeLayout(this)
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
@@ -84,7 +84,24 @@ internal class GameplayScreen(
 			WorldInitScreen(p1, p2, p3).apply {
 				core.world = World(Ymir(), progressBar)
 				addListener(ScreenEvent.Close::class.java) {
-					this@GameplayScreen.layout.update(GameplayRenderer())
+					this@GameplayScreen.layout.update {
+						add(SingletonLayout(
+							this@GameplayScreen,
+							GameplayRenderer(),
+							SingletonLayout.Config.Absolute.Full,
+						))
+						add(SingletonLayout(
+							this@GameplayScreen,
+							ButtonComponent(ComponentAsdHandleImpl(), inputStatesHandle) {
+								SingletonLayout(this, TextDisplayComponent(
+									ComponentAsdHandleImpl(),
+									renderSystemHandle,
+									TextContext.Config(24.0F, 24.0F, ImmVec4i(255)),
+								), SingletonLayout.Config.Absolute.Full)
+							},
+							SingletonLayout.Config.Absolute.Insets(InsetsD(20.0, 0.0, 0.0, 300.0)),
+						))
+					}
 					this@GameplayScreen.addListener(ScreenEvent.Update::class.java) {
 						update0(it.muiIoI)
 					}
@@ -116,7 +133,7 @@ internal class GameplayScreen(
 		private val sphereGeom = SimpleMesh3dGeomSphere(canvasHandle.canvas, 1F)
 
 		override fun wrapCube(phyGeom: PhyGeom, x: Double, y: Double, z: Double): VoidGeom = EnvVoidGeom(phyGeom,
-			WorldObjDrawable(cubeGeom, randomColor(), ImmVec3d(x, y, z), STD_SCALE, IDENT_ROT,),
+			WorldObjDrawable(cubeGeom, randomColor(), ImmVec3d(x, y, z), STD_SCALE, IDENT_ROT),
 			ImmVec3d(x, y, z),
 		)
 

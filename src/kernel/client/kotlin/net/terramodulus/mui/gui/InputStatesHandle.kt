@@ -5,4 +5,6 @@
 
 package net.terramodulus.mui.gui
 
-class MouseGlobalStates : InputGlobalStates<MouseState, MouseState.Key>()
+class InputStatesHandle {
+    val mouseGlobalStates = MouseGlobalStates()
+}

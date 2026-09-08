@@ -5,18 +5,9 @@
 
 package net.terramodulus.mui.gui
 
-sealed class InputGlobalStates<S : InputState, C : InputCtxStates<S>, K : Any> {
-	protected val ctxStates = mutableSetOf<C>()
+sealed class InputGlobalStates<S : InputState, K : Any> {
 	protected val triggers = mutableMapOf<K, MutableSet<InputState.Trigger<S, K>>>()
 	protected val listeners = mutableMapOf<InputState.Trigger<S, K>, InputState.Listener<S, K>>()
-
-	internal fun addCtxStates(c: C) {
-		ctxStates.add(c)
-	}
-
-	internal fun removeCtxStates(c: C) {
-		ctxStates.remove(c)
-	}
 
 	internal fun addListener(listener: InputState.Listener<S, K>) {
 		listener.triggers.forEach {
