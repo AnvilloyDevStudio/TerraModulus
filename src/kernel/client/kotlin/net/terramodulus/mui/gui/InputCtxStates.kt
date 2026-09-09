@@ -23,6 +23,12 @@ sealed class InputCtxStates<S : InputState, K : Any>(
 			rect = RectRange.range(asdHandle.rect)
 		}.also(asdHandle::observeRect)
 
+		init {
+			try {
+				rect = RectRange.range(asdHandle.rect)
+			} catch (_: UninitializedPropertyAccessException) {}
+		}
+
 		override fun close() {
 			asdHandle.unobserveRect(listener)
 		}

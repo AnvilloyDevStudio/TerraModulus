@@ -42,6 +42,13 @@ internal object Mui {
 
 	/**
 	 * @param sdlHandle SDL handle pointer
+	 * @return `[x, y]` in window coordinates
+	 */
+	@JvmName("getMousePos")
+	external fun getMousePos(sdlHandle: ULong): FloatArray
+
+	/**
+	 * @param sdlHandle SDL handle pointer
 	 * @return the list of all MUI events in this frame
 	 */
 	@JvmName("sdlPoll")

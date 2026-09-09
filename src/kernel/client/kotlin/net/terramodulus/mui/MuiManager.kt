@@ -14,6 +14,7 @@ import net.terramodulus.mui.hui.HuiManager
 import net.terramodulus.mui.kui.InputSystem
 import net.terramodulus.mui.kui.KeyboardInputHandler
 import net.terramodulus.mui.kui.KuiManager
+import net.terramodulus.mui.kui.MouseInputHandler
 import net.terramodulus.mui.uid.UidManager
 import net.terramodulus.util.logging.logger
 import java.io.Closeable
@@ -37,7 +38,7 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 	 * This includes input ticking and canvas rendering.
 	 */
 	internal fun update() {
-		val keyEvents = ArrayList<InputSystem.InputEvent>()
+		val inputEvents = ArrayList<InputSystem.InputEvent>()
 		window.pollEvents().forEach { event ->
 			when (event) {
 				is MuiEvent.DisplayAdded -> {
@@ -123,11 +124,11 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 				is MuiEvent.KeyboardKeyDown -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` down." }
-					keyEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Down(KeyboardInputHandler.KeyId(event.key))))
+					inputEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Down(KeyboardInputHandler.KeyId(event.key))))
 				}
 				is MuiEvent.KeyboardKeyUp -> {
 					logger.debug { "Keyboard (id: ${event.keyboardId}) key `${event.key}` up." }
-					keyEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Up(KeyboardInputHandler.KeyId(event.key))))
+					inputEvents.add(InputSystem.InputEvent.Keyboard(KeyboardInputHandler.KeyEvent.Up(KeyboardInputHandler.KeyId(event.key))))
 				}
 				MuiEvent.KeyboardRemoved -> {
 					logger.debug { "Keyboard removed." }
@@ -140,13 +141,19 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 				is MuiEvent.MouseButtonDown -> {
 					logger.debug { "Mouse (id: ${event.mouseId}) key `${event.key}` down." }
-					guiManager
+					inputEvents.add(InputSystem.InputEvent.Mouse(MouseInputHandler.Event.Button.Down(MouseInputHandler.ButtonId(
+						event.key.toUInt()
+					))))
 				}
 				is MuiEvent.MouseButtonUp -> {
 					logger.debug { "Mouse (id: ${event.mouseId}) key `${event.key}` up." }
+					inputEvents.add(InputSystem.InputEvent.Mouse(MouseInputHandler.Event.Button.Up(MouseInputHandler.ButtonId(
+						event.key.toUInt()
+					))))
 				}
 				is MuiEvent.MouseMotion -> {
-					logger.debug { "Mouse (id: ${event.mouseId}) motion (${event.x}, ${event.y})." }
+					// y is inverted as coordinates in y are inversed from window coordinates to rendering coordinates
+					inputEvents.add(InputSystem.InputEvent.Mouse(MouseInputHandler.Event.Movement(event.x, -event.y)))
 				}
 				MuiEvent.MouseRemoved -> {
 					logger.debug { "Mouse removed." }
@@ -239,7 +246,8 @@ internal class MuiManager internal constructor(core: TerraModulus) : Closeable {
 				}
 			}
 		}
-		kuiManager.inputSystem.update(keyEvents.asSequence())
+		guiManager.inputStatesHandle.update(inputEvents.asSequence(), window.getMousePos())
+		kuiManager.inputSystem.update(inputEvents.asSequence())
 		guiManager.updateScreens(this)
 		guiManager.updateCanvas()
 	}

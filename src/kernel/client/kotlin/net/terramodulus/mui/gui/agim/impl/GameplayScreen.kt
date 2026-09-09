@@ -6,6 +6,7 @@
 package net.terramodulus.mui.gui.agim.impl
 
 import com.cout970.math.quaternion.ImmQuatd
+import com.cout970.math.vec2.Vec2d
 import com.cout970.math.vec3.ImmVec3d
 import com.cout970.math.vec3.Vec3d
 import com.cout970.math.vec3.Vec3f
@@ -26,12 +27,15 @@ import net.terramodulus.engine.SimpleMesh3dGeomSphere
 import net.terramodulus.engine.WorldObjDrawable
 import net.terramodulus.engine.common.ZeroImmVec3d
 import net.terramodulus.mui.gui.InputStatesHandle
+import net.terramodulus.mui.gui.MouseCtxStates
+import net.terramodulus.mui.gui.MouseState
 import net.terramodulus.mui.gui.agim.Component
 import net.terramodulus.mui.gui.agim.Screen
 import net.terramodulus.mui.gui.agim.ScreenManager
 import net.terramodulus.mui.gui.agim.event.ScreenEvent
 import net.terramodulus.mui.gui.asd.AsdHandle
 import net.terramodulus.mui.gui.gfx.Direction6C
+import net.terramodulus.mui.gui.gfx.GuiLine
 import net.terramodulus.mui.gui.gfx.InsetsD
 import net.terramodulus.mui.gui.gfx.RenderSystem
 import net.terramodulus.mui.gui.gfx.TextContext
@@ -39,7 +43,11 @@ import net.terramodulus.mui.kui.KeyboardInputHandler
 import net.terramodulus.util.logging.logger
 import net.terramodulus.void.World
 import kotlin.math.PI
+import kotlin.math.roundToInt
+import kotlin.properties.Delegates
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeSource
 
 private val WHITE = ImmVec4i(255, 255, 255, 255)
 private val RED = ImmVec4i(255, 0, 0, 255)
@@ -77,6 +85,7 @@ internal class GameplayScreen(
 
 	private lateinit var player: PlayerVoidGeom
 	override val layout = CompositeLayout(this)
+	private val mouseDebugTrackingLayer = MouseDebugTrackingLayer(renderSystemHandle.canvasHandle, inputStatesHandle)
 
 	init {
 		renderSystemHandle.setBackgroundColor(0F, 0F, 0F, 0F)
@@ -97,9 +106,34 @@ internal class GameplayScreen(
 									ComponentAsdHandleImpl(),
 									renderSystemHandle,
 									TextContext.Config(24.0F, 24.0F, ImmVec4i(255)),
-								), SingletonLayout.Config.Absolute.Full)
+								).apply {
+									text = "Button"
+								}, SingletonLayout.Config.Absolute.Full)
 							},
 							SingletonLayout.Config.Absolute.Insets(InsetsD(20.0, 0.0, 0.0, 300.0)),
+						))
+						add(SingletonLayout(
+							this@GameplayScreen,
+							SimplePane(ComponentAsdHandleImpl()) {
+								SingletonLayout(this, SizedPane(
+									ComponentAsdHandleImpl(),
+									CheckboxComponent(
+										ComponentAsdHandleImpl(),
+										inputStatesHandle,
+										renderSystemHandle.canvasHandle,
+									) { mouseDebugTrackingLayer.enabled = it },
+									SizedPane.Config(100u, 100u),
+								), SingletonLayout.Config.Aligned(
+									SingletonLayout.Config.ObjectFit.Contain,
+									SingletonLayout.Config.AlignmentConfig.withX(0.0),
+								))
+							},
+							SingletonLayout.Config.Absolute.Insets(InsetsD(20.0, 0.0, 0.0, 350.0)),
+						))
+						add(SingletonLayout(
+							this@GameplayScreen,
+							mouseDebugTrackingLayer,
+							SingletonLayout.Config.Absolute.Full,
 						))
 					}
 					this@GameplayScreen.addListener(ScreenEvent.Update::class.java) {
@@ -108,24 +142,64 @@ internal class GameplayScreen(
 				}
 			}
 		}
-// 		val progressBarEdge = GeomComponent(GuiLine(0, 100, 100, 100, 255, 255, 255, 255))
-// 		addComponent(progressBarEdge)
-// 		val progressBarCtnVal = GuiLine(0, 101, 0, 101, 255, 255, 0, 255)
-// 		val progressBarCtn = GeomComponent(progressBarCtnVal)
-// 		addComponent(progressBarCtn)
-// 		class Tracker : World.ProgressTracker {
-// 			override val progress: AtomicInteger = AtomicInteger(0)
-// 			override val max: AtomicInteger = AtomicInteger(0)
-// 			override fun update() {
-// 				progressBarCtnVal.setPos(0, 101, 100 * progress.get() / max.get(), 101)
-// 			}
-// 		}
-// 		Thread {
-// 			core.world = World(Tracker(), Ymir())
-// 			removeComponent(progressBarEdge)
-// 			removeComponent(progressBarCtn)
-// 			addComponent(GameplayRenderer())
-// 		}.start()
+	}
+
+	private inner class MouseDebugTrackingLayer(
+		private val handle: RenderSystem.CanvasHandle,
+		inputStatesHandle: InputStatesHandle,
+	) : Component(ComponentAsdHandleImpl()) {
+		private var prevPos: Vec2d? = null
+		private val lines = ArrayDeque<Element>()
+		private val timeSource = TimeSource.Monotonic
+		private val mouseCtxStates = MouseCtxStates(inputStatesHandle.mouseGlobalStates, asdHandle)
+		private val threshold = 3.seconds
+		var enabled: Boolean by Delegates.observable(false) { _, _, newValue -> if (!newValue) lines.clear() }
+
+		private inner class Element(val timestamp: TimeSource.Monotonic.ValueTimeMark, val geom: GuiLine)
+
+		init {
+			asdHandle.observeRect {
+				lines.clear()
+				prevPos = null
+			}
+			mouseCtxStates.addListener(MouseState.Listener(
+				setOf(MouseState.Trigger(MouseState.Key.Movement) { true })
+			) {
+				when (it) {
+					is MouseState.Movement -> {
+						if (prevPos != null) {
+							// Standard tracking aligned with SDL
+							lines.add(Element(
+								timeSource.markNow(),
+								GuiLine(handle, prevPos!!.xi, prevPos!!.yi, it.pos.xi, it.pos.yi, 255, 165, 0, 255),
+							))
+							// Secondary tracking by relative values from event polling
+							val x = (prevPos!!.xd + it.delX).roundToInt()
+							val y = (prevPos!!.yd + it.delY).roundToInt()
+							lines.add(Element(
+								timeSource.markNow(),
+								GuiLine(handle, prevPos!!.xi, prevPos!!.yi, x, y, 0, 255, 0, 255),
+							))
+						}
+						prevPos = it.pos
+					}
+					else -> throw AssertionError()
+				}
+			})
+		}
+
+		override fun render(renderSystem: RenderSystem) {
+			if (enabled) {
+				val now = timeSource.markNow()
+				lines.iterator().apply {
+					while (hasNext()) {
+						val it = next()
+						if (now - it.timestamp > threshold) remove()
+						else it.geom.render(renderSystem)
+					}
+				}
+			}
+		}
 	}
 
 	private inner class Ymir : World.Ymir {

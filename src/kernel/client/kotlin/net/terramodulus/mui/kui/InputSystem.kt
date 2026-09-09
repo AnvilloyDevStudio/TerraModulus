@@ -46,6 +46,7 @@ class InputSystem internal constructor(private val kuiManager: KuiManager) {
 
 	internal sealed class InputEvent private constructor() {
 		data class Keyboard(val inner: KeyboardInputHandler.KeyEvent) : InputEvent()
+		data class Mouse(val inner: MouseInputHandler.Event) : InputEvent()
 	}
 
 	internal fun update(events: Sequence<InputEvent>) {

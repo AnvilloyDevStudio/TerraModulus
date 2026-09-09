@@ -22,4 +22,8 @@ sealed class InputGlobalStates<S : InputState, K : Any> {
 			triggers[it.key]!!.remove(it)
 		}
 	}
+
+	internal fun triggerListeners(key: K, state: S) {
+		triggers[key]?.forEach { listeners[it]!!.act(state) }
+	}
 }

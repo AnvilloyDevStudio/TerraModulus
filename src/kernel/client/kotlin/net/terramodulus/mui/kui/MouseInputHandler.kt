@@ -84,20 +84,28 @@ class MouseInputHandler(mouseDevice: MouseDevice) {
 
 	fun condition(predicate: ButtonsScope.() -> ButtonPredicate) = ButtonsScope.predicate().test(ButtonPredicate.Helper(buttons))
 
-	sealed class KeyEvent private constructor(internal open val key: ButtonId) {
-		data class Down(override val key: ButtonId) : KeyEvent(key)
-		data class Up(override val key: ButtonId) : KeyEvent(key)
+	internal sealed class Event private constructor() {
+		sealed class Button private constructor(open val key: ButtonId) : Event() {
+			data class Down(override val key: ButtonId) : Button(key)
+			data class Up(override val key: ButtonId) : Button(key)
+		}
+		data class Movement(val delX: Float, val delY: Float) : Event()
 	}
 
-	internal fun update(events: Sequence<KeyEvent>) {
+	internal fun update(events: Sequence<Event>) {
 		buttons.values.forEach { it.justChanged = false }
 		events.forEach {
-			// Note: This may not handle the case where a key is just down less than a tick.
-			// This also assumes that keyboard states are consistent across time frames.
-			buttons[it.key]!!.justChanged = true
 			when (it) {
-				is KeyEvent.Down -> buttons[it.key]!!.raw.down = true
-				is KeyEvent.Up -> buttons[it.key]!!.raw.down = false
+				is Event.Button -> {
+					// Note: This may not handle the case where a key is just down less than a tick.
+					// This also assumes that keyboard states are consistent across time frames.
+					buttons[it.key]!!.justChanged = true
+					when (it) {
+						is Event.Button.Down -> buttons[it.key]!!.raw.down = true
+						is Event.Button.Up -> buttons[it.key]!!.raw.down = false
+					}
+				}
+				is Event.Movement -> {} // TODO
 			}
 		}
 	}

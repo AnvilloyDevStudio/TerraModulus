@@ -5,8 +5,10 @@
 
 package net.terramodulus.engine
 
+import com.cout970.math.vec2.ImmVec2f
 import net.terramodulus.engine.ferricia.Mui.dropSdlHandle
 import net.terramodulus.engine.ferricia.Mui.dropWindowHandle
+import net.terramodulus.engine.ferricia.Mui.getMousePos
 import net.terramodulus.engine.ferricia.Mui.initSdlHandle
 import net.terramodulus.engine.ferricia.Mui.initWindowHandle
 import net.terramodulus.engine.ferricia.Mui.resizeGLViewport
@@ -47,6 +49,8 @@ class Window(
 	fun swap() = swapWindow(windowHandle)
 
 	fun pollEvents() = sdlPoll(sdlHandle)
+
+	fun getMousePos() = getMousePos(sdlHandle).let { ImmVec2f(it[0], height.toFloat() - it[1]) }
 
 	override fun close() {
 		dropWindowHandle(windowHandle)
