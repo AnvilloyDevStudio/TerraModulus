@@ -12,9 +12,6 @@ import kotlinx.coroutines.runBlocking
 import net.terramodulus.mui.gui.agim.impl.BoundsProperty
 import net.terramodulus.mui.gui.agim.impl.RectangleProperty
 import net.terramodulus.mui.gui.asd.AsdHandle
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.mutableSetOf
 
 internal class LayoutManager(screenManager: ScreenManager) {
 	private val agimoTree = AgimoTree(screenManager)
@@ -245,7 +242,7 @@ internal class LayoutManager(screenManager: ScreenManager) {
 							}
 						}
 					}
-					for (unit in channelComputed) {
+					if (unitsToCompute.isNotEmpty()) for (unit in channelComputed) {
 						unitChildren.remove(unit)?.forEach {
 							val deps = requireNotNull(unitDeps[it])
 							assert(deps.remove(unit))
@@ -255,12 +252,11 @@ internal class LayoutManager(screenManager: ScreenManager) {
 								unitsToCompute.remove(it)
 							}
 						}
-						if (unitsToCompute.isEmpty()) {
-							channelToCompute.close()
-							assert(unitChildren.isEmpty())
-							assert(unitDeps.isEmpty())
-						}
+						if (unitsToCompute.isEmpty()) break
 					}
+					channelToCompute.close()
+					assert(unitChildren.isEmpty())
+					assert(unitDeps.isEmpty())
 				}
 				launch {
 					val layoutHandle = object : LayoutHandle() {
