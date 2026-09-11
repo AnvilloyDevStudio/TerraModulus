@@ -26,6 +26,8 @@ private val logger = logger {}
 class World(commander: Ymir, progressBar: ProgressBar) : Closeable {
 	private val env = PhyEnv()
 	private val world = env.createWorld()
+	var timePerTick = Duration.ZERO
+		private set
 
 	var gravity: Vec3d by world::gravity
 	var frictionMode: FrictionMode by Delegates.observable(FrictionMode.Infinite) { _, _, new ->
@@ -88,6 +90,7 @@ class World(commander: Ymir, progressBar: ProgressBar) : Closeable {
 					val now = timeSource.markNow()
 					// remaining time after elapsed time used to maintain stable interval
 					val rem = interval - (now - lastMark)
+					timePerTick = (now - lastMark)
 					if (rem > Duration.ZERO) { // sleeps the remaining time only when it is positive
 						Thread.sleep(rem.inWholeMilliseconds)
 					}
@@ -96,7 +99,6 @@ class World(commander: Ymir, progressBar: ProgressBar) : Closeable {
 				}
 			}.start()
 		}.start()
-
 	}
 
 	interface Ymir {
@@ -111,14 +113,18 @@ class World(commander: Ymir, progressBar: ProgressBar) : Closeable {
 		fun render()
 
 		val pos: Vec3d
+
+		val phyGeoms: Sequence<PhyGeom>
 	}
 
 	interface EnvVoidGeom : VoidGeom {
 		val phyGeom: PhyGeom
+		override val phyGeoms: Sequence<PhyGeom> get() = sequenceOf(phyGeom)
 	}
 
 	interface PlayerVoidGeom : VoidGeom {
 		val phyBody: PhyBody
+		override val phyGeoms: Sequence<PhyGeom> get() = phyBody.geoms.asSequence()
 	}
 
 	// Source: https://en.wikipedia.org/wiki/Maze_generation_algorithm

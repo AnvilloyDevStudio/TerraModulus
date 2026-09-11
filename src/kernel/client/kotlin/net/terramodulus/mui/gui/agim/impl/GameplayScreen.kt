@@ -96,7 +96,7 @@ internal class GameplayScreen(
 					this@GameplayScreen.layout.update {
 						add(SingletonLayout(
 							this@GameplayScreen,
-							GameplayRenderer(),
+							GameplayRenderer(renderSystemHandle),
 							SingletonLayout.Config.Absolute.Full,
 						))
 						add(SingletonLayout(
@@ -235,8 +235,10 @@ internal class GameplayScreen(
 	private inner class EnvVoidGeom(override val phyGeom: PhyGeom, drawable: WorldObjDrawable, override val pos: Vec3d) :
 		VoidGeom(drawable), World.EnvVoidGeom
 
-	private inner class PlayerVoidGeom(override val phyBody: PhyBody, drawable: WorldObjDrawable) :
-		VoidGeom(drawable), World.PlayerVoidGeom {
+	private inner class PlayerVoidGeom(
+		override val phyBody: PhyBody,
+		drawable: WorldObjDrawable,
+	) : VoidGeom(drawable), World.PlayerVoidGeom {
 		fun move(dir: Vec3d) {
 			if (dir == ZeroImmVec3d) return // avoid math errors and computations
 			val dir = ImmVec3d(dir.x, dir.y, dir.z).normalized()
@@ -428,11 +430,30 @@ internal class GameplayScreen(
 		player.move(dirs.fold(ZeroImmVec3d, Vec3d::plus))
 	}
 
-	private inner class GameplayRenderer : Component(ComponentAsdHandleImpl()) {
+	private inner class GameplayRenderer(renderSystemHandle: RenderSystem.Handle) :
+		Component(ComponentAsdHandleImpl()) {
+		private val tpsText = TextContext(renderSystemHandle, TextContext.Config(16F, 16F, ImmVec4i(255)))
+
+		init {
+			asdHandle.observeRect {
+				tpsText.update(asdHandle.rect)
+			}
+		}
+
 		override fun render(renderSystem: RenderSystem) {
-			if (core.world != null) core.world!!.objects.values.sortedWith(
-				compareBy<World.VoidGeom> { it.pos.y }.thenBy { it.pos.z }
-			).forEach { it.render() }
+			if (core.world != null) {
+// 				val range = camera.getSpace() * 1.1 // with little tolerance
+// 				val ceil = 3
+// 				val floor = 10
+// 				worldStates.pos = player.pos.toMutVec3d().apply { y -= floor - (ceil + floor).toDouble() / 2 }
+// 				worldStates.dims = ImmVec3d(range.x, (ceil + floor).toDouble(), range.y)
+				core.world!!.objects.values.sortedWith(
+					compareBy<World.VoidGeom> { it.pos.y }.thenBy { it.pos.z }
+				).forEach { it.render() }
+			}
+
+			tpsText.setText("${core.tps} FPS")
+			tpsText.render()
 		}
 	}
 

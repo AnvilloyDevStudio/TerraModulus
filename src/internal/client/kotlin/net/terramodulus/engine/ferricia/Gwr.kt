@@ -26,6 +26,13 @@ internal object Gwr {
 
 	/**
 	 * @param cameraHandle Camera3D handle pointer
+	 * @return `[x, z]` space dimensions
+	 */
+	@JvmName("getCameraSpace")
+	external fun getCameraSpace(cameraHandle: ULong): DoubleArray
+
+	/**
+	 * @param cameraHandle Camera3D handle pointer
 	 * @param data `[x, y, z]`
 	 */
 	@JvmName("refreshCameraPos")

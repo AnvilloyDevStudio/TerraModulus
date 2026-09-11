@@ -24,7 +24,6 @@ class TextDisplayComponent(
 	init {
 		asdHandle.observeRect {
 			context.update(asdHandle.rect)
-			println(asdHandle.rect)
 		}
 	}
 

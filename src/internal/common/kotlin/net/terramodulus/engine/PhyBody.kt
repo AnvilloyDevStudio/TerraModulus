@@ -37,7 +37,13 @@ class PhyBody internal constructor(worldHandle: ULong, mass: Mass) {
 		setPhyBodyGravityMode(handle, newValue)
 	}
 
-	fun addGeom(geom: PhyGeom) = addPhyBodyGeom(handle, geom.handle)
+	private val _geoms = mutableSetOf<PhyGeom>()
+	val geoms: Set<PhyGeom> get() = _geoms
+
+	fun addGeom(geom: PhyGeom) {
+		addPhyBodyGeom(handle, geom.handle)
+		_geoms.add(geom)
+	}
 
 	fun addForce(force: Vec3d) = addPhyBodyForce(handle, force.toArray())
 }

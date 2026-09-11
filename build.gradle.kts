@@ -8,6 +8,7 @@ plugins {
     id("net.terramodulus.plugins.cargo") apply false
 //    id("fr.stardustenterprises.rust.wrapper") version "3.2.4" apply false
     application
+    kotlin("kapt") version "2.3.21"
 }
 
 version = "0.0.1"
@@ -121,6 +122,8 @@ configure(listOf(project(":internal:common"), project(":kernel:common"))) {
 }
 
 project(":kernel:common") {
+    apply(plugin = "org.jetbrains.kotlin.kapt")
+
     dependencies {
         api("org.jetbrains:annotations:26.1.0")
         api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
@@ -136,7 +139,7 @@ project(":kernel:common") {
         implementation("org.apache.logging.log4j:log4j-api:2.24.3")
         implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3")
         implementation(platform("org.apache.logging.log4j:log4j-bom:2.24.3"))
-        annotationProcessor("org.apache.logging.log4j:log4j-core:2.24.3")
+        kapt("org.apache.logging.log4j:log4j-core:2.24.3")
         runtimeOnly("com.lmax:disruptor:4.0.0")
         api("io.github.oshai:kotlin-logging-jvm:7.0.3")
         implementation("net.sf.jopt-simple:jopt-simple:5.0.4")
@@ -229,9 +232,18 @@ configure(listOf(project(":kernel:server"), project(":kernel:client"))) {
     }
 
     tasks.named<JavaExec>("run") {
-        jvmArgs("-Djava.library.path=${rootProject.file("ferricia/target/${
-            if (project.hasProperty("release")) "release" else "debug"
-        }").path}")
+        jvmArgs(
+            "-Djava.library.path=${
+                rootProject.file(
+                    "ferricia/target/${
+                        if (project.hasProperty("release")) "release" else "debug"
+                    }"
+                ).path
+            }"
+        )
         args("--screen-size", "800x500")
     }
+}
+dependencies {
+    testImplementation(kotlin("test"))
 }

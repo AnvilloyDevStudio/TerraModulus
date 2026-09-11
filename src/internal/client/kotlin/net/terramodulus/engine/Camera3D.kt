@@ -5,6 +5,8 @@
 
 package net.terramodulus.engine
 
+import com.cout970.math.vec2.ImmVec2d
+import net.terramodulus.engine.ferricia.Gwr.getCameraSpace
 import net.terramodulus.engine.ferricia.Gwr.newCamera
 import net.terramodulus.engine.ferricia.Gwr.refreshCameraPos
 import net.terramodulus.engine.ferricia.Gwr.setCameraZoomLevel
@@ -15,6 +17,8 @@ class Camera3D internal constructor(private val canvas: Canvas, pos: FloatArray)
 	internal val handle = newCamera(canvas.handle, pos)
 
 	fun loadGeoShaders(vsh: String, fsh: String) = canvas.load3DGeoShaders(vsh, fsh)
+
+	fun getSpace() = getCameraSpace(handle).let { ImmVec2d(it[0], it[1]) }
 
 	fun refreshPos(pos: FloatArray) = refreshCameraPos(handle, pos)
 
